@@ -33,23 +33,18 @@ mdp = Shape("home", 'Votre mot de passe est :', (current_w/4-6)*1, current_h/12,
 def welcome_display(): 
     for event in pygame.event.get():
         if event.type == pygame.MOUSEBUTTONDOWN:
-            if sign_in.top_rect.collidepoint(event.pos):
-                dest = sign_in_display()
-                if dest:
-                    return dest
-
-            elif log_in.top_rect.collidepoint(event.pos):
+            if log_in.top_rect.collidepoint(event.pos):
                 dest = log_in_display()
                 if dest:
                     return dest
-
+                
     choix.draw()
     title.draw()
     sign_in.draw()
     log_in.draw()
     dest = sans_compte.draw()
     if dest is not None:
-        with open(resource_path("profile/compte.txt"), "w") as f:
-            f.write("Invité\ninvit")
+        with open(resource_path("GuessMyClass/profile/compte.txt"), "w") as f:
+            f.write("Invite\ninvit")
             f.close()
         return dest

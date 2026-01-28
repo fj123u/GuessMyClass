@@ -36,7 +36,7 @@ running = True
 
 
 
-icon = pygame.image.load(resource_path('icon/Logo PJB.png'))
+icon = pygame.image.load(resource_path('GuessMyClass/icon/Logo PJB.png'))
 pygame.display.set_icon(icon)
 icon = pygame.transform.scale(icon, (25, 25))
 
@@ -72,7 +72,7 @@ while running:
     screen.fill("#CDE4E2")
 
     if dest in ['home', 'leave', 'versus', 'account']:
-        with open(resource_path("score/option.txt"), "w") as f:
+        with open(resource_path("GuessMyClass/score/option.txt"), "w") as f:
             f.write('False')
             f.close()
 
@@ -119,7 +119,7 @@ while running:
                 dest = 'home'
             if o:
                 print('hellyeah')
-                with open(resource_path("score/option.txt"), "w") as f:
+                with open(resource_path("GuessMyClass/score/option.txt"), "w") as f:
                     f.write('True')
                     f.close()
                 game_display()

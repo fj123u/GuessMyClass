@@ -27,7 +27,7 @@ def log_in_display():
             )
             return
 
-        profile_path = resource_path("profile/compte.txt")
+        profile_path = resource_path("GuessMyClass/profile/compte.txt")
         os.makedirs(os.path.dirname(profile_path), exist_ok=True)
 
         with open(profile_path, "w", encoding="utf-8") as f:
@@ -51,7 +51,7 @@ def log_in_display():
     username.place(x=25, y=30)
 
     try:
-        with open(resource_path("profile/compte.txt"), "r", encoding="utf-8") as f:
+        with open(resource_path("GuessMyClass/profile/compte.txt"), "r", encoding="utf-8") as f:
             pseudo = f.read().strip()
             if pseudo:
                 username.insert(0, pseudo)

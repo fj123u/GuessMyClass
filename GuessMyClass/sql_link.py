@@ -66,7 +66,7 @@ def get_leaderboard(mode: int, limit: int = 20):
 
 
 def save_local_profile(pseudo):
-    path = resource_path("profile/compte.txt")
+    path = resource_path("GuessMyClass/profile/compte.txt")
     os.makedirs(os.path.dirname(path), exist_ok=True)
     with open(path, "w", encoding="utf-8") as f:
         f.write(pseudo)
@@ -74,7 +74,7 @@ def save_local_profile(pseudo):
 
 def load_local_profile():
     try:
-        with open(resource_path("profile/compte.txt"), "r", encoding="utf-8") as f:
+        with open(resource_path("GuessMyClass/profile/compte.txt"), "r", encoding="utf-8") as f:
             return f.read().strip()
     except FileNotFoundError:
         return ""

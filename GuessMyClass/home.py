@@ -34,7 +34,7 @@ infos_right = Shape(None, '', current_w/3, current_h -current_h/6 -60 -35, (curr
 
 def home_display(icon):
     screen.fill((205,228,226))
-    with open(resource_path("profile/compte.txt"), "r") as f:
+    with open(resource_path("GuessMyClass/profile/compte.txt"), "r") as f:
         lines = f.readlines()
         f.close()
     ide = ''

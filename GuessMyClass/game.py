@@ -28,27 +28,27 @@ import mysql.connector
 
 last_point = None  
 
-C000 = ["img/C000/C006.webp", "img/C000/C008.webp", "img/C000/C012.webp", "img/C000/C013.webp", "img/C000/C009.webp", "img/C000/C005.webp"]
-C100 = ["img/C100/C106.webp", "img/C100/C108.webp", "img/C100/C105.webp", "img/C100/C111.webp", "img/C100/C114.webp", "img/C100/C117.webp", "img/C100/C104.webp", "img/C100/C109.webp", "img/C100/C110.webp", "img/C100/C113.webp", "img/C100/C115.webp"]
-D000 = ["img/D000/D004.webp", "img/D000/D010.webp", "img/D000/D012_v2.webp", "img/D000/D014.webp", "img/D000/Escalier D.webp", "img/D000/D006.webp"]
-D100 = ["img/D100/D104.webp", "img/D100/D105.webp", "img/D100/D106.webp", "img/D100/D109.webp", "img/D100/D110.webp", "img/D100/couloir D haut.webp", "img/D100/D111.webp", "img/D100/D113.webp", "img/D100/D114.webp", "img/D100/D117.webp", "img/D100/D116.webp", "img/D100/D115.webp", "img/D100/D112.webp"]
-special = ["img/special/(parking).webp", "img/special/4_arbres.webp", "img/special/biathlon.webp", "img/special/briques.webp", "img/special/cdi.webp", "img/special/cours_dehors.webp", "img/special/cours_internat.webp", "img/special/creux.webp", "img/special/dehors_physique.webp", "img/special/hall.webp", "img/special/petit_arbre.webp", "img/special/terrain_foot.webp", "img/special/couloir CDI.webp", "img/special/couloir salle prof.webp", "img/special/escalier E.webp", "img/special/Grande passerelle.webp", "img/special/Passerelle_D-C_bas.webp", "img/special/Passerelle_D-C.webp", "img/special/Passerelle_E-D_bas.webp", "img/special/Passerelle_E-D.webp"]
-toilettes = ["img/toilettes/toilettes hall garçon.webp", "img/toilettes/toilette haut interieur.webp", "img/toilettes/vestiaire.webp"]
-A100 = ["img/A100/A136.webp", "img/A100/A137.webp", "img/A100/A138.webp", "img/A100/A139.webp"]
-E000 = ["img/E000/Beton.webp", "img/E000/bois.webp", "img/E000/couloir E bas.webp", "img/E000/E030.webp", "img/E000/Energie.webp", "img/E000/peinture.webp", "img/E000/E041.webp"]
-E100 = ["img/E100/couloir E haut.webp", "img/E100/E116.webp", "img/E100/E108.webp", "img/E100/E110.webp", "img/E100/E113.webp", "img/E100/E123.webp", "img/E100/E125.webp", "img/E100/E107.webp", "img/E100/E109.webp", "img/E100/E111.webp", "img/E100/E114.webp", "img/E100/E121.webp", "img/E100/E126.webp"]
+C000 = ["GuessMyClass/img/C000/C006.webp", "GuessMyClass/img/C000/C008.webp", "GuessMyClass/img/C000/C012.webp", "GuessMyClass/img/C000/C013.webp", "GuessMyClass/img/C000/C009.webp", "GuessMyClass/img/C000/C005.webp"]
+C100 = ["GuessMyClass/img/C100/C106.webp", "GuessMyClass/img/C100/C108.webp", "GuessMyClass/img/C100/C105.webp", "GuessMyClass/img/C100/C111.webp", "GuessMyClass/img/C100/C114.webp", "GuessMyClass/img/C100/C117.webp", "GuessMyClass/img/C100/C104.webp", "GuessMyClass/img/C100/C109.webp", "GuessMyClass/img/C100/C110.webp", "GuessMyClass/img/C100/C113.webp", "GuessMyClass/img/C100/C115.webp"]
+D000 = ["GuessMyClass/img/D000/D004.webp", "GuessMyClass/img/D000/D010.webp", "GuessMyClass/img/D000/D012_v2.webp", "GuessMyClass/img/D000/D014.webp", "GuessMyClass/img/D000/Escalier D.webp", "GuessMyClass/img/D000/D006.webp"]
+D100 = ["GuessMyClass/img/D100/D104.webp", "GuessMyClass/img/D100/D105.webp", "GuessMyClass/img/D100/D106.webp", "GuessMyClass/img/D100/D109.webp", "GuessMyClass/img/D100/D110.webp", "GuessMyClass/img/D100/couloir D haut.webp", "GuessMyClass/img/D100/D111.webp", "GuessMyClass/img/D100/D113.webp", "GuessMyClass/img/D100/D114.webp", "GuessMyClass/img/D100/D117.webp", "GuessMyClass/img/D100/D116.webp", "GuessMyClass/img/D100/D115.webp", "GuessMyClass/img/D100/D112.webp"]
+special = ["GuessMyClass/img/special/(parking).webp", "GuessMyClass/img/special/4_arbres.webp", "GuessMyClass/img/special/biathlon.webp", "GuessMyClass/img/special/briques.webp", "GuessMyClass/img/special/cdi.webp", "GuessMyClass/img/special/cours_dehors.webp", "GuessMyClass/img/special/cours_internat.webp", "GuessMyClass/img/special/creux.webp", "GuessMyClass/img/special/dehors_physique.webp", "GuessMyClass/img/special/hall.webp", "GuessMyClass/img/special/petit_arbre.webp", "GuessMyClass/img/special/terrain_foot.webp", "GuessMyClass/img/special/couloir CDI.webp", "GuessMyClass/img/special/couloir salle prof.webp", "GuessMyClass/img/special/escalier E.webp", "GuessMyClass/img/special/Grande passerelle.webp", "GuessMyClass/img/special/Passerelle_D-C_bas.webp", "GuessMyClass/img/special/Passerelle_D-C.webp", "GuessMyClass/img/special/Passerelle_E-D_bas.webp", "GuessMyClass/img/special/Passerelle_E-D.webp"]
+toilettes = ["GuessMyClass/img/toilettes/toilettes hall garçon.webp", "GuessMyClass/img/toilettes/toilette haut interieur.webp", "GuessMyClass/img/toilettes/vestiaire.webp"]
+A100 = ["GuessMyClass/img/A100/A136.webp", "GuessMyClass/img/A100/A137.webp", "GuessMyClass/img/A100/A138.webp", "GuessMyClass/img/A100/A139.webp"]
+E000 = ["GuessMyClass/img/E000/Beton.webp", "GuessMyClass/img/E000/bois.webp", "GuessMyClass/img/E000/couloir E bas.webp", "GuessMyClass/img/E000/E030.webp", "GuessMyClass/img/E000/Energie.webp", "GuessMyClass/img/E000/peinture.webp", "GuessMyClass/img/E000/E041.webp"]
+E100 = ["GuessMyClass/img/E100/couloir E haut.webp", "GuessMyClass/img/E100/E116.webp", "GuessMyClass/img/E100/E108.webp", "GuessMyClass/img/E100/E110.webp", "GuessMyClass/img/E100/E113.webp", "GuessMyClass/img/E100/E123.webp", "GuessMyClass/img/E100/E125.webp", "GuessMyClass/img/E100/E107.webp", "GuessMyClass/img/E100/E109.webp", "GuessMyClass/img/E100/E111.webp", "GuessMyClass/img/E100/E114.webp", "GuessMyClass/img/E100/E121.webp", "GuessMyClass/img/E100/E126.webp"]
 
 
 
-C000_copy = ["img/C000/C006.webp", "img/C000/C008.webp", "img/C000/C012.webp", "img/C000/C013.webp", "img/C000/C009.webp", "img/C000/C005.webp"]
-C100_copy = ["img/C100/C106.webp", "img/C100/C108.webp", "img/C100/C105.webp", "img/C100/C111.webp", "img/C100/C114.webp", "img/C100/C117.webp", "img/C100/C104.webp", "img/C100/C109.webp", "img/C100/C110.webp", "img/C100/C113.webp", "img/C100/C115.webp"]
-D000_copy = ["img/D000/D004.webp", "img/D000/D010.webp", "img/D000/D012_v2.webp", "img/D000/D014.webp", "img/D000/Escalier D.webp", "img/D000/D006.webp"]
-D100_copy = ["img/D100/D104.webp", "img/D100/D105.webp", "img/D100/D106.webp", "img/D100/D109.webp", "img/D100/D110.webp", "img/D100/couloir D haut.webp", "img/D100/D111.webp", "img/D100/D113.webp", "img/D100/D114.webp", "img/D100/D117.webp", "img/D100/D116.webp", "img/D100/D115.webp", "img/D100/D112.webp"]
-special_copy = ["img/special/(parking).webp", "img/special/4_arbres.webp", "img/special/biathlon.webp", "img/special/briques.webp", "img/special/cdi.webp", "img/special/cours_dehors.webp", "img/special/cours_internat.webp", "img/special/creux.webp", "img/special/dehors_physique.webp", "img/special/hall.webp", "img/special/petit_arbre.webp", "img/special/terrain_foot.webp", "img/special/couloir CDI.webp", "img/special/couloir salle prof.webp", "img/special/escalier E.webp", "img/special/Grande passerelle.webp", "img/special/Passerelle_D-C_bas.webp", "img/special/Passerelle_D-C.webp", "img/special/Passerelle_E-D_bas.webp", "img/special/Passerelle_E-D.webp"]
-toilettes_copy = ["img/toilettes/toilettes hall garçon.webp", "img/toilettes/toilette haut interieur.webp", "img/toilettes/vestiaire.webp"]
-A100_copy = ["img/A100/A136.webp", "img/A100/A137.webp", "img/A100/A138.webp", "img/A100/A139.webp"]
-E000_copy = ["img/E000/Beton.webp", "img/E000/bois.webp", "img/E000/couloir E bas.webp", "img/E000/E030.webp", "img/E000/Energie.webp", "img/E000/peinture.webp", "img/E000/E041.webp"]
-E100_copy = ["img/E100/couloir E haut.webp", "img/E100/E116.webp", "img/E100/E108.webp", "img/E100/E110.webp", "img/E100/E113.webp", "img/E100/E123.webp", "img/E100/E125.webp", "img/E100/E107.webp", "img/E100/E109.webp", "img/E100/E111.webp", "img/E100/E114.webp", "img/E100/E121.webp", "img/E100/E126.webp"]
+C000_copy = ["GuessMyClass/img/C000/C006.webp", "GuessMyClass/img/C000/C008.webp", "GuessMyClass/img/C000/C012.webp", "GuessMyClass/img/C000/C013.webp", "GuessMyClass/img/C000/C009.webp", "GuessMyClass/img/C000/C005.webp"]
+C100_copy = ["GuessMyClass/img/C100/C106.webp", "GuessMyClass/img/C100/C108.webp", "GuessMyClass/img/C100/C105.webp", "GuessMyClass/img/C100/C111.webp", "GuessMyClass/img/C100/C114.webp", "GuessMyClass/img/C100/C117.webp", "GuessMyClass/img/C100/C104.webp", "GuessMyClass/img/C100/C109.webp", "GuessMyClass/img/C100/C110.webp", "GuessMyClass/img/C100/C113.webp", "GuessMyClass/img/C100/C115.webp"]
+D000_copy = ["GuessMyClass/img/D000/D004.webp", "GuessMyClass/img/D000/D010.webp", "GuessMyClass/img/D000/D012_v2.webp", "GuessMyClass/img/D000/D014.webp", "GuessMyClass/img/D000/Escalier D.webp", "GuessMyClass/img/D000/D006.webp"]
+D100_copy = ["GuessMyClass/img/D100/D104.webp", "GuessMyClass/img/D100/D105.webp", "GuessMyClass/img/D100/D106.webp", "GuessMyClass/img/D100/D109.webp", "GuessMyClass/img/D100/D110.webp", "GuessMyClass/img/D100/couloir D haut.webp", "GuessMyClass/img/D100/D111.webp", "GuessMyClass/img/D100/D113.webp", "GuessMyClass/img/D100/D114.webp", "GuessMyClass/img/D100/D117.webp", "GuessMyClass/img/D100/D116.webp", "GuessMyClass/img/D100/D115.webp", "GuessMyClass/img/D100/D112.webp"]
+special_copy = ["GuessMyClass/img/special/(parking).webp", "GuessMyClass/img/special/4_arbres.webp", "GuessMyClass/img/special/biathlon.webp", "GuessMyClass/img/special/briques.webp", "GuessMyClass/img/special/cdi.webp", "GuessMyClass/img/special/cours_dehors.webp", "GuessMyClass/img/special/cours_internat.webp", "GuessMyClass/img/special/creux.webp", "GuessMyClass/img/special/dehors_physique.webp", "GuessMyClass/img/special/hall.webp", "GuessMyClass/img/special/petit_arbre.webp", "GuessMyClass/img/special/terrain_foot.webp", "GuessMyClass/img/special/couloir CDI.webp", "GuessMyClass/img/special/couloir salle prof.webp", "GuessMyClass/img/special/escalier E.webp", "GuessMyClass/img/special/Grande passerelle.webp", "GuessMyClass/img/special/Passerelle_D-C_bas.webp", "GuessMyClass/img/special/Passerelle_D-C.webp", "GuessMyClass/img/special/Passerelle_E-D_bas.webp", "GuessMyClass/img/special/Passerelle_E-D.webp"]
+toilettes_copy = ["GuessMyClass/img/toilettes/toilettes hall garçon.webp", "GuessMyClass/img/toilettes/toilette haut interieur.webp", "GuessMyClass/img/toilettes/vestiaire.webp"]
+A100_copy = ["GuessMyClass/img/A100/A136.webp", "GuessMyClass/img/A100/A137.webp", "GuessMyClass/img/A100/A138.webp", "GuessMyClass/img/A100/A139.webp"]
+E000_copy = ["GuessMyClass/img/E000/Beton.webp", "GuessMyClass/img/E000/bois.webp", "GuessMyClass/img/E000/couloir E bas.webp", "GuessMyClass/img/E000/E030.webp", "GuessMyClass/img/E000/Energie.webp", "GuessMyClass/img/E000/peinture.webp", "GuessMyClass/img/E000/E041.webp"]
+E100_copy = ["GuessMyClass/img/E100/couloir E haut.webp", "GuessMyClass/img/E100/E116.webp", "GuessMyClass/img/E100/E108.webp", "GuessMyClass/img/E100/E110.webp", "GuessMyClass/img/E100/E113.webp", "GuessMyClass/img/E100/E123.webp", "GuessMyClass/img/E100/E125.webp", "GuessMyClass/img/E100/E107.webp", "GuessMyClass/img/E100/E109.webp", "GuessMyClass/img/E100/E111.webp", "GuessMyClass/img/E100/E114.webp", "GuessMyClass/img/E100/E121.webp", "GuessMyClass/img/E100/E126.webp"]
 
 
 
@@ -119,14 +119,14 @@ class PanoramicView:
 
 def game_display():
     
-    with open(resource_path("score/option.txt"), "r") as f:
+    with open(resource_path("GuessMyClass/score/option.txt"), "r") as f:
         testread = f.readlines()
     
     
     try:
         if testread[0] == "True":
             f.close()
-            with open(resource_path("score/option.txt"), "w") as f :
+            with open(resource_path("GuessMyClass/score/option.txt"), "w") as f :
                 f.write("True")
                 f.close()
             mult = True
@@ -148,7 +148,7 @@ def game_display():
     truc2 = 0
     end = False
     reponse_donnee = False
-    path_plan = resource_path("img/plan/etage_0.png")
+    path_plan = resource_path("GuessMyClass/img/plan/etage_0.png")
 
     global last_point
     global last_point2
@@ -202,7 +202,7 @@ def game_display():
                 etage_pressed = False
                 running = True
                 clickable = False
-                map_icon = pygame.image.load(resource_path('icon/map.png'))
+                map_icon = pygame.image.load(resource_path('GuessMyClass/icon/map.png'))
                 map_icon = pygame.transform.scale(map_icon, (75, 75))
                 map = Shape('map', "", 100, 100, (current_w -100 -5,current_h -100 -5), 5, (206, 206, 206), True, (resource_path('GuessMyClass/font/MightySouly.ttf'), 40))
             
@@ -210,9 +210,9 @@ def game_display():
 
                 valider = Shape("valider", "Check", 100, 100, (current_w -100 -100 -10, current_h - 100 -5), 5, (0, 220, 0), True, (resource_path('GuessMyClass/font/MightySouly.ttf'), 40))
 
-                etage_icon = pygame.image.load(resource_path('icon/fleche haut.png'))
+                etage_icon = pygame.image.load(resource_path('GuessMyClass/icon/fleche haut.png'))
                 etage_icon = pygame.transform.scale(etage_icon, (75,75))
-                etage_icon2 = pygame.image.load(resource_path('icon/fleche bas.png'))
+                etage_icon2 = pygame.image.load(resource_path('GuessMyClass/icon/fleche bas.png'))
                 etage_icon2 = pygame.transform.scale(etage_icon2, (75,75))
                 etage = Shape("etage", "", 100, 100, (current_w -100 -5, current_h -100 -100 -10 -5), 5, (0, 0, 0), True, (resource_path('GuessMyClass/font/MightySouly.ttf'), 40))
             
@@ -258,11 +258,11 @@ def game_display():
                                 valider_pressed = not valider_pressed
                             if current_w - 106 <= x <= current_w -6 and current_h -218 <= y <= current_h - 118 and clickable == True:
                                 if nb_etage == 1 :
-                                    path_plan = resource_path("img/plan/etage_0.png")
+                                    path_plan = resource_path("GuessMyClass/img/plan/etage_0.png")
                                     map_image = pygame.image.load(path_plan)
                                     map_image = pygame.transform.scale(map_image, (current_w, current_h))
                                 elif nb_etage == 0 :
-                                    path_plan = resource_path("img/plan/etage_1.png")
+                                    path_plan = resource_path("GuessMyClass/img/plan/etage_1.png")
                                     map_image = pygame.image.load(path_plan)
                                     map_image = pygame.transform.scale(map_image, (current_w, current_h))
                                 print("presser")
@@ -307,7 +307,7 @@ def game_display():
                                     running = False
                                     clickable = False
                                     nb_etage = 1
-                                    path_plan = resource_path("img/plan/etage_0.png")
+                                    path_plan = resource_path("GuessMyClass/img/plan/etage_0.png")
                                     map_image = pygame.image.load(path_plan)
                                     map_image = pygame.transform.scale(map_image, (current_w, current_h))
                                 elif etage_pressed :
@@ -334,7 +334,7 @@ def game_display():
                                     running = False
                                     clickable = False
                                     nb_etage = 1
-                                    path_plan = resource_path("img/plan/etage_0.png")
+                                    path_plan = resource_path("GuessMyClass/img/plan/etage_0.png")
                                     map_image = pygame.image.load(path_plan)
                                     map_image = pygame.transform.scale(map_image, (current_w, current_h))
                                 elif etage_pressed :
@@ -359,7 +359,7 @@ def game_display():
                                     running = False
                                     clickable = False
                                     nb_etage = 1
-                                    path_plan = resource_path("img/plan/etage_0.png")
+                                    path_plan = resource_path("GuessMyClass/img/plan/etage_0.png")
                                     map_image = pygame.image.load(path_plan)
                                     map_image = pygame.transform.scale(map_image, (current_w, current_h))
                                 elif etage_pressed :
@@ -383,7 +383,7 @@ def game_display():
                                     running = False
                                     clickable = False
                                     nb_etage = 1
-                                    path_plan = resource_path("img/plan/etage_0.png")
+                                    path_plan = resource_path("GuessMyClass/img/plan/etage_0.png")
                                     map_image = pygame.image.load(path_plan)
                                     map_image = pygame.transform.scale(map_image, (current_w, current_h))
                                 elif etage_pressed :
@@ -414,11 +414,11 @@ def game_display():
             pygame.time.delay(2000)
             end = True
         
-            with open(resource_path("profile/compte.txt"), "r") as f:
+            with open(resource_path("GuessMyClass/profile/compte.txt"), "r") as f:
                 pseudo = f.read().strip()
 
             if pseudo != "invit":
-                score_path = resource_path(f"score/{pseudo}_{nb}.txt")
+                score_path = resource_path(f"GuessMyClass/score/{pseudo}_{nb}.txt")
                 os.makedirs(os.path.dirname(score_path), exist_ok=True)
 
                 best_score = 0
@@ -429,6 +429,7 @@ def game_display():
                 if score > best_score:
                     with open(score_path, "w") as f:
                         f.write(str(score))
+                        send_score(pseudo, nb, score)
 
 
             if mult == True:
@@ -468,7 +469,7 @@ def game_display():
                             reponse_donnee = True
                         elif current_w/2 -50 +160 <= x <= current_w/2 -50 +160 +100 and current_h/2 +75 <= y <= current_h/2 +75 +50:
                             pygame.time.delay(300)
-                            with open(resource_path("score/option.txt"), "w") as f:
+                            with open(resource_path("GuessMyClass/score/option.txt"), "w") as f:
                                 f.write('False')
                             mult = False
                             return "home"

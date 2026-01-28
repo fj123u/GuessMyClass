@@ -34,7 +34,7 @@ def about_display():
     screen = pygame.display.set_mode((screen_width, screen_height))
 
     # Chemins des images des membres de l'équipe
-    image_paths = [resource_path('Images/melvin.jpg'), resource_path('Images/colin.png'), resource_path('Images/evan.png'), resource_path('Images/theo.jpg'), resource_path('Images/gabriel.png')]
+    image_paths = [resource_path('GuessMyClass/Images/melvin.jpg'), resource_path('GuessMyClass/Images/colin.png'), resource_path('GuessMyClass/Images/evan.png'), resource_path('GuessMyClass/Images/theo.jpg'), resource_path('GuessMyClass/Images/gabriel.png')]
     descriptions = [
         "Melvin - Le stratège de l'équipe",
         "Colin - Le codeur fou",
@@ -61,7 +61,7 @@ def about_display():
     current_index = 0
 
     # Chemins des images de dégradé
-    degrade_path = [resource_path('Images/degrade.png'), resource_path('Images/degrade_droite.png')]
+    degrade_path = [resource_path('GuessMyClass/Images/degrade.png'), resource_path('GuessMyClass/Images/degrade_droite.png')]
     degrades = load_and_prepare_images(degrade_path, 0)
 
     # Fonction pour obtenir les indices des images visibles
