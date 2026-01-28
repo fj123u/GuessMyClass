@@ -19,15 +19,15 @@ from pathlib import Path
 
 play_button = Shape('game', 'Jouer', 370, 140, (current_w/2-185, current_h/2-150), 10, (255, 145, 0), True)
 
-title = Shape(None, 'GMC', (current_w/4-6)*2+6, current_h/6, (current_w/4, 6), 0, (104, 180, 229), False, (resource_path('font/Mighty Souly.ttf'), 150))
-button2 = Shape('about', 'À propos', current_w/4-6, current_h/6, (current_w-current_w/4, 6), 2, (104, 208, 229), True, (resource_path('font/Mighty Souly.ttf'), 100))
+title = Shape(None, 'GMC', (current_w/4-6)*2+6, current_h/6, (current_w/4, 6), 0, (104, 180, 229), False, (resource_path('GuessMyClass/font/MightySouly.ttf'), 150))
+button2 = Shape('about', 'À propos', current_w/4-6, current_h/6, (current_w-current_w/4, 6), 2, (104, 208, 229), True, (resource_path('GuessMyClass/font/MightySouly.ttf'), 100))
 
-bottom_bar = Shape(None, 'GMC - 2025', current_w, 35, (0, current_h-35), 0, (104, 208, 229), False, (resource_path('font/Mighty Souly.ttf'), 20), False)
+bottom_bar = Shape(None, 'GMC - 2025', current_w, 35, (0, current_h-35), 0, (104, 208, 229), False, (resource_path('GuessMyClass/font/MightySouly.ttf'), 20), False)
 
-button_list1 = Shape('settings', 'Paramètres', 250, 50, (current_w/2-125, current_h/2+50), 2, (224, 180, 229), True, (resource_path('font/Mighty Souly.ttf'), 40))
-button_list2 = Shape('versus', 'Versus', 250, 50, (current_w/2-125, current_h/2+106), 2, (184, 180, 229), True, (resource_path('font/Mighty Souly.ttf'), 40))
-button_list3 = Shape('leaderboard', 'Classements', 250, 50, (current_w/2-125, current_h/2+212-50), 2, (144, 180, 229), True, (resource_path('font/Mighty Souly.ttf'), 40))
-button_list4 = Shape('leave', 'Quitter', 250, 50, (current_w/2-125, current_h/2+218), 2, (104, 180, 229), True, (resource_path('font/Mighty Souly.ttf'), 40))
+button_list1 = Shape('settings', 'Paramètres', 250, 50, (current_w/2-125, current_h/2+50), 2, (224, 180, 229), True, (resource_path('GuessMyClass/font/MightySouly.ttf'), 40))
+button_list2 = Shape('versus', 'Versus', 250, 50, (current_w/2-125, current_h/2+106), 2, (184, 180, 229), True, (resource_path('GuessMyClass/font/MightySouly.ttf'), 40))
+button_list3 = Shape('leaderboard', 'Classements', 250, 50, (current_w/2-125, current_h/2+212-50), 2, (144, 180, 229), True, (resource_path('GuessMyClass/font/MightySouly.ttf'), 40))
+button_list4 = Shape('leave', 'Quitter', 250, 50, (current_w/2-125, current_h/2+218), 2, (104, 180, 229), True, (resource_path('GuessMyClass/font/MightySouly.ttf'), 40))
 
 infos_left = Shape(None, '', current_w/3, current_h -current_h/6 -60 -35, (current_w/60,30 +current_h/6), 0, (144, 180, 229))
 infos_right = Shape(None, '', current_w/3, current_h -current_h/6 -60 -35, (current_w -current_w/3 -current_w/60, 30 +current_h/6), 0, (144, 180, 229))

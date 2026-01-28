@@ -21,7 +21,7 @@ import mysql.connector
 # Class utilisé pour créer les différentes formes pygame
 
 class Shape:
-    def __init__(self,destination,text,width,height,pos,elevation,color, button=False, font=(resource_path('font/Mighty Souly.ttf'), 80), around=True):
+    def __init__(self,destination,text,width,height,pos,elevation,color, button=False, font=(resource_path('GuessMyClass/font/MightySouly.ttf'), 80), around=True):
         pygame.font.get_init()
         self.destination = destination
         self.color = color

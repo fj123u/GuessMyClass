@@ -19,15 +19,14 @@ def get_score_options_path():
 import mysql.connector
 import pygame
 from shape_creator import *
-from sign_in import *
 from log_in import *
 
-title = Shape(None, 'Bienvenue sur GMC !',     (current_w/4-6)*2+958, current_h/6, (current_w/250, 8), 0, (104, 180, 229), False, (resource_path('font/Mighty Souly.ttf'), 150))
-choix = Shape(None, 'Que voulez-vous faire ?', (current_w/4-6)*2+200, current_h/6, (current_w/5, 400), 0, (144, 180, 229), False, (resource_path('font/Mighty Souly.ttf'), 100))
-log_in = Shape('home', 'Se connecter',    ((current_w/4-6)*2+58)/1.8, current_h/8, (current_w/5, 600), 2, (184, 180, 229), True, (resource_path('font/Mighty Souly.ttf'), 70))
-sign_in = Shape('home', 'Créer un compte', ((current_w/4-6)*2+58)/1.8, current_h/8, (current_w/1.97, 600), 2, (184, 180, 229), True, (resource_path('font/Mighty Souly.ttf'), 70))
-sans_compte = Shape("home", 'Jouer sans compte', (current_w/4-6)*1, current_h/12, (current_w/2.67, 755), 0, (193, 214, 213), True, (resource_path('font/Mighty Souly.ttf'), 50))
-mdp = Shape("home", 'Votre mot de passe est :', (current_w/4-6)*1, current_h/12, (current_w/2.67, 755), 0, (193, 214, 213), True, (resource_path('font/Mighty Souly.ttf'), 50))
+title = Shape(None, 'Bienvenue sur GMC !',     (current_w/4-6)*2+958, current_h/6, (current_w/250, 8), 0, (104, 180, 229), False, (resource_path('GuessMyClass/font/MightySouly.ttf'), 150))
+choix = Shape(None, 'Que voulez-vous faire ?', (current_w/4-6)*2+200, current_h/6, (current_w/5, 400), 0, (144, 180, 229), False, (resource_path('GuessMyClass/font/MightySouly.ttf'), 100))
+log_in = Shape('home', 'Se connecter',    ((current_w/4-6)*2+58)/1.8, current_h/8, (current_w/5, 600), 2, (184, 180, 229), True, (resource_path('GuessMyClass/font/MightySouly.ttf'), 70))
+sign_in = Shape('home', 'Créer un compte', ((current_w/4-6)*2+58)/1.8, current_h/8, (current_w/1.97, 600), 2, (184, 180, 229), True, (resource_path('GuessMyClass/font/MightySouly.ttf'), 70))
+sans_compte = Shape("home", 'Jouer sans compte', (current_w/4-6)*1, current_h/12, (current_w/2.67, 755), 0, (193, 214, 213), True, (resource_path('GuessMyClass/font/MightySouly.ttf'), 50))
+mdp = Shape("home", 'Votre mot de passe est :', (current_w/4-6)*1, current_h/12, (current_w/2.67, 755), 0, (193, 214, 213), True, (resource_path('GuessMyClass/font/MightySouly.ttf'), 50))
 
 
 # Boucle principale du jeu

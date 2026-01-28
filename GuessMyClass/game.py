@@ -153,11 +153,11 @@ def game_display():
     global last_point
     global last_point2
 
-    quit_button = Shape('retour', "Quitter", 150, 50, (20, 20), 5, (220, 0, 0), True, (resource_path('font/Mighty Souly.ttf'), 30))
-    question = Shape('question', "Combien de round voulez-vous jouer ?", 1920/3, 100, (current_w/2 -1920/6, current_h/2 -200), 0, (220, 0, 0), False, (resource_path('font/Mighty Souly.ttf'), 30))
-    nb_5 = Shape(None, "5", 50, 50, (current_w/2 -125, current_h/2), 2, (255, 128, 0), True, (resource_path('font/Mighty Souly.ttf'), 40))
-    nb_10 = Shape(None, "10", 50, 50, (current_w/2-25, current_h/2), 2, (255, 128, 0), True, (resource_path('font/Mighty Souly.ttf'), 40))
-    nb_20 = Shape(None, "20", 50, 50, (current_w/2 +75, current_h/2), 2, (255, 128, 0), True, (resource_path('font/Mighty Souly.ttf'), 40))
+    quit_button = Shape('retour', "Quitter", 150, 50, (20, 20), 5, (220, 0, 0), True, (resource_path('GuessMyClass/font/MightySouly.ttf'), 30))
+    question = Shape('question', "Combien de round voulez-vous jouer ?", 1920/3, 100, (current_w/2 -1920/6, current_h/2 -200), 0, (220, 0, 0), False, (resource_path('GuessMyClass/font/MightySouly.ttf'), 30))
+    nb_5 = Shape(None, "5", 50, 50, (current_w/2 -125, current_h/2), 2, (255, 128, 0), True, (resource_path('GuessMyClass/font/MightySouly.ttf'), 40))
+    nb_10 = Shape(None, "10", 50, 50, (current_w/2-25, current_h/2), 2, (255, 128, 0), True, (resource_path('GuessMyClass/font/MightySouly.ttf'), 40))
+    nb_20 = Shape(None, "20", 50, 50, (current_w/2 +75, current_h/2), 2, (255, 128, 0), True, (resource_path('GuessMyClass/font/MightySouly.ttf'), 40))
  
 
     quit_button.draw()
@@ -204,27 +204,27 @@ def game_display():
                 clickable = False
                 map_icon = pygame.image.load(resource_path('icon/map.png'))
                 map_icon = pygame.transform.scale(map_icon, (75, 75))
-                map = Shape('map', "", 100, 100, (current_w -100 -5,current_h -100 -5), 5, (206, 206, 206), True, (resource_path('font/Mighty Souly.ttf'), 40))
+                map = Shape('map', "", 100, 100, (current_w -100 -5,current_h -100 -5), 5, (206, 206, 206), True, (resource_path('GuessMyClass/font/MightySouly.ttf'), 40))
             
-                quit_button = Shape('retour', "Quitter", 120, 50, (20, 20), 5, (220, 0, 0), True, (resource_path('font/Mighty Souly.ttf'), 30))
+                quit_button = Shape('retour', "Quitter", 120, 50, (20, 20), 5, (220, 0, 0), True, (resource_path('GuessMyClass/font/MightySouly.ttf'), 30))
 
-                valider = Shape("valider", "Check", 100, 100, (current_w -100 -100 -10, current_h - 100 -5), 5, (0, 220, 0), True, (resource_path('font/Mighty Souly.ttf'), 40))
+                valider = Shape("valider", "Check", 100, 100, (current_w -100 -100 -10, current_h - 100 -5), 5, (0, 220, 0), True, (resource_path('GuessMyClass/font/MightySouly.ttf'), 40))
 
                 etage_icon = pygame.image.load(resource_path('icon/fleche haut.png'))
                 etage_icon = pygame.transform.scale(etage_icon, (75,75))
                 etage_icon2 = pygame.image.load(resource_path('icon/fleche bas.png'))
                 etage_icon2 = pygame.transform.scale(etage_icon2, (75,75))
-                etage = Shape("etage", "", 100, 100, (current_w -100 -5, current_h -100 -100 -10 -5), 5, (0, 0, 0), True, (resource_path('font/Mighty Souly.ttf'), 40))
+                etage = Shape("etage", "", 100, 100, (current_w -100 -5, current_h -100 -100 -10 -5), 5, (0, 0, 0), True, (resource_path('GuessMyClass/font/MightySouly.ttf'), 40))
             
-                score_button = Shape('score', "Score J1 : " + str(score), 200, 50, (current_w -200 -25, 20), 5, (220, 0, 0), False, (resource_path('font/Mighty Souly.ttf'), 30))
-                score_button2 = Shape('score', "Score J2 : " + str(score4), 200, 50, (current_w -200 -25, 80), 5, (220, 0, 0), False, (resource_path('font/Mighty Souly.ttf'), 30))
+                score_button = Shape('score', "Score J1 : " + str(score), 200, 50, (current_w -200 -25, 20), 5, (220, 0, 0), False, (resource_path('GuessMyClass/font/MightySouly.ttf'), 30))
+                score_button2 = Shape('score', "Score J2 : " + str(score4), 200, 50, (current_w -200 -25, 80), 5, (220, 0, 0), False, (resource_path('GuessMyClass/font/MightySouly.ttf'), 30))
 
                 if mult == True :
                     score_button2.draw()
                 else :
                     score_button2.hide()
             
-                timer_button = Shape('timer', "Temps : " + str(timer) + "s", 150, 50, (current_w/2 -75, 20), 5, (220, 0, 0), False, (resource_path('font/Mighty Souly.ttf'), 30))
+                timer_button = Shape('timer', "Temps : " + str(timer) + "s", 150, 50, (current_w/2 -75, 20), 5, (220, 0, 0), False, (resource_path('GuessMyClass/font/MightySouly.ttf'), 30))
                 
                 last_point = (0, 0)
                 last_point2 = (0, 0)
@@ -300,8 +300,8 @@ def game_display():
                                     score4 += score3
                                     map_open = not map_open
                                     print(score)
-                                    score_button = Shape('score_J1', "Score_J1 : " + str(score), 200, 50, (current_w -200 -25, 20), 5, (220, 0, 0), False, (resource_path('font/Mighty Souly.ttf'), 30))
-                                    score_button2 = Shape('score_J2', "Score_J2 : " + str(score4), 200, 50, (current_w -200 -25, 80), 5, (220, 0, 0), False, (resource_path('font/Mighty Souly.ttf'), 30))
+                                    score_button = Shape('score_J1', "Score_J1 : " + str(score), 200, 50, (current_w -200 -25, 20), 5, (220, 0, 0), False, (resource_path('GuessMyClass/font/MightySouly.ttf'), 30))
+                                    score_button2 = Shape('score_J2', "Score_J2 : " + str(score4), 200, 50, (current_w -200 -25, 80), 5, (220, 0, 0), False, (resource_path('GuessMyClass/font/MightySouly.ttf'), 30))
                                     show_answer2(salle, liste_points[-2], liste_points2[-1])
                                     truc2 += 1
                                     running = False
@@ -327,8 +327,8 @@ def game_display():
                                     score4 += score3
                                     map_open = not map_open
                                     print(score)
-                                    score_button = Shape('score_J1', "Score_J1 : " + str(score), 200, 50, (current_w -200 -25, 20), 5, (220, 0, 0), False, (resource_path('font/Mighty Souly.ttf'), 30))
-                                    score_button2 = Shape('score_J2', "Score_J2 : " + str(score4), 200, 50, (current_w -200 -25, 80), 5, (220, 0, 0), False, (resource_path('font/Mighty Souly.ttf'), 30))
+                                    score_button = Shape('score_J1', "Score_J1 : " + str(score), 200, 50, (current_w -200 -25, 20), 5, (220, 0, 0), False, (resource_path('GuessMyClass/font/MightySouly.ttf'), 30))
+                                    score_button2 = Shape('score_J2', "Score_J2 : " + str(score4), 200, 50, (current_w -200 -25, 80), 5, (220, 0, 0), False, (resource_path('GuessMyClass/font/MightySouly.ttf'), 30))
                                     show_answer2(salle, liste_points[-2], liste_points2[-1])
                                     truc2 += 1
                                     running = False
@@ -353,7 +353,7 @@ def game_display():
                                     score += score2
                                     map_open = not map_open
                                     print(score)
-                                    score_button = Shape('score', "Score_J1 : " + str(score), 200, 50, (current_w -200 -25, 20), 5, (220, 0, 0), False, (resource_path('font/Mighty Souly.ttf'), 30))
+                                    score_button = Shape('score', "Score_J1 : " + str(score), 200, 50, (current_w -200 -25, 20), 5, (220, 0, 0), False, (resource_path('GuessMyClass/font/MightySouly.ttf'), 30))
                                     show_answer(salle, liste_points[-2])
                                     truc2 += 1
                                     running = False
@@ -377,7 +377,7 @@ def game_display():
                                     score += score2
                                     map_open = not map_open
                                     print(score)
-                                    score_button = Shape('score', "Score_J1 : " + str(score), 200, 50, (current_w -200 -25, 20), 5, (220, 0, 0), False, (resource_path('font/Mighty Souly.ttf'), 30))
+                                    score_button = Shape('score', "Score_J1 : " + str(score), 200, 50, (current_w -200 -25, 20), 5, (220, 0, 0), False, (resource_path('GuessMyClass/font/MightySouly.ttf'), 30))
                                     show_answer(salle, liste_points[-2])
                                     truc2 += 1
                                     running = False
@@ -400,7 +400,7 @@ def game_display():
                     map.draw()
                     screen.blit(map_icon, (current_w -75 -17,current_h -75 -22))
                     aze = calc_timer(timer)
-                    timer_button = Shape('timer', "Temps : " + str(aze[0]), 150, 50, (current_w/2 -75, 20), 5, (220, 0, 0), False, (resource_path('font/Mighty Souly.ttf'), 30))
+                    timer_button = Shape('timer', "Temps : " + str(aze[0]), 150, 50, (current_w/2 -75, 20), 5, (220, 0, 0), False, (resource_path('GuessMyClass/font/MightySouly.ttf'), 30))
                     timer -= 0.015
                     if aze [1] == "fin" :
                         map_open = True
@@ -415,63 +415,64 @@ def game_display():
             end = True
         
             with open(resource_path("profile/compte.txt"), "r") as f:
-                ide = f.readlines()[1]
-                f.close()
+                pseudo = f.read().strip()
 
-            if ide != "invit" :
-                cnx = connect()
-                acc = get_score(cnx, ide, nb)
-                if int(acc[0]) < score:
-                    set_score(cnx, ide, nb, score)
-                    cnx.commit()
-                cnx.close()
-                    
-        
-        if mult == True :
-            score_tot_J1 = Shape('score_tot', "Bravo J1 vous avez fait : " + str(score) + " / " + str(nb * 5000) + " points", 650, 100, (current_w/2 -325, current_h/4 -150), 5, (220, 93, 0), False, (resource_path('font/Mighty Souly.ttf'), 30))
-            score_tot_J2 = Shape('score_tot', "Bravo J2 vous avez fait : " + str(score4) + " / " + str(nb * 5000) + " points", 650, 100, (current_w/2 -325, current_h/4), 5, (220, 93, 0), False, (resource_path('font/Mighty Souly.ttf'), 30))
-            question2 = Shape('question2', "Voulez-vous rejouez ?", 600, 100, (current_w/2 -300, current_h/4 +150), 5, (220, 93, 0), False, (resource_path('font/Mighty Souly.ttf'), 30))
-            oui = Shape("oui", "Oui", 100, 50, (current_w/2 -50 -160, current_h/2 +75), 5, (0, 220, 0), True, (resource_path('font/Mighty Souly.ttf'), 40))
-            non = Shape("non", "Non", 100, 50, (current_w/2 -50 +160, current_h/2 +75), 5, (220, 0, 0), True, (resource_path('font/Mighty Souly.ttf'), 40))
-        else :
-            score_tot = Shape('score_tot', "Bravo vous avez fait : " + str(score) + " / " + str(nb * 5000) + " points", 650, 100, (current_w/2 -325, current_h/4 -100), 5, (220, 93, 0), False, (resource_path('font/Mighty Souly.ttf'), 30))
-            question2 = Shape('question2', "Voulez-vous rejouez ?", 600, 100, (current_w/2 -300, current_h/4 +50), 5, (220, 93, 0), False, (resource_path('font/Mighty Souly.ttf'), 30))
-            oui = Shape("oui", "Oui", 100, 50, (current_w/2 -50 -160, current_h/2 +75), 5, (0, 220, 0), True, (resource_path('font/Mighty Souly.ttf'), 40))
-            non = Shape("non", "Non", 100, 50, (current_w/2 -50 +160, current_h/2 +75), 5, (220, 0, 0), True, (resource_path('font/Mighty Souly.ttf'), 40))
+            if pseudo != "invit":
+                score_path = resource_path(f"score/{pseudo}_{nb}.txt")
+                os.makedirs(os.path.dirname(score_path), exist_ok=True)
+
+                best_score = 0
+                if os.path.exists(score_path):
+                    with open(score_path, "r") as f:
+                        best_score = int(f.read().strip())
+
+                if score > best_score:
+                    with open(score_path, "w") as f:
+                        f.write(str(score))
 
 
-        while end :
-            screen.fill("#CDE4E2")
-            if mult == True :
-                score_tot_J1.draw()
-                score_tot_J2.draw()
-            else :
-                score_tot.draw()
+            if mult == True:
+                score_tot_J1 = Shape('score_tot', "Bravo J1 vous avez fait : " + str(score) + " / " + str(nb * 5000) + " points", 650, 100, (current_w/2 -325, current_h/4 -150), 5, (220, 93, 0), False, (resource_path('GuessMyClass/font/MightySouly.ttf'), 30))
+                score_tot_J2 = Shape('score_tot', "Bravo J2 vous avez fait : " + str(score4) + " / " + str(nb * 5000) + " points", 650, 100, (current_w/2 -325, current_h/4), 5, (220, 93, 0), False, (resource_path('GuessMyClass/font/MightySouly.ttf'), 30))
+                question2 = Shape('question2', "Voulez-vous rejouez ?", 600, 100, (current_w/2 -300, current_h/4 +150), 5, (220, 93, 0), False, (resource_path('GuessMyClass/font/MightySouly.ttf'), 30))
+                oui = Shape("oui", "Oui", 100, 50, (current_w/2 -50 -160, current_h/2 +75), 5, (0, 220, 0), True, (resource_path('GuessMyClass/font/MightySouly.ttf'), 40))
+                non = Shape("non", "Non", 100, 50, (current_w/2 -50 +160, current_h/2 +75), 5, (220, 0, 0), True, (resource_path('GuessMyClass/font/MightySouly.ttf'), 40))
+            else:
+                score_tot = Shape('score_tot', "Bravo vous avez fait : " + str(score) + " / " + str(nb * 5000) + " points", 650, 100, (current_w/2 -325, current_h/4 -100), 5, (220, 93, 0), False, (resource_path('GuessMyClass/font/MightySouly.ttf'), 30))
+                question2 = Shape('question2', "Voulez-vous rejouez ?", 600, 100, (current_w/2 -300, current_h/4 +50), 5, (220, 93, 0), False, (resource_path('GuessMyClass/font/MightySouly.ttf'), 30))
+                oui = Shape("oui", "Oui", 100, 50, (current_w/2 -50 -160, current_h/2 +75), 5, (0, 220, 0), True, (resource_path('GuessMyClass/font/MightySouly.ttf'), 40))
+                non = Shape("non", "Non", 100, 50, (current_w/2 -50 +160, current_h/2 +75), 5, (220, 0, 0), True, (resource_path('GuessMyClass/font/MightySouly.ttf'), 40))
+
+
+            while end:
+                screen.fill("#CDE4E2")
+                if mult == True:
+                    score_tot_J1.draw()
+                    score_tot_J2.draw()
+                else:
+                    score_tot.draw()
+                    question2.draw()
+
                 question2.draw()
-            
-            question2.draw()
-            oui.draw()
-            non.draw()
-            
-            pygame.display.flip()
+                oui.draw()
+                non.draw()
 
-            for event in pygame.event.get():
+                pygame.display.flip()
 
-                if event.type == pygame.QUIT:
-
-                    return "home"
-                if event.type == pygame.MOUSEBUTTONDOWN:
-
-                    x, y = event.pos
-                    if current_w/2 -50 -160 <= x <= current_w/2 -50 -160 +100 and current_h/2 +75 <= y <= current_h/2 +75 +50:
-                        reponse_donnee = True
-                    elif current_w/2 -50 +160 <= x <= current_w/2 -50 +160 +100 and current_h/2 +75 <= y <= current_h/2 +75 +50:
-                        pygame.time.delay(300)
-                        with open(resource_path("score/option.txt"), "w") as f :
-                            f.write('False')
-                            f.close()
-                        mult = False            
+                for event in pygame.event.get():
+                    if event.type == pygame.QUIT:
                         return "home"
+                    if event.type == pygame.MOUSEBUTTONDOWN:
+                        x, y = event.pos
+                        if current_w/2 -50 -160 <= x <= current_w/2 -50 -160 +100 and current_h/2 +75 <= y <= current_h/2 +75 +50:
+                            reponse_donnee = True
+                        elif current_w/2 -50 +160 <= x <= current_w/2 -50 +160 +100 and current_h/2 +75 <= y <= current_h/2 +75 +50:
+                            pygame.time.delay(300)
+                            with open(resource_path("score/option.txt"), "w") as f:
+                                f.write('False')
+                            mult = False
+                            return "home"
+
 
             if reponse_donnee:
                 while truc != [] :

@@ -71,7 +71,7 @@ def about_display():
     visible_indices = get_visible_indices(current_index)
 
     # Charge une police de caractères personnalisée
-    font = pygame.font.Font(resource_path('font/Mighty Souly.ttf'), 20)
+    font = pygame.font.Font(resource_path('GuessMyClass/font/MightySouly.ttf'), 20)
     text_color = (255, 255, 255)
 
     # Définit la taille et la position des flèches

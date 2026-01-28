@@ -20,7 +20,6 @@ import pygame
 from pathlib import Path
 from home import *
 from about import *
-from sign_in import *
 from log_in import *
 from game import *
 from welcome import *
@@ -29,7 +28,7 @@ pygame.init()
 
 current_w, current_h = pygame.display.Info().current_w, pygame.display.Info().current_h
 
-font = pygame.font.Font(resource_path('font/Mighty Souly.ttf'), 80)
+font = pygame.font.Font(resource_path('GuessMyClass/font/MightySouly.ttf'), 80)
 
 screen = pygame.display.set_mode((current_w, current_h))
 clock = pygame.time.Clock()
@@ -50,12 +49,11 @@ a = False
 s = False
 mail_text = ''
 
-popup_leave = Shape(None, 'Êtes-vous sûr de vouloir quitter ?', current_w/4 + 100, 100, (current_w/2 - (current_w/4)/2 - 50, current_h/2 - 50), 0, (104, 180, 229), False, (resource_path('font/Mighty Souly.ttf'), 30))
-popup_yes = Shape('hell', 'Oui', current_w/20, 50, (current_w/2 - 125, current_h/2 + 100), 2, (0, 180, 0), True, (resource_path('font/Mighty Souly.ttf'), 30))
-popup_no = Shape('paradise', 'Non', current_w/20, 50, (current_w/2 - 125 + 250 - (current_w/20), current_h/2 + 100), 2, (180, 0, 0), True, (resource_path('font/Mighty Souly.ttf'), 30))
-popup_versus1 = Shape('versus_friend', 'Versus friend', 350, 350, (current_w/2 - 175, current_h/2 - 175), 3, (184, 180, 229), True, (resource_path('font/Mighty Souly.ttf'), 50))
-sign_in = Shape('sign_in', 'Créer un compte', 350, 50, (6, current_h/6 + 6 + 5), 2, (184, 180, 229), True, (resource_path('font/Mighty Souly.ttf'), 40))
-log_in = Shape('log_in', 'Se connecter', 350, 50, (6, current_h/6 + 6 + 5 + 55), 2, (184, 180, 229), True, (resource_path('font/Mighty Souly.ttf'), 40))
+popup_leave = Shape(None, 'Êtes-vous sûr de vouloir quitter ?', current_w/4 + 100, 100, (current_w/2 - (current_w/4)/2 - 50, current_h/2 - 50), 0, (104, 180, 229), False, (resource_path('GuessMyClass/font/MightySouly.ttf'), 30))
+popup_yes = Shape('hell', 'Oui', current_w/20, 50, (current_w/2 - 125, current_h/2 + 100), 2, (0, 180, 0), True, (resource_path('GuessMyClass/font/MightySouly.ttf'), 30))
+popup_no = Shape('paradise', 'Non', current_w/20, 50, (current_w/2 - 125 + 250 - (current_w/20), current_h/2 + 100), 2, (180, 0, 0), True, (resource_path('GuessMyClass/font/MightySouly.ttf'), 30))
+popup_versus1 = Shape('versus_friend', 'Versus friend', 350, 350, (current_w/2 - 175, current_h/2 - 175), 3, (184, 180, 229), True, (resource_path('GuessMyClass/font/MightySouly.ttf'), 50))
+log_in = Shape('log_in', 'Changer de pseudo', 350, 50, (6, current_h/6 + 6 + 5 + 55), 2, (184, 180, 229), True, (resource_path('GuessMyClass/font/MightySouly.ttf'), 40))
 
 def reset(db=False):
     print('r')
@@ -152,9 +150,6 @@ while running:
         running = False
     elif dest == 'game':
         dest = game_display()
-    elif dest == 'sign_in':
-        sign_in_display()
-        dest = 'home'
     elif dest == 'log_in':
         log_in_display()
         dest = 'home'

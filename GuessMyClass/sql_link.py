@@ -1,5 +1,6 @@
-
 import sys, os
+from supabase import create_client
+
 
 def resource_path(relative_path):
     try:
@@ -8,158 +9,72 @@ def resource_path(relative_path):
         base_path = os.path.abspath(".")
     return os.path.join(base_path, relative_path)
 
+
 def get_score_options_path():
     base_path = getattr(sys, '_MEIPASS', os.path.abspath("."))
-    full_path = os.path.join(os.path.dirname(sys.executable if getattr(sys, 'frozen', False) else __file__), "score", "options.txt")
+    full_path = os.path.join(
+        os.path.dirname(sys.executable if getattr(sys, 'frozen', False) else __file__),
+        "score",
+        "options.txt"
+    )
     os.makedirs(os.path.dirname(full_path), exist_ok=True)
     return full_path
 
-import mysql.connector
-import random
-from shape_creator import *
 
-def connect():
-    
-    cnx = mysql.connector.connect(
-            host="frchassot.fr",
-            port=2000,
-            user="gmc",
-            password="9eyIha9VC_V96bmO",
-            database='gmc')
-    
-    return cnx
-    
+SUPABASE_URL = "https://dfrfhlvbckvakgtridzv.supabase.co"
+SUPABASE_KEY = "sb_publishable_OEqgvVyKwJGXy5rV1H1Y8Q_kGL98num"
 
-def create_table(cnx):
-    
-    cur = cnx.cursor()
-    cur.execute('CREATE TABLE accounts (account_name VARCHAR(20) PRIMARY KEY NOT NULL, password TEXT(5) NOT NULL, best_of_5 CHAR, best_of_10 CHAR, best_of_20 CHAR);')
-    cur.fetchone()
-    
-def reset_table(cnx):
-    
-    cur = cnx.cursor()
-    cur.execute('DELETE FROM accounts')
-    cur.fetchone()
-    
+supabase = create_client(SUPABASE_URL, SUPABASE_KEY)
 
-def generate_password(password_lenght=5):
-    caracts = "azertyuiopqsdfghjklmwxcvbnAZERTYUIOPQSDFGHJKLMWXCVBN?!12345678990"
+
+
+def send_score(pseudo: str, mode: int, score: int):
+   
+    supabase.table("leaderboard").insert({
+        "pseudo": pseudo,
+        "mode": mode,
+        "score": score
+    }).execute()
+
+
+def get_best_score(pseudo: str, mode: int):
     
-    password = ""
-    for i in range(password_lenght):
-        rand = random.randint(0,len(caracts)-1)
-        password += caracts[rand]
-    return password
+    res = supabase.table("leaderboard") \
+        .select("score") \
+        .eq("pseudo", pseudo) \
+        .eq("mode", mode) \
+        .order("score", desc=True) \
+        .limit(1) \
+        .execute()
+
+    if res.data:
+        return res.data[0]["score"]
+    return 0
+
+
+def get_leaderboard(mode: int, limit: int = 20):
     
-    
-def add_account(cnx, name):
-    
-    password = ""
-        
-    cur = cnx.cursor()
-    cur.execute(f'SELECT password FROM accounts;')
-    passwords = cur.fetchall()
-    
-    if passwords is None:
-        password = generate_password()
-    else:
-        password = generate_password()
-        while password in passwords:
-            password = generate_password()
-    
+    res = supabase.table("leaderboard") \
+        .select("pseudo, score") \
+        .eq("mode", mode) \
+        .order("score", desc=True) \
+        .limit(limit) \
+        .execute()
+
+    return res.data
+
+
+
+def save_local_profile(pseudo):
+    path = resource_path("profile/compte.txt")
+    os.makedirs(os.path.dirname(path), exist_ok=True)
+    with open(path, "w", encoding="utf-8") as f:
+        f.write(pseudo)
+
+
+def load_local_profile():
     try:
-        cur.execute(f"INSERT INTO accounts VALUES ('{name}','{password}','{0}','{0}','{0}');")
-        cnx.commit()
-        retoursql = cur.fetchone()
-    except:
-        print("table gmc already have this account_name, please change it")
-    
-    return password
-
-
-def get_account_password(cnx, name):
-    
-    cur = cnx.cursor()
-    cur.execute(f'SELECT password FROM accounts WHERE account_name ="{name}";')
-    password = cur.fetchone()
-    if password:
-        return password[0]
-    else:
-        return "None"
-
-
-
-def get_score(cnx, password, nb=5):
-    
-    cur = cnx.cursor()
-    cur.execute(f'SELECT best_of_{nb} FROM accounts WHERE password="{password}";')
-    score = cur.fetchone()
-    
-    return score
-
-def set_score(cnx, password, nb, score):
-
-    cur = cnx.cursor()
-    cur.execute(f'UPDATE accounts SET best_of_{nb}={str(score)} WHERE password="{password}";')
-    cur.fetchone()
-
-
-def get_leaderboards(cnx, out_5=True,out_10=True,out_20=True):
-        
-    if out_5:
-        cur = cnx.cursor()
-        cur.execute(f"SELECT * FROM accounts ORDER BY best_of_5 DESC LIMIT 20;")
-        row = cur.fetchone()
-        a1 = []
-        c = 1
-        height = 20 +100 +10
-        while row != None:
-            if c<=21:
-                b = Shape(None,str(c) + " : " + str(row[0]) + " / Best Score : " + str(row[2]), current_w/3 -15 -10, 40, (15, height +50 +5), 0, (224, 180, 229), False, (resource_path('font/Mighty Souly.ttf'), 35))
-            a1.append(b)
-            row = cur.fetchone()
-            height += 40 + 4
-            c += 1
-            
-    if out_10:
-        cur = cnx.cursor()
-        cur.execute(f"SELECT * FROM accounts ORDER BY best_of_10 DESC LIMIT 20;")
-        row = cur.fetchone()
-        a2 = []
-        c = 1
-        height = 20 +100 +10
-        while row != None:
-            if c<=21:
-                b = Shape(None,str(c) + " : " + str(row[0]) + " / Best Score : " + str(row[3]), current_w/3 -15 -10, 40, (15 +current_w/3 -15 +15, height +50 +5), 0, (224, 180, 229), False, (resource_path('font/Mighty Souly.ttf'), 35))
-            a2.append(b)
-            row = cur.fetchone()
-            height += 40 + 4
-            c += 1
-            
-    if out_20:
-        cur = cnx.cursor()
-        cur.execute(f"SELECT * FROM accounts ORDER BY best_of_20 DESC LIMIT 20;")
-        row = cur.fetchone()
-        a3 = []
-        c = 1
-        height = 20 +100 +10
-        while row != None:
-            if c<=21:
-                b = Shape(None,str(c) + " : " + str(row[0]) + " / Best Score : " + str(row[4]), current_w/3 -15 -10, 40, (15 +current_w/3 -15 +15 +current_w/3 -15 +15, height +50 +5), 0, (224, 180, 229), False, (resource_path('font/Mighty Souly.ttf'), 35))
-            a3.append(b)
-            row = cur.fetchone()
-            height += 40 + 4
-            c += 1
-            
-    return a1, a2, a3
-            
-def check_pseudo(cnx, pseudo):
-
-    cur = cnx.cursor()
-    cur.execute(f'SELECT password FROM accounts WHERE account_name="{pseudo}";')
-    result = cur.fetchone()
-
-    if result != None:
-        return True
-    return False
+        with open(resource_path("profile/compte.txt"), "r", encoding="utf-8") as f:
+            return f.read().strip()
+    except FileNotFoundError:
+        return ""
