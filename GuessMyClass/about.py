@@ -1,30 +1,33 @@
 
+# Importe les bibliothèques nécessaires pour le fonctionnement du code
+
+import pygame
+from shape_creator import *
 import sys, os
 
+
+# Fonctions pour faire le .exe
+# Met le bon chemin de fichier
 def resource_path(relative_path):
     try:
         base_path = sys._MEIPASS
     except Exception:
         base_path = os.path.abspath(".")
     return os.path.join(base_path, relative_path)
-
+# Recupère le chemin du score
 def get_score_options_path():
     base_path = getattr(sys, '_MEIPASS', os.path.abspath("."))
     full_path = os.path.join(os.path.dirname(sys.executable if getattr(sys, 'frozen', False) else __file__), "score", "options.txt")
     os.makedirs(os.path.dirname(full_path), exist_ok=True)
     return full_path
 
-# Importe les bibliothèques nécessaires pour le fonctionnement du code
 
-import pygame
-from shape_creator import *
-import sys
 
 # Crée un bouton pour quitter l'écran "À propos"
 leave_button = Shape('home', '<', 50, 50, (10, 10), 2, (200, 0, 0), True)
 
+# Fonction pour la partie about du jeu
 def about_display():
-    
     # Récupère les informations de l'écran
     screen_info = pygame.display.Info()
     screen_width = screen_info.current_w
@@ -83,7 +86,6 @@ def about_display():
     running = True
     while running:
         screen.fill((205, 228, 226))
-
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 running = False

@@ -1,23 +1,28 @@
 
-import sys, os
+# Importe les bibliothèques nécessaires pour le fonctionnement du code
 
+import sys, os
+from math import *
+from pygame import *
+from shape_creator import *
+
+# Fonctions pour faire le .exe
+# Met le bon chemin de fichier
 def resource_path(relative_path):
     try:
         base_path = sys._MEIPASS
     except Exception:
         base_path = os.path.abspath(".")
     return os.path.join(base_path, relative_path)
-
+# Recupère le chemin du score
 def get_score_options_path():
     base_path = getattr(sys, '_MEIPASS', os.path.abspath("."))
     full_path = os.path.join(os.path.dirname(sys.executable if getattr(sys, 'frozen', False) else __file__), "score", "options.txt")
     os.makedirs(os.path.dirname(full_path), exist_ok=True)
     return full_path
 
-from math import *
-from pygame import *
-from shape_creator import *
 
+# Dictionnaire pour stocker les coordonnées de chaque salle
 coo = {"C005" : [1178, 313, 0], "C006" : [1180, 265, 0], "C008" : [1284, 312, 0], "C009" : [1247, 265, 0], "C012" : [1366, 263, 0],
        "C104" : [1159, 265, 1], "C105" : [1193, 314, 1], "C106" : [1195, 263, 1], "C108" : [1232, 491, 1], "C109" : [1249, 315, 1], "C111" : [1249, 316, 1], "C113" : [1312, 263, 1], "C114" : [1347, 265, 1], "C115" : [1360, 316, 1],"C117" : [1387, 313, 1],"C110" : [1268, 262, 1], 
        "D004" : [1162, 478, 0], "D010" : [1285, 470, 0], "D012_v2" : [1388, 414, 0],"D006" : [1185, 415, 0],"D014" : [1373, 472, 0],
@@ -34,54 +39,62 @@ coo = {"C005" : [1178, 313, 0], "C006" : [1180, 265, 0], "C008" : [1284, 312, 0]
        "A138" : [988, 270, 1], "A139" : [1037, 268, 1], "E041" : [1639, 605, 0]}
 
 
-
+# Fonction qui calcul le nombre de points par rapport à la salle, les coordonnées du points et l'étage
 def calcul_points(salle, coo_pin, nb_etage) :
-
+    # Définition du lambda
     lambda_ = 0.01
 
-   
-
+    # Calcul de la distance avec pythagore
     distance = sqrt((coo_pin[0]-coo[salle][0])**2 + (coo_pin[1]-coo[salle][1])**2)
+    # Fais en sorte que le point ne soit pas obligatoirement pile poil sur le vrai point pour avoir le score max (5000)
     if distance <= 1 :
         return 5000   
+    # Calcul le score
     score = 5000 * exp(-lambda_ * distance)
 
+    # Divise le score par 2 si le joueur n'est pas au bon étage
     if nb_etage == 0 and coo[salle][2] == 1 :
         score /= 2
     elif nb_etage == 1 and coo[salle][2] == 0 :
         score /= 2
 
-
+    # Renvoie le score arrondi pour ne pas avoir de float
     return round(score)
 
 
-
+# Fonction pour afficher le point du joueur 1
 def draw_points(last_point):
-    
     if last_point:
         pygame.draw.circle(screen, (255, 0, 0), last_point, 7)
-        
+
+# Fonction pour afficher le point du joueur 2     
 def draw_points2(last_point2):
-    
     if last_point2:
         pygame.draw.circle(screen, (0, 255, 0), last_point2, 7)
 
+# Fonction pour afficher le point de la solution
 def draw_points3(last_point3):
-    
     if last_point3:
         pygame.draw.circle(screen, (0, 0, 255), last_point3, 7)
 
+# Fonction pour afficher les points (joueur et solution) à la fin de la manche
 def show_answer(salle, coo_pin) :
-
+    # Solution
     draw_points3((coo[salle][0], coo[salle][1]))
+    # Joueur
     draw_points(coo_pin)
+    # Fais une ligne entre le point du joueur et de la solution
     pygame.draw.line(screen, (0, 0, 0), coo_pin, (coo[salle][0], coo[salle][1]), width = 3)
 
+# Fonction pour afficher les points (joueurs et solution) à la fin de la manche
 def show_answer2(salle, coo_pin, coo_pin2) :
-
+    #Solution
     draw_points3((coo[salle][0], coo[salle][1]))
+    # Joueur 1
     draw_points(coo_pin)
+    # Joueur 2
     draw_points2(coo_pin2)
+    # Fais une ligne entre le point du joueur et de la solution
     pygame.draw.line(screen, (0, 0, 0), coo_pin, (coo[salle][0], coo[salle][1]), width = 3)
     pygame.draw.line(screen, (0, 0, 0), coo_pin2, (coo[salle][0], coo[salle][1]), width = 3)
 

@@ -1,19 +1,7 @@
 
+# Importe les bibliothèques nécessaires pour le fonctionnement du code
+
 import sys, os
-
-def resource_path(relative_path):
-    try:
-        base_path = sys._MEIPASS
-    except Exception:
-        base_path = os.path.abspath(".")
-    return os.path.join(base_path, relative_path)
-
-def get_score_options_path():
-    base_path = getattr(sys, '_MEIPASS', os.path.abspath("."))
-    full_path = os.path.join(os.path.dirname(sys.executable if getattr(sys, 'frozen', False) else __file__), "score", "options.txt")
-    os.makedirs(os.path.dirname(full_path), exist_ok=True)
-    return full_path
-
 import pygame
 from shape_creator import *
 from coordonées_salles import *
@@ -21,13 +9,26 @@ from random import *
 from time import *
 from pathlib import Path
 from sql_link import *
-import mysql.connector
+
+# Fonctions pour faire le .exe
+# Met le bon chemin de fichier
+def resource_path(relative_path):
+    try:
+        base_path = sys._MEIPASS
+    except Exception:
+        base_path = os.path.abspath(".")
+    return os.path.join(base_path, relative_path)
+# Recupère le chemin du score
+def get_score_options_path():
+    base_path = getattr(sys, '_MEIPASS', os.path.abspath("."))
+    full_path = os.path.join(os.path.dirname(sys.executable if getattr(sys, 'frozen', False) else __file__), "score", "options.txt")
+    os.makedirs(os.path.dirname(full_path), exist_ok=True)
+    return full_path
 
 
-
-
+# Définition de last_point
 last_point = None  
-
+# Définition de liste contenant le chemin de l'image de chaque salle
 C000 = ["GuessMyClass/img/C000/C006.webp", "GuessMyClass/img/C000/C008.webp", "GuessMyClass/img/C000/C012.webp", "GuessMyClass/img/C000/C009.webp", "GuessMyClass/img/C000/C005.webp"]
 C100 = ["GuessMyClass/img/C100/C106.webp", "GuessMyClass/img/C100/C108.webp", "GuessMyClass/img/C100/C105.webp", "GuessMyClass/img/C100/C111.webp", "GuessMyClass/img/C100/C114.webp", "GuessMyClass/img/C100/C117.webp", "GuessMyClass/img/C100/C104.webp", "GuessMyClass/img/C100/C109.webp", "GuessMyClass/img/C100/C110.webp", "GuessMyClass/img/C100/C113.webp", "GuessMyClass/img/C100/C115.webp"]
 D000 = ["GuessMyClass/img/D000/D004.webp", "GuessMyClass/img/D000/D010.webp", "GuessMyClass/img/D000/D012_v2.webp", "GuessMyClass/img/D000/D014.webp", "GuessMyClass/img/D000/Escalier D.webp", "GuessMyClass/img/D000/D006.webp"]
@@ -39,7 +40,7 @@ E000 = ["GuessMyClass/img/E000/Beton.webp", "GuessMyClass/img/E000/bois.webp", "
 E100 = ["GuessMyClass/img/E100/couloir E haut.webp", "GuessMyClass/img/E100/E116.webp", "GuessMyClass/img/E100/E108.webp", "GuessMyClass/img/E100/E110.webp", "GuessMyClass/img/E100/E113.webp", "GuessMyClass/img/E100/E123.webp", "GuessMyClass/img/E100/E125.webp", "GuessMyClass/img/E100/E107.webp", "GuessMyClass/img/E100/E109.webp", "GuessMyClass/img/E100/E111.webp", "GuessMyClass/img/E100/E114.webp", "GuessMyClass/img/E100/E121.webp", "GuessMyClass/img/E100/E126.webp"]
 
 
-
+# Définition de liste secondaire contenant le chemin de l'image de chaque salle
 C000_copy = ["GuessMyClass/img/C000/C006.webp", "GuessMyClass/img/C000/C008.webp", "GuessMyClass/img/C000/C012.webp", "GuessMyClass/img/C000/C009.webp", "GuessMyClass/img/C000/C005.webp"]
 C100_copy = ["GuessMyClass/img/C100/C106.webp", "GuessMyClass/img/C100/C108.webp", "GuessMyClass/img/C100/C105.webp", "GuessMyClass/img/C100/C111.webp", "GuessMyClass/img/C100/C114.webp", "GuessMyClass/img/C100/C117.webp", "GuessMyClass/img/C100/C104.webp", "GuessMyClass/img/C100/C109.webp", "GuessMyClass/img/C100/C110.webp", "GuessMyClass/img/C100/C113.webp", "GuessMyClass/img/C100/C115.webp"]
 D000_copy = ["GuessMyClass/img/D000/D004.webp", "GuessMyClass/img/D000/D010.webp", "GuessMyClass/img/D000/D012_v2.webp", "GuessMyClass/img/D000/D014.webp", "GuessMyClass/img/D000/Escalier D.webp", "GuessMyClass/img/D000/D006.webp"]
@@ -51,13 +52,13 @@ E000_copy = ["GuessMyClass/img/E000/Beton.webp", "GuessMyClass/img/E000/bois.web
 E100_copy = ["GuessMyClass/img/E100/couloir E haut.webp", "GuessMyClass/img/E100/E116.webp", "GuessMyClass/img/E100/E108.webp", "GuessMyClass/img/E100/E110.webp", "GuessMyClass/img/E100/E113.webp", "GuessMyClass/img/E100/E123.webp", "GuessMyClass/img/E100/E125.webp", "GuessMyClass/img/E100/E107.webp", "GuessMyClass/img/E100/E109.webp", "GuessMyClass/img/E100/E111.webp", "GuessMyClass/img/E100/E114.webp", "GuessMyClass/img/E100/E121.webp", "GuessMyClass/img/E100/E126.webp"]
 
 
-
-
+# Définition d'une liste globale contenant les autres listes
 tout = [C000_copy, C100_copy, D100_copy, D000_copy, special_copy, toilettes_copy, A100_copy, E000_copy, E100_copy]
 
 truc = []
 block = False
 
+# Fonction pour choisir une image parmi toutes les listes
 def choix(liste) :
 
     i = 0
@@ -75,7 +76,7 @@ def choix(liste) :
             for k in truc :
                 truc.remove(k)
 
-
+# Fonction pour incrémenter le timer du jeu
 def calc_timer(timer) :
 
     if timer < 1 :
@@ -83,9 +84,7 @@ def calc_timer(timer) :
     return round(timer -0.015), ""
 
 
-
-
-
+# Class pour gérer la vue 3D
 class PanoramicView:
     def __init__(self, image_path, screen):
         self.screen = screen
@@ -116,9 +115,10 @@ class PanoramicView:
             self.screen.blit(self.image, (-x + self.image_width, self.y_offset))
 
 
-
+# Fonction principale du gameplay
 def game_display():
     
+    # Gère le multijoueur
     with open(resource_path("GuessMyClass/score/option.txt"), "r") as f:
         testread = f.readlines()
     
@@ -137,7 +137,7 @@ def game_display():
         
     f.close()
     
-    
+    #Création de plein de variables pour le bon fonctionnement du programme
     liste_points = [(0, 0)]
     liste_points2 = [(0, 0)]
     nb = 0
@@ -153,6 +153,7 @@ def game_display():
     global last_point
     global last_point2
 
+    # Menu pour choisir le nombre de round
     quit_button = Shape('retour', "Quitter", 150, 50, (20, 20), 5, (220, 0, 0), True, (resource_path('GuessMyClass/font/MightySouly.ttf'), 30))
     question = Shape('question', "Combien de round voulez-vous jouer ?", 1920/3, 100, (current_w/2 -1920/6, current_h/2 -200), 0, (220, 0, 0), False, (resource_path('GuessMyClass/font/MightySouly.ttf'), 30))
     nb_5 = Shape(None, "5", 50, 50, (current_w/2 -125, current_h/2), 2, (255, 128, 0), True, (resource_path('GuessMyClass/font/MightySouly.ttf'), 40))
@@ -166,7 +167,7 @@ def game_display():
     nb_10.draw()
     nb_20.draw()
     
-
+    # Gère tous les endroits où l'utilisateur clique
     for event in pygame.event.get():
 
         if event.type == pygame.QUIT:
@@ -185,7 +186,8 @@ def game_display():
 
             if nb == 0 :
                 continue
-
+            
+            # Boucle en fonction du nombre de round pour afficher chaque image manche par manche
             for j in range (nb) :
                 if truc2 >= 1 :
                     pygame.time.delay(2000)
@@ -414,6 +416,7 @@ def game_display():
             pygame.time.delay(2000)
             end = True
         
+            # Ouvre le fichier de score du joueur et met son meilleur score dedans, et envoie le résultat en BDD sauf si le joueur n'est pas connecté
             with open(resource_path("GuessMyClass/profile/compte.txt"), "r") as f:
                 pseudo = f.read().strip()
 
@@ -432,6 +435,7 @@ def game_display():
                         send_score(pseudo, nb, score)
 
 
+            # Ecran de fin de partie
             if mult == True:
                 score_tot_J1 = Shape('score_tot', "Bravo J1 vous avez fait : " + str(score) + " / " + str(nb * 5000) + " points", 650, 100, (current_w/2 -325, current_h/4 -150), 5, (220, 93, 0), False, (resource_path('GuessMyClass/font/MightySouly.ttf'), 30))
                 score_tot_J2 = Shape('score_tot', "Bravo J2 vous avez fait : " + str(score4) + " / " + str(nb * 5000) + " points", 650, 100, (current_w/2 -325, current_h/4), 5, (220, 93, 0), False, (resource_path('GuessMyClass/font/MightySouly.ttf'), 30))
@@ -473,19 +477,17 @@ def game_display():
                                 f.write('False')
                             mult = False
                             return "home"
+                    if reponse_donnee:
+                        while truc != [] :
+                            for k in truc :
+                                truc.remove(k)
+                                print(truc)
+                        question.draw()
+                        nb_5.draw()
+                        nb_10.draw()
+                        nb_20.draw()
+                        pygame.display.flip()
 
-
-            if reponse_donnee:
-                while truc != [] :
-                    for k in truc :
-                        truc.remove(k)
-                        print(truc)
-                question.draw()
-                nb_5.draw()
-                nb_10.draw()
-                nb_20.draw()
-                pygame.display.flip()
-
-                return "game"
+                        return "game"
                         
     return "game"

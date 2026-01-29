@@ -1,22 +1,25 @@
 
-import sys, os
+# Importe les bibliothèques nécessaires pour le fonctionnement du code
 
+import sys, os
+import pygame, sys
+from pathlib import Path
+
+# Fonction pour faire le .exe
+# Met le bon chemin de fichier
 def resource_path(relative_path):
     try:
         base_path = sys._MEIPASS
     except Exception:
         base_path = os.path.abspath(".")
     return os.path.join(base_path, relative_path)
-
+# Recupère le chemin du score
 def get_score_options_path():
     base_path = getattr(sys, '_MEIPASS', os.path.abspath("."))
     full_path = os.path.join(os.path.dirname(sys.executable if getattr(sys, 'frozen', False) else __file__), "score", "options.txt")
     os.makedirs(os.path.dirname(full_path), exist_ok=True)
     return full_path
 
-import pygame, sys
-from pathlib import Path
-import mysql.connector
 
 # Class utilisé pour créer les différentes formes pygame
 
@@ -83,7 +86,6 @@ class Shape:
             if self.is_button == True:
                 dest = self.check_click()
                 if dest == 'disc':
-                    reset()
                     return 'hell'
                 elif dest != None:
                     return dest
@@ -117,19 +119,4 @@ pygame.font.get_init()
 current_w, current_h = pygame.display.Info().current_w, pygame.display.Info().current_h
 screen =  pygame.display.set_mode((current_w, current_h))
 clock = pygame.time.Clock()
-
-def reset(db=False):
-    
-    if db:
-        cnx = mysql.connector.connect(
-            host="172.16.105.164",
-            port=3306,
-            user="eleve",
-            password="eleve",
-            database='GMC')
-        
-        cur = cnx.cursor()
-        cur.execute(f"DELETE FROM accounts;")
-        cur.fetchone()
-        cnx.commit()
         

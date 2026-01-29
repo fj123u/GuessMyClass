@@ -1,15 +1,18 @@
+
+#Importe les bibliothèques nécessaires pour le fonctionnement du code
+
 import sys, os
 from supabase import create_client
 
-
+# Fonction pour faire le .exe
+# Met le bon chemin de fichier
 def resource_path(relative_path):
     try:
         base_path = sys._MEIPASS
     except Exception:
         base_path = os.path.abspath(".")
     return os.path.join(base_path, relative_path)
-
-
+# Recupère le chemin du score
 def get_score_options_path():
     base_path = getattr(sys, '_MEIPASS', os.path.abspath("."))
     full_path = os.path.join(
@@ -27,7 +30,7 @@ SUPABASE_KEY = "sb_publishable_OEqgvVyKwJGXy5rV1H1Y8Q_kGL98num"
 supabase = create_client(SUPABASE_URL, SUPABASE_KEY)
 
 
-
+# Fonction qui envoie un score sur la BDD
 def send_score(pseudo: str, mode: int, score: int):
    
     supabase.table("leaderboard").insert({
@@ -37,6 +40,7 @@ def send_score(pseudo: str, mode: int, score: int):
     }).execute()
 
 
+# Fonction pour récupérer le meilleur score du joueur
 def get_best_score(pseudo: str, mode: int):
     
     res = supabase.table("leaderboard") \
@@ -52,6 +56,7 @@ def get_best_score(pseudo: str, mode: int):
     return 0
 
 
+# Fonction pour récupérer l'ensemble des données de la BDD
 def get_leaderboard(mode: int, limit: int = 20):
     res = supabase.table("leaderboard") \
         .select("pseudo, score") \
@@ -73,7 +78,7 @@ def get_leaderboard(mode: int, limit: int = 20):
     return leaderboard[:limit]
 
 
-
+# Fonction qui créer un fichier local pour save le best_score de l'utilisateur
 def save_local_profile(pseudo):
     path = resource_path("GuessMyClass/profile/compte.txt")
     os.makedirs(os.path.dirname(path), exist_ok=True)
@@ -81,6 +86,7 @@ def save_local_profile(pseudo):
         f.write(pseudo)
 
 
+# Fonction qui récupère le score sur la save locale
 def load_local_profile():
     try:
         with open(resource_path("GuessMyClass/profile/compte.txt"), "r", encoding="utf-8") as f:
