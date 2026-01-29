@@ -8,6 +8,7 @@ Un projet réalisé pour le Trophée NSI 2025, dans le but de rendre nos journé
 
 ```
 Installer GuessMyClass.exe dans l'onglet Releases
+
 ⚠️ Avertissement Windows Defender
 
 Lors de l'installation, Windows peut afficher un avertissement de sécurité.
