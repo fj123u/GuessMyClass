@@ -29,7 +29,7 @@ Pygame (https://www.pygame.org/news)
 
 Custom Tkinter (https://customtkinter.tomschimansky.com/)
 
-MySQL Connector Python (https://dev.mysql.com/doc/connector-python/en/)
+Supabase (https://supabase.com/docs/reference/python/introduction)
 ```
 
 ## ✉️ Contact
