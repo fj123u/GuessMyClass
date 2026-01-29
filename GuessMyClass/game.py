@@ -28,7 +28,7 @@ import mysql.connector
 
 last_point = None  
 
-C000 = ["GuessMyClass/img/C000/C006.webp", "GuessMyClass/img/C000/C008.webp", "GuessMyClass/img/C000/C012.webp", "GuessMyClass/img/C000/C013.webp", "GuessMyClass/img/C000/C009.webp", "GuessMyClass/img/C000/C005.webp"]
+C000 = ["GuessMyClass/img/C000/C006.webp", "GuessMyClass/img/C000/C008.webp", "GuessMyClass/img/C000/C012.webp", "GuessMyClass/img/C000/C009.webp", "GuessMyClass/img/C000/C005.webp"]
 C100 = ["GuessMyClass/img/C100/C106.webp", "GuessMyClass/img/C100/C108.webp", "GuessMyClass/img/C100/C105.webp", "GuessMyClass/img/C100/C111.webp", "GuessMyClass/img/C100/C114.webp", "GuessMyClass/img/C100/C117.webp", "GuessMyClass/img/C100/C104.webp", "GuessMyClass/img/C100/C109.webp", "GuessMyClass/img/C100/C110.webp", "GuessMyClass/img/C100/C113.webp", "GuessMyClass/img/C100/C115.webp"]
 D000 = ["GuessMyClass/img/D000/D004.webp", "GuessMyClass/img/D000/D010.webp", "GuessMyClass/img/D000/D012_v2.webp", "GuessMyClass/img/D000/D014.webp", "GuessMyClass/img/D000/Escalier D.webp", "GuessMyClass/img/D000/D006.webp"]
 D100 = ["GuessMyClass/img/D100/D104.webp", "GuessMyClass/img/D100/D105.webp", "GuessMyClass/img/D100/D106.webp", "GuessMyClass/img/D100/D109.webp", "GuessMyClass/img/D100/D110.webp", "GuessMyClass/img/D100/couloir D haut.webp", "GuessMyClass/img/D100/D111.webp", "GuessMyClass/img/D100/D113.webp", "GuessMyClass/img/D100/D114.webp", "GuessMyClass/img/D100/D117.webp", "GuessMyClass/img/D100/D116.webp", "GuessMyClass/img/D100/D115.webp", "GuessMyClass/img/D100/D112.webp"]
@@ -40,7 +40,7 @@ E100 = ["GuessMyClass/img/E100/couloir E haut.webp", "GuessMyClass/img/E100/E116
 
 
 
-C000_copy = ["GuessMyClass/img/C000/C006.webp", "GuessMyClass/img/C000/C008.webp", "GuessMyClass/img/C000/C012.webp", "GuessMyClass/img/C000/C013.webp", "GuessMyClass/img/C000/C009.webp", "GuessMyClass/img/C000/C005.webp"]
+C000_copy = ["GuessMyClass/img/C000/C006.webp", "GuessMyClass/img/C000/C008.webp", "GuessMyClass/img/C000/C012.webp", "GuessMyClass/img/C000/C009.webp", "GuessMyClass/img/C000/C005.webp"]
 C100_copy = ["GuessMyClass/img/C100/C106.webp", "GuessMyClass/img/C100/C108.webp", "GuessMyClass/img/C100/C105.webp", "GuessMyClass/img/C100/C111.webp", "GuessMyClass/img/C100/C114.webp", "GuessMyClass/img/C100/C117.webp", "GuessMyClass/img/C100/C104.webp", "GuessMyClass/img/C100/C109.webp", "GuessMyClass/img/C100/C110.webp", "GuessMyClass/img/C100/C113.webp", "GuessMyClass/img/C100/C115.webp"]
 D000_copy = ["GuessMyClass/img/D000/D004.webp", "GuessMyClass/img/D000/D010.webp", "GuessMyClass/img/D000/D012_v2.webp", "GuessMyClass/img/D000/D014.webp", "GuessMyClass/img/D000/Escalier D.webp", "GuessMyClass/img/D000/D006.webp"]
 D100_copy = ["GuessMyClass/img/D100/D104.webp", "GuessMyClass/img/D100/D105.webp", "GuessMyClass/img/D100/D106.webp", "GuessMyClass/img/D100/D109.webp", "GuessMyClass/img/D100/D110.webp", "GuessMyClass/img/D100/couloir D haut.webp", "GuessMyClass/img/D100/D111.webp", "GuessMyClass/img/D100/D113.webp", "GuessMyClass/img/D100/D114.webp", "GuessMyClass/img/D100/D117.webp", "GuessMyClass/img/D100/D116.webp", "GuessMyClass/img/D100/D115.webp", "GuessMyClass/img/D100/D112.webp"]
@@ -417,7 +417,7 @@ def game_display():
             with open(resource_path("GuessMyClass/profile/compte.txt"), "r") as f:
                 pseudo = f.read().strip()
 
-            if pseudo != "invit":
+            if pseudo != "Invite\ninvit":
                 score_path = resource_path(f"GuessMyClass/score/{pseudo}_{nb}.txt")
                 os.makedirs(os.path.dirname(score_path), exist_ok=True)
 

@@ -79,7 +79,8 @@ leaderboards = [[], [], []]
 try:
     for i, mode in enumerate([5, 10, 20]):
         data = get_leaderboard(mode)
-        y = 170
+        print(f"Mode {mode}: {len(data)} résultats")
+        y = 180
         rank = 1
         for row in data:
             leaderboards[i].append(
@@ -88,7 +89,7 @@ try:
                     f"{rank} : {row['pseudo']} / {row['score']}",
                     current_w / b - 40,
                     40,
-                    (scoreboards[i].pos[0] + 10, y),
+                    (scoreboards[i].top_rect.x + 10, y),
                     0,
                     (224, 180, 229),
                     False,
@@ -98,7 +99,10 @@ try:
             y += 44
             rank += 1
     connected = True
-except Exception:
+except Exception as e:
+    print(f"Erreur lors de la récupération du leaderboard: {e}")
+    import traceback
+    traceback.print_exc()
     connected = False
 
 

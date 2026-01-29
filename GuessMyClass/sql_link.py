@@ -53,15 +53,24 @@ def get_best_score(pseudo: str, mode: int):
 
 
 def get_leaderboard(mode: int, limit: int = 20):
-    
     res = supabase.table("leaderboard") \
         .select("pseudo, score") \
         .eq("mode", mode) \
         .order("score", desc=True) \
-        .limit(limit) \
         .execute()
-
-    return res.data
+    
+    best_scores = {}
+    for row in res.data:
+        pseudo = row['pseudo']
+        score = row['score']
+        if pseudo not in best_scores or score > best_scores[pseudo]:
+            best_scores[pseudo] = score
+    
+    leaderboard = [{'pseudo': pseudo, 'score': score} 
+                   for pseudo, score in best_scores.items()]
+    leaderboard.sort(key=lambda x: x['score'], reverse=True)
+    
+    return leaderboard[:limit]
 
 
 

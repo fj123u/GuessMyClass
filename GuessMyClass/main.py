@@ -34,8 +34,6 @@ screen = pygame.display.set_mode((current_w, current_h))
 clock = pygame.time.Clock()
 running = True
 
-
-
 icon = pygame.image.load(resource_path('GuessMyClass/icon/Logo PJB.png'))
 pygame.display.set_icon(icon)
 icon = pygame.transform.scale(icon, (25, 25))
