@@ -23,7 +23,7 @@ def get_score_options_path():
 
 
 # Dictionnaire pour stocker les coordonnées de chaque salle
-coo = {"C005" : [1178, 313, 0], "C006" : [1180, 265, 0], "C008" : [1284, 312, 0], "C009" : [1247, 265, 0], "C012" : [1366, 263, 0],
+coo_original = {"C005" : [1178, 313, 0], "C006" : [1180, 265, 0], "C008" : [1284, 312, 0], "C009" : [1247, 265, 0], "C012" : [1366, 263, 0],
        "C104" : [1159, 265, 1], "C105" : [1193, 314, 1], "C106" : [1195, 263, 1], "C108" : [1232, 491, 1], "C109" : [1249, 315, 1], "C111" : [1249, 316, 1], "C113" : [1312, 263, 1], "C114" : [1347, 265, 1], "C115" : [1360, 316, 1],"C117" : [1387, 313, 1],"C110" : [1268, 262, 1], 
        "D004" : [1162, 478, 0], "D010" : [1285, 470, 0], "D012_v2" : [1388, 414, 0],"D006" : [1185, 415, 0],"D014" : [1373, 472, 0],
        "D104" : [1198, 471, 1], "D105" : [1170, 421, 1], "D106" : [1212, 419, 1], "D111" : [1271, 418, 0], "D112" : [1299, 469, 0], "D113" : [1310, 420, 0], "D114" : [1360, 471, 0], "D115" : [1358, 419, 0],"D116" : [1386, 469, 0],"D117" : [1387, 420, 0],"D109" : [1246, 471, 1], "D110" : [1274, 471, 1],
@@ -37,6 +37,24 @@ coo = {"C005" : [1178, 313, 0], "C006" : [1180, 265, 0], "C008" : [1284, 312, 0]
        "Beton" : [1561, 803, 0], "bois" : [1303, 881, 0], "couloir E bas" : [1334, 653, 0], "E030" : [1464, 612, 0], "Energie" : [1447, 725, 0],
        "peinture" : [1193, 829, 0], "couloir D haut" : [1311, 444, 1], "Escalier D" : [1324, 478, 1], "A136" : [1069, 268, 1], "A137" : [1056, 271, 1],
        "A138" : [988, 270, 1], "A139" : [1037, 268, 1], "E041" : [1639, 605, 0]}
+
+# Fonction pour adapter les coordonnées
+def scale_coordinates(coord_dict, scale_x, scale_y):
+    scaled_dict = {}
+    for key, value in coord_dict.items():
+        # value = [x, y, étage]
+        scaled_x = int(value[0] * scale_x)
+        scaled_y = int(value[1] * scale_y)
+        scaled_dict[key] = [scaled_x, scaled_y, value[2]]
+    return scaled_dict
+
+REFERENCE_WIDTH = 1920
+REFERENCE_HEIGHT = 1080
+scale_x = current_w / REFERENCE_WIDTH
+scale_y = current_h / REFERENCE_HEIGHT
+
+# Coordonnées adaptées à l'écran actuel
+coo = scale_coordinates(coo_original, scale_x, scale_y)
 
 
 # Fonction qui calcul le nombre de points par rapport à la salle, les coordonnées du points et l'étage
