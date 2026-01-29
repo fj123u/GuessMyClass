@@ -120,7 +120,7 @@ def game_display():
         
     f.close()
     
-    #Création de plein de variables pour le bon fonctionnement du programme
+    #Création de variables pour le bon fonctionnement du programme
     liste_points = [(0, 0)]
     liste_points2 = [(0, 0)]
     nb = 0
@@ -129,52 +129,17 @@ def game_display():
     score3 = 0
     score4 = 0
     truc2 = 0
+    map_image_coo = (75, 75)
+    etage_image_coo = (75, 75)
     end = False
     reponse_donnee = False
     path_plan = resource_path("GuessMyClass/img/plan/etage_0.png")
 
     global last_point
     global last_point2
-
-    # Menu pour choisir le nombre de round
-    leaveButtonWidth = 50
-    leaveButtonHeight = 50
-    leaveButtonpos = (10, 10)
-    leaveButtonElevation = 2
-    leaveButtonColor = (200, 0, 0)
-    leave_button = Shape('home', '<', leaveButtonWidth, leaveButtonHeight, leaveButtonpos, leaveButtonElevation, leaveButtonColor, True)
-
-    questionWidth = 1920/3
-    questionHeight = 100
-    questionPos = (current_w/2 -1920/6, current_h/2 -200)
-    questionElevation = 0
-    questionColor = (220, 0, 0)
-    question = Shape('question', "Combien de round voulez-vous jouer ?", questionWidth, questionHeight, questionPos, questionElevation, questionColor, False, (resource_path('GuessMyClass/font/MightySouly.ttf'), 30))
-    
-    nb5Width = 50
-    nb5Height = 50
-    nb5Pos = (current_w/2 -125, current_h/2)
-    nb5Elevation = 2
-    nb5Color = (255, 128, 0)
-    nb_5 = Shape(None, "5", nb5Width, nb5Height, nb5Pos, nb5Elevation, nb5Color, True, (resource_path('GuessMyClass/font/MightySouly.ttf'), 40))
-    
-    nb10Width = 50
-    nb10Height = 50
-    nb10Pos = (current_w/2-25, current_h/2)
-    nb10Elevation = 2
-    nb10Color = (255, 128, 0)
-    nb_10 = Shape(None, "10", nb10Width, nb10Height, nb10Pos, nb10Elevation, nb10Color, True, (resource_path('GuessMyClass/font/MightySouly.ttf'), 40))
-    
-    nb20Width = 50
-    nb20Height = 50
-    nb20Pos = (current_w/2 +75, current_h/2)
-    nb20Elevation = 2
-    nb20Color = (255, 128, 0)
-    nb_20 = Shape(None, "20", nb20Width, nb20Height, nb20Pos, nb20Elevation, nb20Color, True, (resource_path('GuessMyClass/font/MightySouly.ttf'), 40))
  
-
     leave_button.draw()
-    question.draw()
+    game_question.draw()
     nb_5.draw()
     nb_10.draw()
     nb_20.draw()
@@ -200,14 +165,13 @@ def game_display():
                 continue
             
             # Boucle en fonction du nombre de round pour afficher chaque image manche par manche
-            for j in range (nb) :
+            for _ in range (nb) :
                 if truc2 >= 1 :
                     pygame.time.delay(2000)
                 choose = choix(tout)
                 pano_view = PanoramicView(resource_path(choose), screen)
                 map_image = pygame.image.load(path_plan)
                 map_image = pygame.transform.scale(map_image, (current_w, current_h))
-                font = pygame.font.Font(None, 36)
                 timer = 30
                 nb_etage = 0
                 map_open = False
@@ -217,39 +181,14 @@ def game_display():
                 running = True
                 clickable = False
                 map_icon = pygame.image.load(resource_path('GuessMyClass/icon/map.png'))
-                map_icon = pygame.transform.scale(map_icon, (75, 75))
-                mapWidth = 100
-                mapHeight = 100
-                mapPos = (current_w -100 -5,current_h -100 -5)
-                mapElevation = 5
-                mapColor = (206, 206, 206)
-                map = Shape('map', "", mapWidth, mapHeight, mapPos, mapElevation, mapColor, True, (resource_path('GuessMyClass/font/MightySouly.ttf'), 40))
+                map_icon = pygame.transform.scale(map_icon, map_image_coo)
+                map_icon = pygame.image.load(resource_path('GuessMyClass/icon/map.png'))
+                map_icon = pygame.transform.scale(map_icon, map_image_coo)
             
-                leaveButtonWidth = 50
-                leaveButtonHeight = 50
-                leaveButtonpos = (10, 10)
-                leaveButtonElevation = 2
-                leaveButtonColor = (200, 0, 0)
-                leave_button = Shape('home', '<', leaveButtonWidth, leaveButtonHeight, leaveButtonpos, leaveButtonElevation, leaveButtonColor, True)
-
-                validerWidth = 100
-                validerHeight = 100
-                validerPos = (current_w -100 -100 -10, current_h - 100 -5)
-                validerElevation = 5
-                validerColor = (0, 220, 0)
-                valider = Shape("valider", "Check", validerWidth, validerHeight, validerPos, validerElevation, validerColor, True, (resource_path('GuessMyClass/font/MightySouly.ttf'), 40))
-
                 etage_icon = pygame.image.load(resource_path('GuessMyClass/icon/fleche haut.png'))
-                etage_icon = pygame.transform.scale(etage_icon, (75,75))
+                etage_icon = pygame.transform.scale(etage_icon, etage_image_coo)
                 etage_icon2 = pygame.image.load(resource_path('GuessMyClass/icon/fleche bas.png'))
-                etage_icon2 = pygame.transform.scale(etage_icon2, (75,75))
-                
-                etageWidth = 100
-                etageHeight = 100
-                etagePos = (current_w -100 -5, current_h -100 -100 -10 -5)
-                etageElevation = 5
-                etageColor = (0, 0, 0)
-                etage = Shape("etage", "", etageWidth, etageHeight, etagePos, etageElevation, etageColor, True, (resource_path('GuessMyClass/font/MightySouly.ttf'), 40))
+                etage_icon2 = pygame.transform.scale(etage_icon2, etage_image_coo)
             
                 scoreButtonWidth = 200
                 scoreButtonHeight = 50
@@ -338,8 +277,8 @@ def game_display():
                                 screen.blit(map_image, (screen.get_width() // 2 - map_image.get_width() // 2, screen.get_height() // 2 - map_image.get_height() // 2))
                                 draw_points(last_point)
                                 draw_points2(last_point2)
-                                valider.draw()
-                                etage.draw()
+                                game_valider.draw()
+                                game_etage.draw()
                                 screen.blit(etage_icon, (current_w -75 - 17,current_h -75 -132))
                                 if valider_pressed :
                                     score += score2
@@ -376,8 +315,8 @@ def game_display():
                                 screen.blit(map_image, (screen.get_width() // 2 - map_image.get_width() // 2, screen.get_height() // 2 - map_image.get_height() // 2))
                                 draw_points(last_point)
                                 draw_points2(last_point2)
-                                valider.draw()
-                                etage.draw()
+                                game_valider.draw()
+                                game_etage.draw()
                                 screen.blit(etage_icon2, (current_w -75 - 17,current_h -75 -132))
                                 if valider_pressed :
                                     score += score2
@@ -414,8 +353,8 @@ def game_display():
                                 leave_button.hide()
                                 screen.blit(map_image, (screen.get_width() // 2 - map_image.get_width() // 2, screen.get_height() // 2 - map_image.get_height() // 2))
                                 draw_points(last_point)
-                                valider.draw()
-                                etage.draw()
+                                game_valider.draw()
+                                game_etage.draw()
                                 screen.blit(etage_icon, (current_w -75 - 17,current_h -75 -132))
                                 if valider_pressed :
                                     score += score2
@@ -443,8 +382,8 @@ def game_display():
                                 leave_button.hide()
                                 screen.blit(map_image, (screen.get_width() // 2 - map_image.get_width() // 2, screen.get_height() // 2 - map_image.get_height() // 2))
                                 draw_points(last_point)
-                                valider.draw()
-                                etage.draw()
+                                game_valider.draw()
+                                game_etage.draw()
                                 screen.blit(etage_icon2, (current_w -75 - 17,current_h -75 -132))
                                 if valider_pressed :
                                     score += score2
@@ -475,16 +414,9 @@ def game_display():
                     leave_button.draw()
                     score_button.draw()
                     score_button2.draw()
-                    map.draw()
+                    game_map.draw()
                     screen.blit(map_icon, (current_w -75 -17,current_h -75 -22))
                     aze = calc_timer(timer)
-                    
-                    timerButtonWidth = 150
-                    timerButtonHeight = 50
-                    timerButtonPos = (current_w/2 -75, 20)
-                    timerButtonElevation = 5
-                    timerButtonColor = (220, 0, 0)
-                    timer_button = Shape('timer', "Temps : " + str(aze[0]), timerButtonWidth, timerButtonHeight, timerButtonPos, timerButtonElevation, timerButtonColor, False, (resource_path('GuessMyClass/font/MightySouly.ttf'), 30))
                     
                     timer -= 0.015
                     if aze [1] == "fin" :
@@ -616,12 +548,11 @@ def game_display():
                         while truc != [] :
                             for k in truc :
                                 truc.remove(k)
-                        question.draw()
+                        game_question.draw()
                         nb_5.draw()
                         nb_10.draw()
                         nb_20.draw()
                         pygame.display.flip()
 
-                        return "game"
-                        
+                        return "game" 
     return "game"

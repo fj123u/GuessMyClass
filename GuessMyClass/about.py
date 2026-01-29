@@ -5,13 +5,6 @@ import pygame
 from utils import *
 from shape_creator import *
 
-# Crée un bouton pour quitter l'écran "À propos"
-leaveButtonWidth = 50
-leaveButtonHeight = 50
-leaveButtonpos = (10, 10)
-leaveButtonElevation = 2
-leaveButtonColor = (200, 0, 0)
-leave_button = Shape('home', '<', leaveButtonWidth, leaveButtonHeight, leaveButtonpos, leaveButtonElevation, leaveButtonColor, True)
 
 # Fonction pour la partie about du jeu
 def about_display():

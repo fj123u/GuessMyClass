@@ -8,13 +8,6 @@ from utils import *
 
 b = 3
 
-leaveButtonWidth = 50
-leaveButtonHeight = 50
-leaveButtonpos = (10, 10)
-leaveButtonElevation = 2
-leaveButtonColor = (200, 0, 0)
-leave_button = Shape("home", "<", leaveButtonWidth, leaveButtonHeight, leaveButtonpos, leaveButtonElevation, leaveButtonColor, True, (resource_path("GuessMyClass/font/MightySouly.ttf"), 40))
-
 scoreboardWidth = current_w / b - 15
 scoreboardHeight = current_h - 130
 scoreboardPos = (10, 120)
@@ -25,13 +18,6 @@ scoreboards = [Shape(None, '', scoreboardWidth, scoreboardHeight, scoreboardPos,
 for i in range(1, b):
     scoreboardPos = (10 * i + 10 + (current_w / b - 10) * i, 120)
     scoreboards.append(Shape(None, '', scoreboardWidth, scoreboardHeight, scoreboardPos, scoreboardElevation, scoreboardColor))
-
-bigLeaderboardWidth = current_w / 2 - 190
-bigLeaderboardHeight = 100
-bigLeaderboardPos = (current_w / 2 - (current_w / 2 - 190) / 2, 10)
-bigLeaderboardElevation = 0
-bigLeaderboardColor = (144, 180, 229)
-big_leaderboard = Shape(None, 'Classements', bigLeaderboardWidth, bigLeaderboardHeight, bigLeaderboardPos, bigLeaderboardElevation, bigLeaderboardColor, False, (resource_path("GuessMyClass/font/MightySouly.ttf"), 60))
 
 bestTitleWidth = current_w / 4
 bestTitleHeight = 50

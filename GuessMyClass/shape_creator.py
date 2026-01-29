@@ -2,7 +2,16 @@
 # Importe les bibliothèques nécessaires pour le fonctionnement du code
 
 import pygame
-from utils import *
+import sys, os
+
+# Fonction pour faire le .exe
+# Met le bon chemin de fichier
+def resource_path(relative_path):
+    try:
+        base_path = sys._MEIPASS
+    except Exception:
+        base_path = os.path.abspath(".")
+    return os.path.join(base_path, relative_path)
 
 # Class utilisé pour créer les différentes formes pygame
 
