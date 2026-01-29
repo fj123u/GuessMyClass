@@ -117,7 +117,6 @@ while running:
             if dest is None:
                 dest = 'home'
             if o:
-                print('hellyeah')
                 with open(resource_path("GuessMyClass/score/option.txt"), "w") as f:
                     f.write('True')
                     f.close()

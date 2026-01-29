@@ -68,7 +68,6 @@ def choix(liste) :
         a = liste[randint(0, len(liste) - 1)]
         choix = a[randint(0, len(a) - 1)]
         i += 1
-        print(i)
         if choix not in truc:     
             truc.append(choix)
             return choix
@@ -244,10 +243,8 @@ def game_display():
                                 liste_points2.append(last_point2)
                                 salle = choose.split("/")[-1]
                                 salle = salle.split(".")[0]
-                                print(salle)
                                 if len(liste_points2) >= 1 :
                                     score3 = calcul_points(salle, liste_points2[-1], nb_etage)
-                                    print(f"Score pour le point ({x2}, {y2}): {score3}")
                         elif event.type == pygame.MOUSEBUTTONUP:
                             x, y = event.pos
                             if 20 <= x <= 140 and 20 <= y <= 70 and clickable == False: 
@@ -267,7 +264,6 @@ def game_display():
                                     path_plan = resource_path("GuessMyClass/img/plan/etage_1.png")
                                     map_image = pygame.image.load(path_plan)
                                     map_image = pygame.transform.scale(map_image, (current_w, current_h))
-                                print("presser")
                                 etage_pressed = True
                             else :
                                 if map_open == True :
@@ -279,10 +275,8 @@ def game_display():
                                         liste_points.append(last_point)
                                         salle = choose.split("/")[-1]
                                         salle = salle.split(".")[0]
-                                        print(salle)
                                         if len(liste_points) >= 2 :
                                             score2 = calcul_points(salle, liste_points[-2], nb_etage)
-                                            print(f"Score pour le point ({x}, {y}): {score2}")
                         pano_view.handle_event(event)
                     
                     screen.fill((0, 0, 0))
@@ -301,7 +295,6 @@ def game_display():
                                     score += score2
                                     score4 += score3
                                     map_open = not map_open
-                                    print(score)
                                     score_button = Shape('score_J1', "Score_J1 : " + str(score), 200, 50, (current_w -200 -25, 20), 5, (220, 0, 0), False, (resource_path('GuessMyClass/font/MightySouly.ttf'), 30))
                                     score_button2 = Shape('score_J2', "Score_J2 : " + str(score4), 200, 50, (current_w -200 -25, 80), 5, (220, 0, 0), False, (resource_path('GuessMyClass/font/MightySouly.ttf'), 30))
                                     show_answer2(salle, liste_points[-2], liste_points2[-1])
@@ -313,7 +306,6 @@ def game_display():
                                     map_image = pygame.image.load(path_plan)
                                     map_image = pygame.transform.scale(map_image, (current_w, current_h))
                                 elif etage_pressed :
-                                    print("etage 1")
                                     etage_pressed = False
                                     nb_etage = 1
                             else :
@@ -328,7 +320,6 @@ def game_display():
                                     score += score2
                                     score4 += score3
                                     map_open = not map_open
-                                    print(score)
                                     score_button = Shape('score_J1', "Score_J1 : " + str(score), 200, 50, (current_w -200 -25, 20), 5, (220, 0, 0), False, (resource_path('GuessMyClass/font/MightySouly.ttf'), 30))
                                     score_button2 = Shape('score_J2', "Score_J2 : " + str(score4), 200, 50, (current_w -200 -25, 80), 5, (220, 0, 0), False, (resource_path('GuessMyClass/font/MightySouly.ttf'), 30))
                                     show_answer2(salle, liste_points[-2], liste_points2[-1])
@@ -340,7 +331,6 @@ def game_display():
                                     map_image = pygame.image.load(path_plan)
                                     map_image = pygame.transform.scale(map_image, (current_w, current_h))
                                 elif etage_pressed :
-                                    print("etage 0")
                                     etage_pressed = False
                                     nb_etage = 0
                         else :
@@ -354,7 +344,6 @@ def game_display():
                                 if valider_pressed :
                                     score += score2
                                     map_open = not map_open
-                                    print(score)
                                     score_button = Shape('score', "Score_J1 : " + str(score), 200, 50, (current_w -200 -25, 20), 5, (220, 0, 0), False, (resource_path('GuessMyClass/font/MightySouly.ttf'), 30))
                                     show_answer(salle, liste_points[-2])
                                     truc2 += 1
@@ -365,7 +354,6 @@ def game_display():
                                     map_image = pygame.image.load(path_plan)
                                     map_image = pygame.transform.scale(map_image, (current_w, current_h))
                                 elif etage_pressed :
-                                    print("etage 1")
                                     etage_pressed = False
                                     nb_etage = 1
                             else :
@@ -378,7 +366,6 @@ def game_display():
                                 if valider_pressed :
                                     score += score2
                                     map_open = not map_open
-                                    print(score)
                                     score_button = Shape('score', "Score_J1 : " + str(score), 200, 50, (current_w -200 -25, 20), 5, (220, 0, 0), False, (resource_path('GuessMyClass/font/MightySouly.ttf'), 30))
                                     show_answer(salle, liste_points[-2])
                                     truc2 += 1
@@ -389,7 +376,6 @@ def game_display():
                                     map_image = pygame.image.load(path_plan)
                                     map_image = pygame.transform.scale(map_image, (current_w, current_h))
                                 elif etage_pressed :
-                                    print("etage 0")
                                     etage_pressed = False
                                     nb_etage = 0
                     else:
@@ -481,7 +467,6 @@ def game_display():
                         while truc != [] :
                             for k in truc :
                                 truc.remove(k)
-                                print(truc)
                         question.draw()
                         nb_5.draw()
                         nb_10.draw()

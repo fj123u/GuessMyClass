@@ -100,7 +100,6 @@ class Shape:
             else:
                 self.dynamic_elecation = self.elevation
                 if self.pressed == True:
-                    print(f'Going to {self.destination}')
                     self.pressed = False
                     return self.destination
         else:

@@ -38,7 +38,6 @@ leaderboards = [[], [], []]
 try:
     for i, mode in enumerate([5, 10, 20]):
         data = get_leaderboard(mode)
-        print(f"Mode {mode}: {len(data)} résultats")
         y = 180
         rank = 1
         for row in data:
