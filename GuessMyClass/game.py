@@ -290,14 +290,14 @@ def game_display():
                                     scoreButtonPos = (current_w -200 -25, 20)
                                     scoreButtonElevation = 5
                                     scoreButtonColor = (220, 0, 0)
-                                    score_button = Shape('score_J1', "Score_J1 : " + str(score), scoreButtonWidth, scoreButtonHeight, scoreButtonPos, scoreButtonElevation, scoreButtonColor, False, (resource_path('GuessMyClass/font/MightySouly.ttf'), 30))
+                                    score_button = Shape('score J1', "Score J1 : " + str(score), scoreButtonWidth, scoreButtonHeight, scoreButtonPos, scoreButtonElevation, scoreButtonColor, False, (resource_path('GuessMyClass/font/MightySouly.ttf'), 30))
                                     
                                     scoreButton2Width = 200
                                     scoreButton2Height = 50
                                     scoreButton2Pos = (current_w -200 -25, 80)
                                     scoreButton2Elevation = 5
                                     scoreButton2Color = (220, 0, 0)
-                                    score_button2 = Shape('score_J2', "Score_J2 : " + str(score4), scoreButton2Width, scoreButton2Height, scoreButton2Pos, scoreButton2Elevation, scoreButton2Color, False, (resource_path('GuessMyClass/font/MightySouly.ttf'), 30))
+                                    score_button2 = Shape('score J2', "Score J2 : " + str(score4), scoreButton2Width, scoreButton2Height, scoreButton2Pos, scoreButton2Elevation, scoreButton2Color, False, (resource_path('GuessMyClass/font/MightySouly.ttf'), 30))
                                     
                                     show_answer2(salle, liste_points[-2], liste_points2[-1])
                                     truc2 += 1
@@ -328,14 +328,14 @@ def game_display():
                                     scoreButtonPos = (current_w -200 -25, 20)
                                     scoreButtonElevation = 5
                                     scoreButtonColor = (220, 0, 0)
-                                    score_button = Shape('score_J1', "Score_J1 : " + str(score), scoreButtonWidth, scoreButtonHeight, scoreButtonPos, scoreButtonElevation, scoreButtonColor, False, (resource_path('GuessMyClass/font/MightySouly.ttf'), 30))
+                                    score_button = Shape('score J1', "Score J1 : " + str(score), scoreButtonWidth, scoreButtonHeight, scoreButtonPos, scoreButtonElevation, scoreButtonColor, False, (resource_path('GuessMyClass/font/MightySouly.ttf'), 30))
                                     
                                     scoreButton2Width = 200
                                     scoreButton2Height = 50
                                     scoreButton2Pos = (current_w -200 -25, 80)
                                     scoreButton2Elevation = 5
                                     scoreButton2Color = (220, 0, 0)
-                                    score_button2 = Shape('score_J2', "Score_J2 : " + str(score4), scoreButton2Width, scoreButton2Height, scoreButton2Pos, scoreButton2Elevation, scoreButton2Color, False, (resource_path('GuessMyClass/font/MightySouly.ttf'), 30))
+                                    score_button2 = Shape('score J2', "Score J2 : " + str(score4), scoreButton2Width, scoreButton2Height, scoreButton2Pos, scoreButton2Elevation, scoreButton2Color, False, (resource_path('GuessMyClass/font/MightySouly.ttf'), 30))
                                     
                                     show_answer2(salle, liste_points[-2], liste_points2[-1])
                                     truc2 += 1
@@ -365,7 +365,7 @@ def game_display():
                                     scoreButtonPos = (current_w -200 -25, 20)
                                     scoreButtonElevation = 5
                                     scoreButtonColor = (220, 0, 0)
-                                    score_button = Shape('score', "Score_J1 : " + str(score), scoreButtonWidth, scoreButtonHeight, scoreButtonPos, scoreButtonElevation, scoreButtonColor, False, (resource_path('GuessMyClass/font/MightySouly.ttf'), 30))
+                                    score_button = Shape('score', "Score J1 : " + str(score), scoreButtonWidth, scoreButtonHeight, scoreButtonPos, scoreButtonElevation, scoreButtonColor, False, (resource_path('GuessMyClass/font/MightySouly.ttf'), 30))
                                     
                                     show_answer(salle, liste_points[-2])
                                     truc2 += 1
@@ -394,7 +394,7 @@ def game_display():
                                     scoreButtonPos = (current_w -200 -25, 20)
                                     scoreButtonElevation = 5
                                     scoreButtonColor = (220, 0, 0)
-                                    score_button = Shape('score', "Score_J1 : " + str(score), scoreButtonWidth, scoreButtonHeight, scoreButtonPos, scoreButtonElevation, scoreButtonColor, False, (resource_path('GuessMyClass/font/MightySouly.ttf'), 30))
+                                    score_button = Shape('score', "Score J1 : " + str(score), scoreButtonWidth, scoreButtonHeight, scoreButtonPos, scoreButtonElevation, scoreButtonColor, False, (resource_path('GuessMyClass/font/MightySouly.ttf'), 30))
                                     
                                     show_answer(salle, liste_points[-2])
                                     truc2 += 1
@@ -417,12 +417,13 @@ def game_display():
                     game_map.draw()
                     screen.blit(map_icon, (current_w -75 -17,current_h -75 -22))
                     aze = calc_timer(timer)
-                    
-                    timer -= 0.015
-                    if aze [1] == "fin" :
+                    if timer > 0 :
+                        timer -= 0.015
+                    if aze[1] == "fin" :
                         map_open = True
                         map_block = True
                         clickable = True
+                    timer_button = Shape('timer', "Temps : " + str(round(timer)) + "s", timerButtonWidth, timerButtonHeight, timerButtonPos, timerButtonElevation, timerButtonColor, False, (resource_path('GuessMyClass/font/MightySouly.ttf'), 30))
                     timer_button.draw()
                 
                     pygame.display.flip()

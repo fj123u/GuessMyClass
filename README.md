@@ -8,12 +8,12 @@ Un projet réalisé pour le Trophée NSI 2025, dans le but de rendre nos journé
 
 ```
 Installer GuessMyClass.exe dans l'onglet Releases
-## ⚠️ Avertissement Windows Defender
+⚠️ Avertissement Windows Defender
 
 Lors de l'installation, Windows peut afficher un avertissement de sécurité.
 C'est normal pour les nouveaux logiciels non signés.
 
-**Pour installer quand même :**
+Pour installer quand même :
 1. Cliquer sur "Informations complémentaires"
 2. Cliquer sur "Exécuter quand même"
 
@@ -45,7 +45,7 @@ Pygame (https://www.pygame.org/news)
 
 Custom Tkinter (https://customtkinter.tomschimansky.com/)
 
-MySQL Connector Python (https://dev.mysql.com/doc/connector-python/en/)
+Supabase (https://supabase.com/docs/reference/python/introduction)
 ```
 
 ## ✉️ Contact

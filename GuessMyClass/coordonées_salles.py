@@ -39,7 +39,6 @@ scale_y = current_h / REFERENCE_HEIGHT
 # Coordonnées adaptées à l'écran actuel
 coo = scale_coordinates(coo_original, scale_x, scale_y)
 
-
 # Fonction qui calcul le nombre de points par rapport à la salle, les coordonnées du points et l'étage
 def calcul_points(salle, coo_pin, nb_etage) :
     # Définition du lambda
@@ -48,16 +47,16 @@ def calcul_points(salle, coo_pin, nb_etage) :
     # Calcul de la distance avec pythagore
     distance = sqrt((coo_pin[0]-coo[salle][0])**2 + (coo_pin[1]-coo[salle][1])**2)
     # Fais en sorte que le point ne soit pas obligatoirement pile poil sur le vrai point pour avoir le score max (5000)
-    if distance <= 1 :
+    if distance <= 10 :
         return 5000
     # Calcul le score
     score = 5000 * exp(-lambda_ * distance)
 
     # Divise le score par 2 si le joueur n'est pas au bon étage
     if nb_etage == 0 and coo[salle][2] == 1 :
-        score /= 2
+        score *= 0.3
     elif nb_etage == 1 and coo[salle][2] == 0 :
-        score /= 2
+        score *= 0.3
 
     # Renvoie le score arrondi pour ne pas avoir de float
     return round(score)
