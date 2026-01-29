@@ -1,43 +1,75 @@
 
 # Importe les bibliothèques nécessaires pour le fonctionnement du code
 
-import sys, os
-import pygame
 from shape_creator import *
-from pathlib import Path
-
-# Fonctions pour faire le .exe
-# Met le bon chemin de fichier
-def resource_path(relative_path):
-    try:
-        base_path = sys._MEIPASS
-    except Exception:
-        base_path = os.path.abspath(".")
-    return os.path.join(base_path, relative_path)
-# Recupère le chemin du score
-def get_score_options_path():
-    base_path = getattr(sys, '_MEIPASS', os.path.abspath("."))
-    full_path = os.path.join(os.path.dirname(sys.executable if getattr(sys, 'frozen', False) else __file__), "score", "options.txt")
-    os.makedirs(os.path.dirname(full_path), exist_ok=True)
-    return full_path
-
+from utils import *
 
 # Menu de l'écran d'acceuil
-play_button = Shape('game', 'Jouer', 370, 140, (current_w/2-185, current_h/2-150), 10, (255, 145, 0), True)
+playButtonWidth = 370
+playButtonHeight = 140
+playButtonPos = (current_w/2-185, current_h/2-150)
+playButtonElevation = 10
+playButtonColor = (255, 145, 0)
+play_button = Shape('game', 'Jouer', playButtonWidth, playButtonHeight, playButtonPos, playButtonElevation, playButtonColor, True)
 
-title = Shape(None, 'GMC', (current_w/4-6)*2+6, current_h/6, (current_w/4, 6), 0, (104, 180, 229), False, (resource_path('GuessMyClass/font/MightySouly.ttf'), 150))
-button2 = Shape('about', 'À propos', current_w/4-6, current_h/6, (current_w-current_w/4, 6), 2, (104, 208, 229), True, (resource_path('GuessMyClass/font/MightySouly.ttf'), 100))
+titleWidth = (current_w/4-6)*2+6
+titleHeight = current_h/6
+titlePos = (current_w/4, 6)
+titleElevation = 0
+titleColor = (104, 180, 229)
+title = Shape(None, 'GMC', titleWidth, titleHeight, titlePos, titleElevation, titleColor, False, (resource_path('GuessMyClass/font/MightySouly.ttf'), 150))
 
-bottom_bar = Shape(None, 'GMC - 2025', current_w, 35, (0, current_h-35), 0, (104, 208, 229), False, (resource_path('GuessMyClass/font/MightySouly.ttf'), 20), False)
+button2Width = current_w/4-6
+button2Height = current_h/6
+button2Pos = (current_w-current_w/4, 6)
+button2Elevation = 2
+button2Color = (104, 208, 229)
+button2 = Shape('about', 'À propos', button2Width, button2Height, button2Pos, button2Elevation, button2Color, True, (resource_path('GuessMyClass/font/MightySouly.ttf'), 100))
+
+bottomBarWidth = current_w
+bottomBarHeight = 35
+bottomBarPos = (0, current_h-35)
+bottomBarElevation = 0
+bottomBarColor = (104, 208, 229)
+bottom_bar = Shape(None, 'GMC - 2025', bottomBarWidth, bottomBarHeight, bottomBarPos, bottomBarElevation, bottomBarColor, False, (resource_path('GuessMyClass/font/MightySouly.ttf'), 20), False)
 
 # A faire les paramètres
 #button_list1 = Shape('settings', 'Paramètres', 250, 50, (current_w/2-125, current_h/2+50), 2, (224, 180, 229), True, (resource_path('GuessMyClass/font/MightySouly.ttf'), 40))
-button_list2 = Shape('versus', 'Versus', 250, 50, (current_w/2-125, current_h/2+106), 2, (184, 180, 229), True, (resource_path('GuessMyClass/font/MightySouly.ttf'), 40))
-button_list3 = Shape('leaderboard', 'Classements', 250, 50, (current_w/2-125, current_h/2+212-50), 2, (144, 180, 229), True, (resource_path('GuessMyClass/font/MightySouly.ttf'), 40))
-button_list4 = Shape('leave', 'Quitter', 250, 50, (current_w/2-125, current_h/2+218), 2, (104, 180, 229), True, (resource_path('GuessMyClass/font/MightySouly.ttf'), 40))
 
-infos_left = Shape(None, '', current_w/3, current_h -current_h/6 -60 -35, (current_w/60,30 +current_h/6), 0, (144, 180, 229))
-infos_right = Shape(None, '', current_w/3, current_h -current_h/6 -60 -35, (current_w -current_w/3 -current_w/60, 30 +current_h/6), 0, (144, 180, 229))
+buttonList2Width = 250
+buttonList2Height = 50
+buttonList2Pos = (current_w/2-125, current_h/2+106)
+buttonList2Elevation = 2
+buttonList2Color = (184, 180, 229)
+button_list2 = Shape('versus', 'Versus', buttonList2Width, buttonList2Height, buttonList2Pos, buttonList2Elevation, buttonList2Color, True, (resource_path('GuessMyClass/font/MightySouly.ttf'), 40))
+
+buttonList3Width = 250
+buttonList3Height = 50
+buttonList3Pos = (current_w/2-125, current_h/2+212-50)
+buttonList3Elevation = 2
+buttonList3Color = (144, 180, 229)
+button_list3 = Shape('leaderboard', 'Classements', buttonList3Width, buttonList3Height, buttonList3Pos, buttonList3Elevation, buttonList3Color, True, (resource_path('GuessMyClass/font/MightySouly.ttf'), 40))
+
+buttonList4Width = 250
+buttonList4Height = 50
+buttonList4Pos = (current_w/2-125, current_h/2+218)
+buttonList4Elevation = 2
+buttonList4Color = (104, 180, 229)
+button_list4 = Shape('leave', 'Quitter', buttonList4Width, buttonList4Height, buttonList4Pos, buttonList4Elevation, buttonList4Color, True, (resource_path('GuessMyClass/font/MightySouly.ttf'), 40))
+
+infosLeftWidth = current_w/3
+infosLeftHeight = current_h -current_h/6 -60 -35
+infosLeftPos = (current_w/60,30 +current_h/6)
+infosLeftElevation = 0
+infosLeftColor = (144, 180, 229)
+infos_left = Shape(None, '', infosLeftWidth, infosLeftHeight, infosLeftPos, infosLeftElevation, infosLeftColor)
+
+infosRightWidth = current_w/3
+infosRightHeight = current_h -current_h/6 -60 -35
+infosRightPos = (current_w -current_w/3 -current_w/60, 30 +current_h/6)
+infosRightElevation = 0
+infosRightColor = (144, 180, 229)
+infos_right = Shape(None, '', infosRightWidth, infosRightHeight, infosRightPos, infosRightElevation, infosRightColor)
 
 # Affiche le menu
 def home_display(icon):
@@ -48,7 +80,13 @@ def home_display(icon):
     ide = ''
     for i in range(len(lines[0])):
         ide = ide + lines[0][i]
-    button1 = Shape(None, ide, current_w/4-12, current_h/6, (6, 6), 0, (104, 208, 229))
+    
+    button1Width = current_w/4-12
+    button1Height = current_h/6
+    button1Pos = (6, 6)
+    button1Elevation = 0
+    button1Color = (104, 208, 229)
+    button1 = Shape(None, ide, button1Width, button1Height, button1Pos, button1Elevation, button1Color)
 
     dest = button1.draw()
     if dest != None:

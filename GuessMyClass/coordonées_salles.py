@@ -1,26 +1,10 @@
 
 # Importe les bibliothèques nécessaires pour le fonctionnement du code
 
-import sys, os
 from math import *
 from pygame import *
 from shape_creator import *
-
-# Fonctions pour faire le .exe
-# Met le bon chemin de fichier
-def resource_path(relative_path):
-    try:
-        base_path = sys._MEIPASS
-    except Exception:
-        base_path = os.path.abspath(".")
-    return os.path.join(base_path, relative_path)
-# Recupère le chemin du score
-def get_score_options_path():
-    base_path = getattr(sys, '_MEIPASS', os.path.abspath("."))
-    full_path = os.path.join(os.path.dirname(sys.executable if getattr(sys, 'frozen', False) else __file__), "score", "options.txt")
-    os.makedirs(os.path.dirname(full_path), exist_ok=True)
-    return full_path
-
+from utils import *
 
 # Dictionnaire pour stocker les coordonnées de chaque salle
 coo_original = {"C005" : [1178, 313, 0], "C006" : [1180, 265, 0], "C008" : [1284, 312, 0], "C009" : [1247, 265, 0], "C012" : [1366, 263, 0],
@@ -42,7 +26,6 @@ coo_original = {"C005" : [1178, 313, 0], "C006" : [1180, 265, 0], "C008" : [1284
 def scale_coordinates(coord_dict, scale_x, scale_y):
     scaled_dict = {}
     for key, value in coord_dict.items():
-        # value = [x, y, étage]
         scaled_x = int(value[0] * scale_x)
         scaled_y = int(value[1] * scale_y)
         scaled_dict[key] = [scaled_x, scaled_y, value[2]]
@@ -66,7 +49,7 @@ def calcul_points(salle, coo_pin, nb_etage) :
     distance = sqrt((coo_pin[0]-coo[salle][0])**2 + (coo_pin[1]-coo[salle][1])**2)
     # Fais en sorte que le point ne soit pas obligatoirement pile poil sur le vrai point pour avoir le score max (5000)
     if distance <= 1 :
-        return 5000   
+        return 5000
     # Calcul le score
     score = 5000 * exp(-lambda_ * distance)
 
@@ -82,17 +65,17 @@ def calcul_points(salle, coo_pin, nb_etage) :
 
 # Fonction pour afficher le point du joueur 1
 def draw_points(last_point):
-    if last_point:
+    if last_point :
         pygame.draw.circle(screen, (255, 0, 0), last_point, 7)
 
 # Fonction pour afficher le point du joueur 2     
 def draw_points2(last_point2):
-    if last_point2:
+    if last_point2 :
         pygame.draw.circle(screen, (0, 255, 0), last_point2, 7)
 
 # Fonction pour afficher le point de la solution
 def draw_points3(last_point3):
-    if last_point3:
+    if last_point3 :
         pygame.draw.circle(screen, (0, 0, 255), last_point3, 7)
 
 # Fonction pour afficher les points (joueur et solution) à la fin de la manche
@@ -115,6 +98,3 @@ def show_answer2(salle, coo_pin, coo_pin2) :
     # Fais une ligne entre le point du joueur et de la solution
     pygame.draw.line(screen, (0, 0, 0), coo_pin, (coo[salle][0], coo[salle][1]), width = 3)
     pygame.draw.line(screen, (0, 0, 0), coo_pin2, (coo[salle][0], coo[salle][1]), width = 3)
-
-    
-    

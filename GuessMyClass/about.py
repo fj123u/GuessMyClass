@@ -2,29 +2,16 @@
 # Importe les bibliothèques nécessaires pour le fonctionnement du code
 
 import pygame
+from utils import *
 from shape_creator import *
-import sys, os
-
-
-# Fonctions pour faire le .exe
-# Met le bon chemin de fichier
-def resource_path(relative_path):
-    try:
-        base_path = sys._MEIPASS
-    except Exception:
-        base_path = os.path.abspath(".")
-    return os.path.join(base_path, relative_path)
-# Recupère le chemin du score
-def get_score_options_path():
-    base_path = getattr(sys, '_MEIPASS', os.path.abspath("."))
-    full_path = os.path.join(os.path.dirname(sys.executable if getattr(sys, 'frozen', False) else __file__), "score", "options.txt")
-    os.makedirs(os.path.dirname(full_path), exist_ok=True)
-    return full_path
-
-
 
 # Crée un bouton pour quitter l'écran "À propos"
-leave_button = Shape('home', '<', 50, 50, (10, 10), 2, (200, 0, 0), True)
+leaveButtonWidth = 50
+leaveButtonHeight = 50
+leaveButtonpos = (10, 10)
+leaveButtonElevation = 2
+leaveButtonColor = (200, 0, 0)
+leave_button = Shape('home', '<', leaveButtonWidth, leaveButtonHeight, leaveButtonpos, leaveButtonElevation, leaveButtonColor, True)
 
 # Fonction pour la partie about du jeu
 def about_display():
@@ -43,8 +30,7 @@ def about_display():
         "Colin - Le codeur fou",
         "Evan - L'artiste de la bande",
         "Théo - Le cerveau de l'opération",
-        "Gabriel - L'inventeur génial"
-    ]
+        "Gabriel - L'inventeur génial"]
 
     # Fonction pour arrondir les coins d'une surface
     def round_corners(surface, radius):

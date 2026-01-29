@@ -1,36 +1,47 @@
 
 # Importe les bibliothèques nécessaires pour le fonctionnement du code
 
-import sys, os
 import pygame
 from shape_creator import *
 from sql_link import *
-
-# Fonction pour faire le .exe
-# Met le bon chemin de fichier
-def resource_path(relative_path):
-    try:
-        base_path = sys._MEIPASS
-    except Exception:
-        base_path = os.path.abspath(".")
-    return os.path.join(base_path, relative_path)
-
+from utils import *
 
 b = 3
 
-leave_button = Shape("home", "<", 50, 50, (10, 10), 2, (200, 0, 0), True, (resource_path("GuessMyClass/font/MightySouly.ttf"), 40))
+leaveButtonWidth = 50
+leaveButtonHeight = 50
+leaveButtonpos = (10, 10)
+leaveButtonElevation = 2
+leaveButtonColor = (200, 0, 0)
+leave_button = Shape("home", "<", leaveButtonWidth, leaveButtonHeight, leaveButtonpos, leaveButtonElevation, leaveButtonColor, True, (resource_path("GuessMyClass/font/MightySouly.ttf"), 40))
 
-scoreboards = [Shape(None, '', current_w / b - 15, current_h - 130, (10, 120), 0, (144, 180, 229))]
+scoreboardWidth = current_w / b - 15
+scoreboardHeight = current_h - 130
+scoreboardPos = (10, 120)
+scoreboardElevation = 0
+scoreboardColor = (144, 180, 229)
+scoreboards = [Shape(None, '', scoreboardWidth, scoreboardHeight, scoreboardPos, scoreboardElevation, scoreboardColor)]
 
 for i in range(1, b):
-    scoreboards.append(Shape(None, '', current_w / b - 15,current_h - 130, (10 * i + 10 + (current_w / b - 10) * i, 120), 0, (144, 180, 229)))
+    scoreboardPos = (10 * i + 10 + (current_w / b - 10) * i, 120)
+    scoreboards.append(Shape(None, '', scoreboardWidth, scoreboardHeight, scoreboardPos, scoreboardElevation, scoreboardColor))
 
-big_leaderboard = Shape(None, 'Classements', current_w / 2 - 190, 100, (current_w / 2 - (current_w / 2 - 190) / 2, 10), 0, (144, 180, 229), False, (resource_path("GuessMyClass/font/MightySouly.ttf"), 60))
+bigLeaderboardWidth = current_w / 2 - 190
+bigLeaderboardHeight = 100
+bigLeaderboardPos = (current_w / 2 - (current_w / 2 - 190) / 2, 10)
+bigLeaderboardElevation = 0
+bigLeaderboardColor = (144, 180, 229)
+big_leaderboard = Shape(None, 'Classements', bigLeaderboardWidth, bigLeaderboardHeight, bigLeaderboardPos, bigLeaderboardElevation, bigLeaderboardColor, False, (resource_path("GuessMyClass/font/MightySouly.ttf"), 60))
+
+bestTitleWidth = current_w / 4
+bestTitleHeight = 50
+bestTitleElevation = 0
+bestTitleColor = (144, 140, 189)
 
 best_titles = [
-    Shape(None, "Meilleur sur 5", current_w / 4, 50, (10 + ((current_w / b - 15) / 2) - (current_w / 4) / 2, 125), 0, (144, 140, 189), False, (resource_path("GuessMyClass/font/MightySouly.ttf"), 35)),
-    Shape(None, "Meilleur sur 10", current_w / 4, 50, (current_w / 2 - current_w / 8, 125), 0, (144, 140, 189), False, (resource_path("GuessMyClass/font/MightySouly.ttf"), 35)),
-    Shape(None, "Meilleur sur 20", current_w / 4, 50, (current_w - (current_w / b - 15) / 2 - 5 - (current_w / 4) / 2, 125), 0, (144, 140, 189), False, (resource_path("GuessMyClass/font/MightySouly.ttf"), 35))]
+    Shape(None, "Meilleur sur 5", bestTitleWidth, bestTitleHeight, (10 + ((current_w / b - 15) / 2) - (current_w / 4) / 2, 125), bestTitleElevation, bestTitleColor, False, (resource_path("GuessMyClass/font/MightySouly.ttf"), 35)),
+    Shape(None, "Meilleur sur 10", bestTitleWidth, bestTitleHeight, (current_w / 2 - current_w / 8, 125), bestTitleElevation, bestTitleColor, False, (resource_path("GuessMyClass/font/MightySouly.ttf"), 35)),
+    Shape(None, "Meilleur sur 20", bestTitleWidth, bestTitleHeight, (current_w - (current_w / b - 15) / 2 - 5 - (current_w / 4) / 2, 125), bestTitleElevation, bestTitleColor, False, (resource_path("GuessMyClass/font/MightySouly.ttf"), 35))]
 
 
 leaderboards = [[], [], []]
@@ -41,7 +52,12 @@ try:
         y = 180
         rank = 1
         for row in data:
-            leaderboards[i].append(Shape(None, f"{rank} : {row['pseudo']} / {row['score']}", current_w / b - 40, 40, (scoreboards[i].top_rect.x + 10, y), 0, (224, 180, 229), False, (resource_path("GuessMyClass/font/MightySouly.ttf"), 30)))
+            entryWidth = current_w / b - 40
+            entryHeight = 40
+            entryPos = (scoreboards[i].top_rect.x + 10, y)
+            entryElevation = 0
+            entryColor = (224, 180, 229)
+            leaderboards[i].append(Shape(None, f"{rank} : {row['pseudo']} / {row['score']}", entryWidth, entryHeight, entryPos, entryElevation, entryColor, False, (resource_path("GuessMyClass/font/MightySouly.ttf"), 30)))
             y += 44
             rank += 1
     connected = True

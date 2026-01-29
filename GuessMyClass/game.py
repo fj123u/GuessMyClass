@@ -1,29 +1,13 @@
 
 # Importe les bibliothèques nécessaires pour le fonctionnement du code
 
-import sys, os
 import pygame
 from shape_creator import *
 from coordonées_salles import *
 from random import *
 from time import *
-from pathlib import Path
 from sql_link import *
-
-# Fonctions pour faire le .exe
-# Met le bon chemin de fichier
-def resource_path(relative_path):
-    try:
-        base_path = sys._MEIPASS
-    except Exception:
-        base_path = os.path.abspath(".")
-    return os.path.join(base_path, relative_path)
-# Recupère le chemin du score
-def get_score_options_path():
-    base_path = getattr(sys, '_MEIPASS', os.path.abspath("."))
-    full_path = os.path.join(os.path.dirname(sys.executable if getattr(sys, 'frozen', False) else __file__), "score", "options.txt")
-    os.makedirs(os.path.dirname(full_path), exist_ok=True)
-    return full_path
+from utils import *
 
 
 # Définition de last_point
@@ -153,14 +137,43 @@ def game_display():
     global last_point2
 
     # Menu pour choisir le nombre de round
-    quit_button = Shape('retour', "Quitter", 150, 50, (20, 20), 5, (220, 0, 0), True, (resource_path('GuessMyClass/font/MightySouly.ttf'), 30))
-    question = Shape('question', "Combien de round voulez-vous jouer ?", 1920/3, 100, (current_w/2 -1920/6, current_h/2 -200), 0, (220, 0, 0), False, (resource_path('GuessMyClass/font/MightySouly.ttf'), 30))
-    nb_5 = Shape(None, "5", 50, 50, (current_w/2 -125, current_h/2), 2, (255, 128, 0), True, (resource_path('GuessMyClass/font/MightySouly.ttf'), 40))
-    nb_10 = Shape(None, "10", 50, 50, (current_w/2-25, current_h/2), 2, (255, 128, 0), True, (resource_path('GuessMyClass/font/MightySouly.ttf'), 40))
-    nb_20 = Shape(None, "20", 50, 50, (current_w/2 +75, current_h/2), 2, (255, 128, 0), True, (resource_path('GuessMyClass/font/MightySouly.ttf'), 40))
+    leaveButtonWidth = 50
+    leaveButtonHeight = 50
+    leaveButtonpos = (10, 10)
+    leaveButtonElevation = 2
+    leaveButtonColor = (200, 0, 0)
+    leave_button = Shape('home', '<', leaveButtonWidth, leaveButtonHeight, leaveButtonpos, leaveButtonElevation, leaveButtonColor, True)
+
+    questionWidth = 1920/3
+    questionHeight = 100
+    questionPos = (current_w/2 -1920/6, current_h/2 -200)
+    questionElevation = 0
+    questionColor = (220, 0, 0)
+    question = Shape('question', "Combien de round voulez-vous jouer ?", questionWidth, questionHeight, questionPos, questionElevation, questionColor, False, (resource_path('GuessMyClass/font/MightySouly.ttf'), 30))
+    
+    nb5Width = 50
+    nb5Height = 50
+    nb5Pos = (current_w/2 -125, current_h/2)
+    nb5Elevation = 2
+    nb5Color = (255, 128, 0)
+    nb_5 = Shape(None, "5", nb5Width, nb5Height, nb5Pos, nb5Elevation, nb5Color, True, (resource_path('GuessMyClass/font/MightySouly.ttf'), 40))
+    
+    nb10Width = 50
+    nb10Height = 50
+    nb10Pos = (current_w/2-25, current_h/2)
+    nb10Elevation = 2
+    nb10Color = (255, 128, 0)
+    nb_10 = Shape(None, "10", nb10Width, nb10Height, nb10Pos, nb10Elevation, nb10Color, True, (resource_path('GuessMyClass/font/MightySouly.ttf'), 40))
+    
+    nb20Width = 50
+    nb20Height = 50
+    nb20Pos = (current_w/2 +75, current_h/2)
+    nb20Elevation = 2
+    nb20Color = (255, 128, 0)
+    nb_20 = Shape(None, "20", nb20Width, nb20Height, nb20Pos, nb20Elevation, nb20Color, True, (resource_path('GuessMyClass/font/MightySouly.ttf'), 40))
  
 
-    quit_button.draw()
+    leave_button.draw()
     question.draw()
     nb_5.draw()
     nb_10.draw()
@@ -205,27 +218,64 @@ def game_display():
                 clickable = False
                 map_icon = pygame.image.load(resource_path('GuessMyClass/icon/map.png'))
                 map_icon = pygame.transform.scale(map_icon, (75, 75))
-                map = Shape('map', "", 100, 100, (current_w -100 -5,current_h -100 -5), 5, (206, 206, 206), True, (resource_path('GuessMyClass/font/MightySouly.ttf'), 40))
+                mapWidth = 100
+                mapHeight = 100
+                mapPos = (current_w -100 -5,current_h -100 -5)
+                mapElevation = 5
+                mapColor = (206, 206, 206)
+                map = Shape('map', "", mapWidth, mapHeight, mapPos, mapElevation, mapColor, True, (resource_path('GuessMyClass/font/MightySouly.ttf'), 40))
             
-                quit_button = Shape('retour', "Quitter", 120, 50, (20, 20), 5, (220, 0, 0), True, (resource_path('GuessMyClass/font/MightySouly.ttf'), 30))
+                leaveButtonWidth = 50
+                leaveButtonHeight = 50
+                leaveButtonpos = (10, 10)
+                leaveButtonElevation = 2
+                leaveButtonColor = (200, 0, 0)
+                leave_button = Shape('home', '<', leaveButtonWidth, leaveButtonHeight, leaveButtonpos, leaveButtonElevation, leaveButtonColor, True)
 
-                valider = Shape("valider", "Check", 100, 100, (current_w -100 -100 -10, current_h - 100 -5), 5, (0, 220, 0), True, (resource_path('GuessMyClass/font/MightySouly.ttf'), 40))
+                validerWidth = 100
+                validerHeight = 100
+                validerPos = (current_w -100 -100 -10, current_h - 100 -5)
+                validerElevation = 5
+                validerColor = (0, 220, 0)
+                valider = Shape("valider", "Check", validerWidth, validerHeight, validerPos, validerElevation, validerColor, True, (resource_path('GuessMyClass/font/MightySouly.ttf'), 40))
 
                 etage_icon = pygame.image.load(resource_path('GuessMyClass/icon/fleche haut.png'))
                 etage_icon = pygame.transform.scale(etage_icon, (75,75))
                 etage_icon2 = pygame.image.load(resource_path('GuessMyClass/icon/fleche bas.png'))
                 etage_icon2 = pygame.transform.scale(etage_icon2, (75,75))
-                etage = Shape("etage", "", 100, 100, (current_w -100 -5, current_h -100 -100 -10 -5), 5, (0, 0, 0), True, (resource_path('GuessMyClass/font/MightySouly.ttf'), 40))
+                
+                etageWidth = 100
+                etageHeight = 100
+                etagePos = (current_w -100 -5, current_h -100 -100 -10 -5)
+                etageElevation = 5
+                etageColor = (0, 0, 0)
+                etage = Shape("etage", "", etageWidth, etageHeight, etagePos, etageElevation, etageColor, True, (resource_path('GuessMyClass/font/MightySouly.ttf'), 40))
             
-                score_button = Shape('score', "Score J1 : " + str(score), 200, 50, (current_w -200 -25, 20), 5, (220, 0, 0), False, (resource_path('GuessMyClass/font/MightySouly.ttf'), 30))
-                score_button2 = Shape('score', "Score J2 : " + str(score4), 200, 50, (current_w -200 -25, 80), 5, (220, 0, 0), False, (resource_path('GuessMyClass/font/MightySouly.ttf'), 30))
+                scoreButtonWidth = 200
+                scoreButtonHeight = 50
+                scoreButtonPos = (current_w -200 -25, 20)
+                scoreButtonElevation = 5
+                scoreButtonColor = (220, 0, 0)
+                score_button = Shape('score', "Score J1 : " + str(score), scoreButtonWidth, scoreButtonHeight, scoreButtonPos, scoreButtonElevation, scoreButtonColor, False, (resource_path('GuessMyClass/font/MightySouly.ttf'), 30))
+                
+                scoreButton2Width = 200
+                scoreButton2Height = 50
+                scoreButton2Pos = (current_w -200 -25, 80)
+                scoreButton2Elevation = 5
+                scoreButton2Color = (220, 0, 0)
+                score_button2 = Shape('score', "Score J2 : " + str(score4), scoreButton2Width, scoreButton2Height, scoreButton2Pos, scoreButton2Elevation, scoreButton2Color, False, (resource_path('GuessMyClass/font/MightySouly.ttf'), 30))
 
                 if mult == True :
                     score_button2.draw()
                 else :
                     score_button2.hide()
             
-                timer_button = Shape('timer', "Temps : " + str(timer) + "s", 150, 50, (current_w/2 -75, 20), 5, (220, 0, 0), False, (resource_path('GuessMyClass/font/MightySouly.ttf'), 30))
+                timerButtonWidth = 150
+                timerButtonHeight = 50
+                timerButtonPos = (current_w/2 -75, 20)
+                timerButtonElevation = 5
+                timerButtonColor = (220, 0, 0)
+                timer_button = Shape('timer', "Temps : " + str(timer) + "s", timerButtonWidth, timerButtonHeight, timerButtonPos, timerButtonElevation, timerButtonColor, False, (resource_path('GuessMyClass/font/MightySouly.ttf'), 30))
                 
                 last_point = (0, 0)
                 last_point2 = (0, 0)
@@ -284,7 +334,7 @@ def game_display():
                     if map_open:
                         if mult == True :
                             if nb_etage == 0 :
-                                quit_button.hide()
+                                leave_button.hide()
                                 screen.blit(map_image, (screen.get_width() // 2 - map_image.get_width() // 2, screen.get_height() // 2 - map_image.get_height() // 2))
                                 draw_points(last_point)
                                 draw_points2(last_point2)
@@ -295,8 +345,21 @@ def game_display():
                                     score += score2
                                     score4 += score3
                                     map_open = not map_open
-                                    score_button = Shape('score_J1', "Score_J1 : " + str(score), 200, 50, (current_w -200 -25, 20), 5, (220, 0, 0), False, (resource_path('GuessMyClass/font/MightySouly.ttf'), 30))
-                                    score_button2 = Shape('score_J2', "Score_J2 : " + str(score4), 200, 50, (current_w -200 -25, 80), 5, (220, 0, 0), False, (resource_path('GuessMyClass/font/MightySouly.ttf'), 30))
+                                    
+                                    scoreButtonWidth = 200
+                                    scoreButtonHeight = 50
+                                    scoreButtonPos = (current_w -200 -25, 20)
+                                    scoreButtonElevation = 5
+                                    scoreButtonColor = (220, 0, 0)
+                                    score_button = Shape('score_J1', "Score_J1 : " + str(score), scoreButtonWidth, scoreButtonHeight, scoreButtonPos, scoreButtonElevation, scoreButtonColor, False, (resource_path('GuessMyClass/font/MightySouly.ttf'), 30))
+                                    
+                                    scoreButton2Width = 200
+                                    scoreButton2Height = 50
+                                    scoreButton2Pos = (current_w -200 -25, 80)
+                                    scoreButton2Elevation = 5
+                                    scoreButton2Color = (220, 0, 0)
+                                    score_button2 = Shape('score_J2', "Score_J2 : " + str(score4), scoreButton2Width, scoreButton2Height, scoreButton2Pos, scoreButton2Elevation, scoreButton2Color, False, (resource_path('GuessMyClass/font/MightySouly.ttf'), 30))
+                                    
                                     show_answer2(salle, liste_points[-2], liste_points2[-1])
                                     truc2 += 1
                                     running = False
@@ -309,7 +372,7 @@ def game_display():
                                     etage_pressed = False
                                     nb_etage = 1
                             else :
-                                quit_button.hide()
+                                leave_button.hide()
                                 screen.blit(map_image, (screen.get_width() // 2 - map_image.get_width() // 2, screen.get_height() // 2 - map_image.get_height() // 2))
                                 draw_points(last_point)
                                 draw_points2(last_point2)
@@ -320,8 +383,21 @@ def game_display():
                                     score += score2
                                     score4 += score3
                                     map_open = not map_open
-                                    score_button = Shape('score_J1', "Score_J1 : " + str(score), 200, 50, (current_w -200 -25, 20), 5, (220, 0, 0), False, (resource_path('GuessMyClass/font/MightySouly.ttf'), 30))
-                                    score_button2 = Shape('score_J2', "Score_J2 : " + str(score4), 200, 50, (current_w -200 -25, 80), 5, (220, 0, 0), False, (resource_path('GuessMyClass/font/MightySouly.ttf'), 30))
+                                    
+                                    scoreButtonWidth = 200
+                                    scoreButtonHeight = 50
+                                    scoreButtonPos = (current_w -200 -25, 20)
+                                    scoreButtonElevation = 5
+                                    scoreButtonColor = (220, 0, 0)
+                                    score_button = Shape('score_J1', "Score_J1 : " + str(score), scoreButtonWidth, scoreButtonHeight, scoreButtonPos, scoreButtonElevation, scoreButtonColor, False, (resource_path('GuessMyClass/font/MightySouly.ttf'), 30))
+                                    
+                                    scoreButton2Width = 200
+                                    scoreButton2Height = 50
+                                    scoreButton2Pos = (current_w -200 -25, 80)
+                                    scoreButton2Elevation = 5
+                                    scoreButton2Color = (220, 0, 0)
+                                    score_button2 = Shape('score_J2', "Score_J2 : " + str(score4), scoreButton2Width, scoreButton2Height, scoreButton2Pos, scoreButton2Elevation, scoreButton2Color, False, (resource_path('GuessMyClass/font/MightySouly.ttf'), 30))
+                                    
                                     show_answer2(salle, liste_points[-2], liste_points2[-1])
                                     truc2 += 1
                                     running = False
@@ -335,7 +411,7 @@ def game_display():
                                     nb_etage = 0
                         else :
                             if nb_etage == 0 :
-                                quit_button.hide()
+                                leave_button.hide()
                                 screen.blit(map_image, (screen.get_width() // 2 - map_image.get_width() // 2, screen.get_height() // 2 - map_image.get_height() // 2))
                                 draw_points(last_point)
                                 valider.draw()
@@ -344,7 +420,14 @@ def game_display():
                                 if valider_pressed :
                                     score += score2
                                     map_open = not map_open
-                                    score_button = Shape('score', "Score_J1 : " + str(score), 200, 50, (current_w -200 -25, 20), 5, (220, 0, 0), False, (resource_path('GuessMyClass/font/MightySouly.ttf'), 30))
+                                    
+                                    scoreButtonWidth = 200
+                                    scoreButtonHeight = 50
+                                    scoreButtonPos = (current_w -200 -25, 20)
+                                    scoreButtonElevation = 5
+                                    scoreButtonColor = (220, 0, 0)
+                                    score_button = Shape('score', "Score_J1 : " + str(score), scoreButtonWidth, scoreButtonHeight, scoreButtonPos, scoreButtonElevation, scoreButtonColor, False, (resource_path('GuessMyClass/font/MightySouly.ttf'), 30))
+                                    
                                     show_answer(salle, liste_points[-2])
                                     truc2 += 1
                                     running = False
@@ -357,7 +440,7 @@ def game_display():
                                     etage_pressed = False
                                     nb_etage = 1
                             else :
-                                quit_button.hide()
+                                leave_button.hide()
                                 screen.blit(map_image, (screen.get_width() // 2 - map_image.get_width() // 2, screen.get_height() // 2 - map_image.get_height() // 2))
                                 draw_points(last_point)
                                 valider.draw()
@@ -366,7 +449,14 @@ def game_display():
                                 if valider_pressed :
                                     score += score2
                                     map_open = not map_open
-                                    score_button = Shape('score', "Score_J1 : " + str(score), 200, 50, (current_w -200 -25, 20), 5, (220, 0, 0), False, (resource_path('GuessMyClass/font/MightySouly.ttf'), 30))
+                                    
+                                    scoreButtonWidth = 200
+                                    scoreButtonHeight = 50
+                                    scoreButtonPos = (current_w -200 -25, 20)
+                                    scoreButtonElevation = 5
+                                    scoreButtonColor = (220, 0, 0)
+                                    score_button = Shape('score', "Score_J1 : " + str(score), scoreButtonWidth, scoreButtonHeight, scoreButtonPos, scoreButtonElevation, scoreButtonColor, False, (resource_path('GuessMyClass/font/MightySouly.ttf'), 30))
+                                    
                                     show_answer(salle, liste_points[-2])
                                     truc2 += 1
                                     running = False
@@ -379,16 +469,23 @@ def game_display():
                                     etage_pressed = False
                                     nb_etage = 0
                     else:
-                        quit_button.show()
+                        leave_button.show()
                         pano_view.draw()
 
-                    quit_button.draw()
+                    leave_button.draw()
                     score_button.draw()
                     score_button2.draw()
                     map.draw()
                     screen.blit(map_icon, (current_w -75 -17,current_h -75 -22))
                     aze = calc_timer(timer)
-                    timer_button = Shape('timer', "Temps : " + str(aze[0]), 150, 50, (current_w/2 -75, 20), 5, (220, 0, 0), False, (resource_path('GuessMyClass/font/MightySouly.ttf'), 30))
+                    
+                    timerButtonWidth = 150
+                    timerButtonHeight = 50
+                    timerButtonPos = (current_w/2 -75, 20)
+                    timerButtonElevation = 5
+                    timerButtonColor = (220, 0, 0)
+                    timer_button = Shape('timer', "Temps : " + str(aze[0]), timerButtonWidth, timerButtonHeight, timerButtonPos, timerButtonElevation, timerButtonColor, False, (resource_path('GuessMyClass/font/MightySouly.ttf'), 30))
+                    
                     timer -= 0.015
                     if aze [1] == "fin" :
                         map_open = True
@@ -423,16 +520,68 @@ def game_display():
 
             # Ecran de fin de partie
             if mult == True:
-                score_tot_J1 = Shape('score_tot', "Bravo J1 vous avez fait : " + str(score) + " / " + str(nb * 5000) + " points", 650, 100, (current_w/2 -325, current_h/4 -150), 5, (220, 93, 0), False, (resource_path('GuessMyClass/font/MightySouly.ttf'), 30))
-                score_tot_J2 = Shape('score_tot', "Bravo J2 vous avez fait : " + str(score4) + " / " + str(nb * 5000) + " points", 650, 100, (current_w/2 -325, current_h/4), 5, (220, 93, 0), False, (resource_path('GuessMyClass/font/MightySouly.ttf'), 30))
-                question2 = Shape('question2', "Voulez-vous rejouez ?", 600, 100, (current_w/2 -300, current_h/4 +150), 5, (220, 93, 0), False, (resource_path('GuessMyClass/font/MightySouly.ttf'), 30))
-                oui = Shape("oui", "Oui", 100, 50, (current_w/2 -50 -160, current_h/2 +75), 5, (0, 220, 0), True, (resource_path('GuessMyClass/font/MightySouly.ttf'), 40))
-                non = Shape("non", "Non", 100, 50, (current_w/2 -50 +160, current_h/2 +75), 5, (220, 0, 0), True, (resource_path('GuessMyClass/font/MightySouly.ttf'), 40))
+                scoreTotJ1Width = 650
+                scoreTotJ1Height = 100
+                scoreTotJ1Pos = (current_w/2 -325, current_h/4 -150)
+                scoreTotJ1Elevation = 5
+                scoreTotJ1Color = (220, 93, 0)
+                score_tot_J1 = Shape('score_tot', "Bravo J1 vous avez fait : " + str(score) + " / " + str(nb * 5000) + " points", scoreTotJ1Width, scoreTotJ1Height, scoreTotJ1Pos, scoreTotJ1Elevation, scoreTotJ1Color, False, (resource_path('GuessMyClass/font/MightySouly.ttf'), 30))
+                
+                scoreTotJ2Width = 650
+                scoreTotJ2Height = 100
+                scoreTotJ2Pos = (current_w/2 -325, current_h/4)
+                scoreTotJ2Elevation = 5
+                scoreTotJ2Color = (220, 93, 0)
+                score_tot_J2 = Shape('score_tot', "Bravo J2 vous avez fait : " + str(score4) + " / " + str(nb * 5000) + " points", scoreTotJ2Width, scoreTotJ2Height, scoreTotJ2Pos, scoreTotJ2Elevation, scoreTotJ2Color, False, (resource_path('GuessMyClass/font/MightySouly.ttf'), 30))
+                
+                question2Width = 600
+                question2Height = 100
+                question2Pos = (current_w/2 -300, current_h/4 +150)
+                question2Elevation = 5
+                question2Color = (220, 93, 0)
+                question2 = Shape('question2', "Voulez-vous rejouez ?", question2Width, question2Height, question2Pos, question2Elevation, question2Color, False, (resource_path('GuessMyClass/font/MightySouly.ttf'), 30))
+                
+                ouiWidth = 100
+                ouiHeight = 50
+                ouiPos = (current_w/2 -50 -160, current_h/2 +75)
+                ouiElevation = 5
+                ouiColor = (0, 220, 0)
+                oui = Shape("oui", "Oui", ouiWidth, ouiHeight, ouiPos, ouiElevation, ouiColor, True, (resource_path('GuessMyClass/font/MightySouly.ttf'), 40))
+                
+                nonWidth = 100
+                nonHeight = 50
+                nonPos = (current_w/2 -50 +160, current_h/2 +75)
+                nonElevation = 5
+                nonColor = (220, 0, 0)
+                non = Shape("non", "Non", nonWidth, nonHeight, nonPos, nonElevation, nonColor, True, (resource_path('GuessMyClass/font/MightySouly.ttf'), 40))
             else:
-                score_tot = Shape('score_tot', "Bravo vous avez fait : " + str(score) + " / " + str(nb * 5000) + " points", 650, 100, (current_w/2 -325, current_h/4 -100), 5, (220, 93, 0), False, (resource_path('GuessMyClass/font/MightySouly.ttf'), 30))
-                question2 = Shape('question2', "Voulez-vous rejouez ?", 600, 100, (current_w/2 -300, current_h/4 +50), 5, (220, 93, 0), False, (resource_path('GuessMyClass/font/MightySouly.ttf'), 30))
-                oui = Shape("oui", "Oui", 100, 50, (current_w/2 -50 -160, current_h/2 +75), 5, (0, 220, 0), True, (resource_path('GuessMyClass/font/MightySouly.ttf'), 40))
-                non = Shape("non", "Non", 100, 50, (current_w/2 -50 +160, current_h/2 +75), 5, (220, 0, 0), True, (resource_path('GuessMyClass/font/MightySouly.ttf'), 40))
+                scoreTotWidth = 650
+                scoreTotHeight = 100
+                scoreTotPos = (current_w/2 -325, current_h/4 -100)
+                scoreTotElevation = 5
+                scoreTotColor = (220, 93, 0)
+                score_tot = Shape('score_tot', "Bravo vous avez fait : " + str(score) + " / " + str(nb * 5000) + " points", scoreTotWidth, scoreTotHeight, scoreTotPos, scoreTotElevation, scoreTotColor, False, (resource_path('GuessMyClass/font/MightySouly.ttf'), 30))
+                
+                question2Width = 600
+                question2Height = 100
+                question2Pos = (current_w/2 -300, current_h/4 +50)
+                question2Elevation = 5
+                question2Color = (220, 93, 0)
+                question2 = Shape('question2', "Voulez-vous rejouez ?", question2Width, question2Height, question2Pos, question2Elevation, question2Color, False, (resource_path('GuessMyClass/font/MightySouly.ttf'), 30))
+                
+                ouiWidth = 100
+                ouiHeight = 50
+                ouiPos = (current_w/2 -50 -160, current_h/2 +75)
+                ouiElevation = 5
+                ouiColor = (0, 220, 0)
+                oui = Shape("oui", "Oui", ouiWidth, ouiHeight, ouiPos, ouiElevation, ouiColor, True, (resource_path('GuessMyClass/font/MightySouly.ttf'), 40))
+                
+                nonWidth = 100
+                nonHeight = 50
+                nonPos = (current_w/2 -50 +160, current_h/2 +75)
+                nonElevation = 5
+                nonColor = (220, 0, 0)
+                non = Shape("non", "Non", nonWidth, nonHeight, nonPos, nonElevation, nonColor, True, (resource_path('GuessMyClass/font/MightySouly.ttf'), 40))
 
 
             while end:
