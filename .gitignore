@@ -17,6 +17,7 @@ GMC_V0.1
 
 # Build .exe et installeur
 build_installeur.iss
+build_installeur_web.iss
 GuessMyClass/GuessMyClass.spec
 GuessMyClass/build_gmc.bat
 GuessMyClass/logo.png
