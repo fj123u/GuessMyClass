@@ -1,0 +1,23 @@
+# Cache Python
+GuessMyClass/__pycache__/
+
+# Dossiers de données utilisateur
+GuessMyClass/score/
+GuessMyClass/profile
+img_base/
+
+# PyInstaller
+GuessMyClass/build/
+GuessMyClass/dist/
+build/
+dist_installer/
+
+# Ancienne version
+GMC_V0.1
+
+# Build .exe et installeur
+build_installeur.iss
+GuessMyClass/GuessMyClass.spec
+GuessMyClass/build_gmc.bat
+GuessMyClass/logo.png
+GuessMyClass/gmc/ico
