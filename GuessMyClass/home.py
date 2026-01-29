@@ -48,7 +48,7 @@ def home_display(icon):
     ide = ''
     for i in range(len(lines[0])):
         ide = ide + lines[0][i]
-    button1 = Shape(None, ide[:-1], current_w/4-12, current_h/6, (6, 6), 0, (104, 208, 229))
+    button1 = Shape(None, ide, current_w/4-12, current_h/6, (6, 6), 0, (104, 208, 229))
 
     dest = button1.draw()
     if dest != None:

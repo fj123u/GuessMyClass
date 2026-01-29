@@ -1,9 +1,12 @@
+
+# Importe les bibliothèques nécessaires pour le fonctionnement du code
+
 import sys, os
 import customtkinter as ctk
 from tkinter import messagebox
 
-
-
+# Fonction pour faire le .exe
+# Met le bon chemin de fichier
 def resource_path(relative_path):
     try:
         base_path = sys._MEIPASS
@@ -12,10 +15,11 @@ def resource_path(relative_path):
     return os.path.join(base_path, relative_path)
 
 
-
+# Fonction pour afficher la fenêtre de connexion
 def log_in_display():
     dest = None
 
+    # Fonction pour check si le pseudo est bon ou pas
     def validate_pseudo():
         nonlocal dest
         pseudo = username.get().strip()
@@ -43,11 +47,7 @@ def log_in_display():
 
     frame.configure(fg_color="#CDE4E2")
 
-    username = ctk.CTkEntry(
-        frame,
-        placeholder_text="Entre ton pseudo",
-        width=170
-    )
+    username = ctk.CTkEntry(frame, placeholder_text="Entre ton pseudo : ", width=170)
     username.place(x=25, y=30)
 
     try:
@@ -58,14 +58,7 @@ def log_in_display():
     except FileNotFoundError:
         pass
 
-    button = ctk.CTkButton(
-        frame,
-        text="Valider",
-        command=validate_pseudo,
-        fg_color="#FF9100",
-        hover_color="#C35500",
-        width=170
-    )
+    button = ctk.CTkButton(frame, text="Valider", command=validate_pseudo, fg_color="#FF9100", hover_color="#C35500", width=170)
     button.place(x=25, y=80)
 
     frame.mainloop()
