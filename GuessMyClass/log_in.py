@@ -1,16 +1,13 @@
-import sys, os
+
+# Importe les bibliothèques nécessaires pour le fonctionnement du code
+
 import customtkinter as ctk
 from tkinter import messagebox
-
-def resource_path(relative_path):
-    try:
-        base_path = sys._MEIPASS
-    except Exception:
-        base_path = os.path.abspath(".")
-    return os.path.join(base_path, relative_path)
+from utils import *
 
 _log_in_window = None
 
+# Fonction pour afficher la fenêtre de log in
 def log_in_display():
     global _log_in_window
     
@@ -29,10 +26,7 @@ def log_in_display():
         nonlocal dest
         pseudo = username.get().strip()
         if len(pseudo) < 3:
-            messagebox.showwarning(
-                "Pseudo invalide",
-                "Le pseudo doit contenir au moins 3 caractères"
-            )
+            messagebox.showwarning("Pseudo invalide","Le pseudo doit contenir au moins 3 caractères")
             return
         profile_path = resource_path("GuessMyClass/profile/compte.txt")
         os.makedirs(os.path.dirname(profile_path), exist_ok=True)
@@ -41,6 +35,7 @@ def log_in_display():
         dest = "home"
         close_window()
     
+    # Fonction pour close la fenêtre
     def close_window():
         global _log_in_window
         _log_in_window = None
