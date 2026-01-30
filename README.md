@@ -55,6 +55,8 @@ Supabase (https://supabase.com/docs/reference/python/introduction)
 Si vous avez des questions, vous pouvez nous contacter à :
 
 Email : francois.chassot@ac-clermont.fr
+      : theo.girard@etu.uca.fr
 
 Téléphone : 04 73 67 16 71
+          : 06 40 31 99 31
 ```
