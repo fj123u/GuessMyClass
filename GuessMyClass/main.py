@@ -30,7 +30,6 @@ l = False
 v = False
 o = False
 a = False
-s = False
 mail_text = ''
 
 
@@ -107,16 +106,11 @@ while running:
                 v = False
 
         if a:
-            dest = sign_in.draw()
-            if dest == 'sign_in':
-                s = True
             dest = log_in_main.draw()
             if dest is None:
                 dest = 'home'
             if s:
-                dest = 'sign_in'
                 a = False
-                s = False
 
     elif dest == 'leaderboard':
         from leaderboard import *

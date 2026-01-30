@@ -113,17 +113,10 @@ logInWelcomeElevation = 2
 logInWelcomeColor = (184, 180, 229)
 log_in_welcome = Shape('home', 'Se connecter', logInWelcomeWidth, logInWelcomeHeight, logInWelcomePos, logInWelcomeElevation, logInWelcomeColor, True, (resource_path('GuessMyClass/font/MightySouly.ttf'), 70))
 
-signInWidth = ((current_w/4-6)*2+58)/1.8
-signInHeight = current_h/8
-signInPos = (current_w/1.97, 600)
-signInElevation = 2
-signInColor = (184, 180, 229)
-sign_in = Shape('home', 'Créer un compte', signInWidth, signInHeight, signInPos, signInElevation, signInColor, True, (resource_path('GuessMyClass/font/MightySouly.ttf'), 70))
-
-sansCompteWidth = (current_w/4-6)*1
-sansCompteHeight = current_h/12
-sansComptePos = (current_w/2.67, 755)
-sansCompteElevation = 0
+sansCompteWidth = ((current_w/4-6)*2+58)/1.8
+sansCompteHeight = current_h/8
+sansComptePos = (current_w/1.97, 600)
+sansCompteElevation = 2
 sansCompteColor = (193, 214, 213)
 sans_compte = Shape("home", 'Jouer sans compte', sansCompteWidth, sansCompteHeight, sansComptePos, sansCompteElevation, sansCompteColor, True, (resource_path('GuessMyClass/font/MightySouly.ttf'), 50))
 

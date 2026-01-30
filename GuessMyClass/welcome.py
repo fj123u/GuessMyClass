@@ -16,7 +16,6 @@ def welcome_display():
                     return dest 
     choix_shape.draw()
     welcome_title.draw()
-    sign_in.draw()
     log_in_welcome.draw()
     dest = sans_compte.draw()
     if dest is not None:
