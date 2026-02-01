@@ -210,3 +210,15 @@ logInMainPos = (6, current_h/6 + 6 + 5 + 55)
 logInMainElevation = 2
 logInMainColor = (184, 180, 229)
 log_in_main = Shape('log_in', 'Changer de pseudo', logInMainWidth, logInMainHeight, logInMainPos, logInMainElevation, logInMainColor, True, (resource_path('GuessMyClass/font/MightySouly.ttf'), 40))
+
+
+onlineWidth = 250
+onlineHeight = 50
+onlinePos = (current_w/2 - 125, current_h/2 + 50)
+onlineElevation = 2
+onlineColor = (104, 180, 229)
+online = Shape("multiplayer", "En ligne", onlineWidth, onlineHeight, onlinePos, onlineElevation, onlineColor, True, (resource_path('GuessMyClass/font/MightySouly.ttf'), 40))
+
+#create_room = Shape()
+
+#join_room = Shape()
