@@ -50,6 +50,9 @@ def home_display(icon):
     dest = button_list4.draw()
     if dest != None:
         return dest
+    dest = online.draw()
+    if dest != None:
+        return dest
 
     infos_left.draw()
     infos_right.draw()

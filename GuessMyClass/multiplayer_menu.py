@@ -20,18 +20,22 @@ create_room_button = Shape('create_room_screen', 'Créer une partie', 350, 80, (
 join_room_button = Shape('join_room_screen', 'Rejoindre une partie', 350, 80, (current_w/2 - 175, current_h/2 + 60), 3, (184, 180, 229), True, (resource_path('GuessMyClass/font/MightySouly.ttf'), 50))
 
 def multiplayer_menu_display():
+    print("menu multi")
     dest = leave_button_multi.draw()
     if dest:
+        print(f"Retour home: {dest}")
         return dest
     
     title_multi.draw()
     
     dest = create_room_button.draw()
     if dest:
+        print(f"Créer partie: {dest}")
         return dest
     
     dest = join_room_button.draw()
     if dest:
+        print(f"Rejoindre partie: {dest}")
         return dest
-    
+    print("Reste sur multiplayer_menu")
     return "multiplayer_menu"

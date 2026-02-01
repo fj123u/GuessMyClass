@@ -218,7 +218,3 @@ onlinePos = (current_w/2 - 125, current_h/2 + 50)
 onlineElevation = 2
 onlineColor = (104, 180, 229)
 online = Shape("multiplayer", "En ligne", onlineWidth, onlineHeight, onlinePos, onlineElevation, onlineColor, True, (resource_path('GuessMyClass/font/MightySouly.ttf'), 40))
-
-#create_room = Shape()
-
-#join_room = Shape()
