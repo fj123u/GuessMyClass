@@ -174,6 +174,7 @@ def game_display():
                 map_image = pygame.transform.scale(map_image, (current_w, current_h))
                 timer = 30
                 nb_etage = 0
+                manche = 1
                 map_open = False
                 map_block = False
                 valider_pressed = False
@@ -203,6 +204,14 @@ def game_display():
                 scoreButton2Elevation = 5
                 scoreButton2Color = (220, 0, 0)
                 score_button2 = Shape('score', "Score J2 : " + str(score4), scoreButton2Width, scoreButton2Height, scoreButton2Pos, scoreButton2Elevation, scoreButton2Color, False, (resource_path('GuessMyClass/font/MightySouly.ttf'), 30))
+
+                roundButtonWidth = 200
+                roundButtonHeight = 50
+                roundButtonPos = (current_w - 200 - 25, 80)
+                roundButtonElevation = 5
+                roundButtonColor = (104, 180, 229)
+                round_button = Shape('round', f"Manche {manche}/{nb}", roundButtonWidth, roundButtonHeight, roundButtonPos, roundButtonElevation, roundButtonColor, False, (resource_path('GuessMyClass/font/MightySouly.ttf'), 30))
+        
 
                 if mult == True :
                     score_button2.draw()
@@ -414,6 +423,7 @@ def game_display():
                     leave_button.draw()
                     score_button.draw()
                     score_button2.draw()
+                    round_button.draw()
                     game_map.draw()
                     screen.blit(map_icon, (current_w -75 -17,current_h -75 -22))
                     aze = calc_timer(timer)
@@ -425,6 +435,7 @@ def game_display():
                         clickable = True
                     timer_button = Shape('timer', "Temps : " + str(round(timer)) + "s", timerButtonWidth, timerButtonHeight, timerButtonPos, timerButtonElevation, timerButtonColor, False, (resource_path('GuessMyClass/font/MightySouly.ttf'), 30))
                     timer_button.draw()
+                    manche += 1
                 
                     pygame.display.flip()
                     clock.tick(60)

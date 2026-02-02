@@ -1,177 +1,290 @@
-import sys, os
+# Importe les bibliothèques nécessaires pour le fonctionnement du code
+
 import pygame
-import random
-import time
-from math import sqrt, exp
 from shape_creator import *
+from coordonées_salles import *
+from random import *
+import time
+from sql_link import *
 from utils import *
 from multiplayer import get_room_info, submit_answer, get_round_results, next_round, finish_game
-from sql_link import load_local_profile
-from coordonées_salles import coo
 
-def resource_path(relative_path):
-    try:
-        base_path = sys._MEIPASS
-    except Exception:
-        base_path = os.path.abspath(".")
-    return os.path.join(base_path, relative_path)
+last_point = None  
+C000 = ["GuessMyClass/img/C000/C006.webp", "GuessMyClass/img/C000/C008.webp", "GuessMyClass/img/C000/C012.webp", "GuessMyClass/img/C000/C009.webp", "GuessMyClass/img/C000/C005.webp"]
+C100 = ["GuessMyClass/img/C100/C106.webp", "GuessMyClass/img/C100/C108.webp", "GuessMyClass/img/C100/C105.webp", "GuessMyClass/img/C100/C111.webp", "GuessMyClass/img/C100/C114.webp", "GuessMyClass/img/C100/C117.webp", "GuessMyClass/img/C100/C104.webp", "GuessMyClass/img/C100/C109.webp", "GuessMyClass/img/C100/C110.webp", "GuessMyClass/img/C100/C113.webp", "GuessMyClass/img/C100/C115.webp"]
+D000 = ["GuessMyClass/img/D000/D004.webp", "GuessMyClass/img/D000/D010.webp", "GuessMyClass/img/D000/D012_v2.webp", "GuessMyClass/img/D000/D014.webp", "GuessMyClass/img/D000/Escalier D.webp", "GuessMyClass/img/D000/D006.webp"]
+D100 = ["GuessMyClass/img/D100/D104.webp", "GuessMyClass/img/D100/D105.webp", "GuessMyClass/img/D100/D106.webp", "GuessMyClass/img/D100/D109.webp", "GuessMyClass/img/D100/D110.webp", "GuessMyClass/img/D100/couloir D haut.webp", "GuessMyClass/img/D100/D111.webp", "GuessMyClass/img/D100/D113.webp", "GuessMyClass/img/D100/D114.webp", "GuessMyClass/img/D100/D117.webp", "GuessMyClass/img/D100/D116.webp", "GuessMyClass/img/D100/D115.webp", "GuessMyClass/img/D100/D112.webp"]
+special = ["GuessMyClass/img/special/(parking).webp", "GuessMyClass/img/special/4_arbres.webp", "GuessMyClass/img/special/biathlon.webp", "GuessMyClass/img/special/briques.webp", "GuessMyClass/img/special/cdi.webp", "GuessMyClass/img/special/cours_dehors.webp", "GuessMyClass/img/special/cours_internat.webp", "GuessMyClass/img/special/creux.webp", "GuessMyClass/img/special/dehors_physique.webp", "GuessMyClass/img/special/hall.webp", "GuessMyClass/img/special/petit_arbre.webp", "GuessMyClass/img/special/terrain_foot.webp", "GuessMyClass/img/special/couloir CDI.webp", "GuessMyClass/img/special/couloir salle prof.webp", "GuessMyClass/img/special/escalier E.webp", "GuessMyClass/img/special/Grande passerelle.webp", "GuessMyClass/img/special/Passerelle_D-C_bas.webp", "GuessMyClass/img/special/Passerelle_D-C.webp", "GuessMyClass/img/special/Passerelle_E-D_bas.webp", "GuessMyClass/img/special/Passerelle_E-D.webp"]
+toilettes = ["GuessMyClass/img/toilettes/toilettes hall garçon.webp", "GuessMyClass/img/toilettes/toilette haut interieur.webp", "GuessMyClass/img/toilettes/vestiaire.webp"]
+A100 = ["GuessMyClass/img/A100/A136.webp", "GuessMyClass/img/A100/A137.webp", "GuessMyClass/img/A100/A138.webp", "GuessMyClass/img/A100/A139.webp"]
+E000 = ["GuessMyClass/img/E000/Beton.webp", "GuessMyClass/img/E000/bois.webp", "GuessMyClass/img/E000/couloir E bas.webp", "GuessMyClass/img/E000/E030.webp", "GuessMyClass/img/E000/Energie.webp", "GuessMyClass/img/E000/peinture.webp", "GuessMyClass/img/E000/E041.webp"]
+E100 = ["GuessMyClass/img/E100/couloir E haut.webp", "GuessMyClass/img/E100/E116.webp", "GuessMyClass/img/E100/E108.webp", "GuessMyClass/img/E100/E110.webp", "GuessMyClass/img/E100/E113.webp", "GuessMyClass/img/E100/E123.webp", "GuessMyClass/img/E100/E125.webp", "GuessMyClass/img/E100/E107.webp", "GuessMyClass/img/E100/E109.webp", "GuessMyClass/img/E100/E111.webp", "GuessMyClass/img/E100/E114.webp", "GuessMyClass/img/E100/E121.webp", "GuessMyClass/img/E100/E126.webp"]
 
-current_room_code = None
-current_round = 0
-total_rounds = 0
-current_salle = None
-player_answered = False
-pin_position = None
-current_etage = 0
-show_results = False
-results_data = []
-last_update_time = 0
+tout = [C000, C100, D100, D000, special, toilettes, A100, E000, E100]
 
-def calcul_points(salle, coo_pin, nb_etage):
-    distance = sqrt((coo_pin[0] - coo[salle][0])**2 + (coo_pin[1] - coo[salle][1])**2)
-    
-    if distance <= 10:
-        score = 5000
-    elif distance <= 300:
-        lambda_ = 0.015
-        score = 5000 * exp(-lambda_ * distance)
-        score = max(score, 500)
-    else:
-        score = 500 - ((distance - 300) / 700) * 450
-        score = max(score, 50)
-    
-    if nb_etage != coo[salle][2]:
-        score *= 0.25
-    
-    return round(score)
+class PanoramicView:
+    def __init__(self, image_path, screen):
+        self.screen = screen
+        self.image = pygame.image.load(image_path)
+        self.image_width, self.image_height = self.image.get_size()
+        self.view_width, self.view_height = screen.get_size()
+        self.x_offset = 0
+        self.y_offset = -(self.image_height // 2 - self.view_height // 2)
+        self.dragging = False
+        self.last_mouse_pos = (0, 0)
 
-def init_game(room_code):
-    global current_room_code, current_round, total_rounds, current_salle, player_answered, show_results
-    
-    current_room_code = room_code
-    room = get_room_info(room_code)
-    
-    if not room:
-        return False
-    
-    total_rounds = room["mode"]
-    current_round = room["current_round"]
-    current_salle = room["current_room"]
-    player_answered = False
-    show_results = False
-    
-    return True
+    def handle_event(self, event):
+        if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
+            self.dragging = True
+            self.last_mouse_pos = event.pos
+        elif event.type == pygame.MOUSEBUTTONUP and event.button == 1:
+            self.dragging = False
+        elif event.type == pygame.MOUSEMOTION and self.dragging:
+            dx, dy = event.pos[0] - self.last_mouse_pos[0], event.pos[1] - self.last_mouse_pos[1]
+            self.x_offset -= dx 
+            self.y_offset = max(-(self.image_height - self.view_height), min(0, self.y_offset + dy))
+            self.last_mouse_pos = event.pos
+
+    def draw(self):
+        x = self.x_offset % self.image_width 
+        self.screen.blit(self.image, (-x, self.y_offset))
+        if x > 0:
+            self.screen.blit(self.image, (-x + self.image_width, self.y_offset))
+
+def get_image_for_room(room_name):
+    for liste in tout:
+        for img_path in liste:
+            if room_name in img_path:
+                return img_path
+    return None
 
 def game_multi_display(room_code):
-    global current_round, current_salle, player_answered, pin_position, current_etage, show_results, results_data, last_update_time
+    global last_point
     
-    if current_round == 0:
-        if not init_game(room_code):
-            return "multiplayer_menu"
+    room_data = get_room_info(room_code)
+    if not room_data:
+        return "multiplayer_menu"
     
-    # Met à jour les infos de la room régulièrement
-    current_time = time.time()
-    if current_time - last_update_time > 1.0:
-        room = get_room_info(room_code)
-        if room:
-            if room["current_round"] > current_round:
-                reset_round()
-                current_round = room["current_round"]
-                current_salle = room["current_room"]
+    nb = room_data["mode"]
+    current_round = room_data["current_round"]
+    total_rounds = nb
+    
+    score = 0
+    map_image_coo = (75, 75)
+    etage_image_coo = (75, 75)
+    path_plan = resource_path("GuessMyClass/img/plan/etage_0.png")
+    pseudo = load_local_profile()
+    is_host = room_data["host"] == pseudo
+    last_update = time.time()
+    
+    for round_num in range(current_round, nb + 1):
+        room_data = get_room_info(room_code)
+        if not room_data or room_data["status"] == "finished":
+            break
+        
+        salle = room_data["current_room"]
+        choose = get_image_for_room(salle)
+        
+        if not choose:
+            print(f"Image non trouvée pour la salle: {salle}")
+            continue
+        
+        pano_view = PanoramicView(resource_path(choose), screen)
+        map_image = pygame.image.load(path_plan)
+        map_image = pygame.transform.scale(map_image, (current_w, current_h))
+        timer = 30
+        nb_etage = 0
+        map_open = False
+        map_block = False
+        valider_pressed = False
+        etage_pressed = False
+        running = True
+        clickable = False
+        player_has_answered = False
+        
+        map_icon = pygame.image.load(resource_path('GuessMyClass/icon/map.png'))
+        map_icon = pygame.transform.scale(map_icon, map_image_coo)
+        
+        etage_icon = pygame.image.load(resource_path('GuessMyClass/icon/fleche haut.png'))
+        etage_icon = pygame.transform.scale(etage_icon, etage_image_coo)
+        etage_icon2 = pygame.image.load(resource_path('GuessMyClass/icon/fleche bas.png'))
+        etage_icon2 = pygame.transform.scale(etage_icon2, etage_image_coo)
+        
+        scoreButtonWidth = 200
+        scoreButtonHeight = 50
+        scoreButtonPos = (current_w - 200 - 25, 20)
+        scoreButtonElevation = 5
+        scoreButtonColor = (220, 0, 0)
+        score_button = Shape('score', "Score : " + str(score), scoreButtonWidth, scoreButtonHeight, scoreButtonPos, scoreButtonElevation, scoreButtonColor, False, (resource_path('GuessMyClass/font/MightySouly.ttf'), 30))
+        
+        roundButtonWidth = 200
+        roundButtonHeight = 50
+        roundButtonPos = (current_w - 200 - 25, 80)
+        roundButtonElevation = 5
+        roundButtonColor = (104, 180, 229)
+        round_button = Shape('round', f"Manche {round_num}/{total_rounds}", roundButtonWidth, roundButtonHeight, roundButtonPos, roundButtonElevation, roundButtonColor, False, (resource_path('GuessMyClass/font/MightySouly.ttf'), 30))
+        
+        timerButtonWidth = 150
+        timerButtonHeight = 50
+        timerButtonPos = (current_w/2 - 75, 20)
+        timerButtonElevation = 5
+        timerButtonColor = (220, 0, 0)
+        
+        last_point = (0, 0)
+        liste_points = [(0, 0)]
+        
+        while running:
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    return 'hell'
+                elif event.type == pygame.MOUSEBUTTONUP:
+                    x, y = event.pos
+                    if 20 <= x <= 140 and 20 <= y <= 70 and clickable == False: 
+                        pygame.time.delay(300)
+                        return 'multiplayer_menu'
+                    if current_w - 120 <= x <= current_w - 20 and current_h - 120 <= y <= current_h - 20 and map_block == False:
+                        clickable = not clickable
+                        map_open = not map_open 
+                    if current_w - 225 <= x <= current_w - 120 and current_h - 120 <= y <= current_h - 20 and clickable == True:
+                        valider_pressed = not valider_pressed
+                    if current_w - 106 <= x <= current_w - 6 and current_h - 218 <= y <= current_h - 118 and clickable == True:
+                        if nb_etage == 1:
+                            path_plan = resource_path("GuessMyClass/img/plan/etage_0.png")
+                            map_image = pygame.image.load(path_plan)
+                            map_image = pygame.transform.scale(map_image, (current_w, current_h))
+                        elif nb_etage == 0:
+                            path_plan = resource_path("GuessMyClass/img/plan/etage_1.png")
+                            map_image = pygame.image.load(path_plan)
+                            map_image = pygame.transform.scale(map_image, (current_w, current_h))
+                        etage_pressed = True
+                    else:
+                        if map_open == True:
+                            if current_w - 120 <= x <= current_w - 20 and current_h - 120 <= y <= current_h - 20:
+                                pass
+                            else:
+                                last_point = pygame.mouse.get_pos()  
+                                x, y = last_point                          
+                                liste_points.append(last_point)
+                
+                pano_view.handle_event(event)
             
-            if room["status"] == "finished":
-                return ('final_results_multi', room_code)
-        last_update_time = current_time
-    
-    leave_button.draw()
-    
-    question_text = Shape(None, f"Où est la salle {current_salle} ?", current_w/2 - 300, 80, (current_w/2 - 300, 50), 0, (220, 0, 0), False, (resource_path("GuessMyClass/font/MightySouly.ttf"), 40))
-    question_text.draw()
-    
-    round_text = Shape(None, f"Manche {current_round}/{total_rounds}", 200, 50, (current_w - 220, 20), 0, (104, 180, 229), False, (resource_path("GuessMyClass/font/MightySouly.ttf"), 30))
-    round_text.draw()
-    
-    map_img = pygame.image.load(resource_path(f'GuessMyClass/img/plan_{current_etage}.png'))
-    map_rect = map_img.get_rect(center=(current_w/2, current_h/2 + 50))
-    screen.blit(map_img, map_rect)
-    
-    if pin_position:
-        pygame.draw.circle(screen, (255, 0, 0), pin_position, 10)
-    
-    if pygame.mouse.get_pressed()[0] and not player_answered and not show_results:
-        mouse_pos = pygame.mouse.get_pos()
-        if map_rect.collidepoint(mouse_pos):
-            pin_position = mouse_pos
-    
-    etage_button = Shape(None, f"Étage: {current_etage}", 150, 60, (current_w - 170, current_h - 80), 2, (104, 180, 229), True, (resource_path("GuessMyClass/font/MightySouly.ttf"), 30))
-    dest = etage_button.draw()
-    if dest:
-        current_etage = 1 - current_etage
-        pygame.time.delay(200)
-    
-    valider_button = Shape('valider_multi', "Valider", 150, 60, (current_w - 340, current_h - 80), 3, (0, 220, 0), True, (resource_path("GuessMyClass/font/MightySouly.ttf"), 35))
-    
-    if not player_answered and not show_results:
-        dest = valider_button.draw()
-        if dest == 'valider_multi' and pin_position:
-            score = calcul_points(current_salle, pin_position, current_etage)
-            pseudo = load_local_profile()
-            submit_answer(current_room_code, current_round, pseudo, pin_position[0], pin_position[1], current_etage, score)
-            player_answered = True
-            pygame.time.delay(300)
-    
-    if player_answered:
-        waiting_text = Shape(None, "En attente des autres joueurs...", 500, 60, (current_w/2 - 250, current_h - 100), 0, (255, 165, 0), False, (resource_path("GuessMyClass/font/MightySouly.ttf"), 30))
-        waiting_text.draw()
-        
-        results_data = get_round_results(current_room_code, current_round)
-        room = get_room_info(current_room_code)
-        
-        if len(results_data) >= len(room["players"]):
-            show_results = True
-    
-    if show_results:
-        display_results()
-        
-        next_button = Shape('next_multi', "Suivant", 200, 60, (current_w/2 - 100, current_h - 80), 3, (0, 200, 0), True, (resource_path("GuessMyClass/font/MightySouly.ttf"), 35))
-        
-        room = get_room_info(current_room_code)
-        is_host = room["host"] == load_local_profile()
-        
-        if is_host:
-            dest = next_button.draw()
-            if dest == 'next_multi':
-                if current_round < total_rounds:
-                    salles_list = list(coo.keys())
-                    new_salle = random.choice(salles_list)
-                    next_round(current_room_code, new_salle)
-                    pygame.time.delay(500)
+            screen.fill((0, 0, 0))
+            
+            if map_open:
+                if nb_etage == 0:
+                    leave_button.hide()
+                    screen.blit(map_image, (screen.get_width() // 2 - map_image.get_width() // 2, screen.get_height() // 2 - map_image.get_height() // 2))
+                    draw_points(last_point)
+                    game_valider.draw()
+                    game_etage.draw()
+                    screen.blit(etage_icon, (current_w - 75 - 17, current_h - 75 - 132))
+                    
+                    if valider_pressed and not player_has_answered:
+                        if len(liste_points) >= 2:
+                            score2 = calcul_points(salle, liste_points[-2], nb_etage)
+                            score += score2
+                            submit_answer(room_code, round_num, pseudo, liste_points[-2][0], liste_points[-2][1], nb_etage, score2)
+                            player_has_answered = True
+                            valider_pressed = False
+                            
+                            score_button = Shape('score', "Score : " + str(score), scoreButtonWidth, scoreButtonHeight, scoreButtonPos, scoreButtonElevation, scoreButtonColor, False, (resource_path('GuessMyClass/font/MightySouly.ttf'), 30))
+                    
+                    elif etage_pressed:
+                        etage_pressed = False
+                        nb_etage = 1
                 else:
-                    finish_game(current_room_code)
-                    return ('final_results_multi', current_room_code)
-        else:
-            waiting_host_text = Shape(None, "En attente de l'hôte...", 400, 50, (current_w/2 - 200, current_h - 80), 0, (255, 165, 0), False, (resource_path("GuessMyClass/font/MightySouly.ttf"), 30))
-            waiting_host_text.draw()
+                    leave_button.hide()
+                    screen.blit(map_image, (screen.get_width() // 2 - map_image.get_width() // 2, screen.get_height() // 2 - map_image.get_height() // 2))
+                    draw_points(last_point)
+                    game_valider.draw()
+                    game_etage.draw()
+                    screen.blit(etage_icon2, (current_w - 75 - 17, current_h - 75 - 132))
+                    
+                    if valider_pressed and not player_has_answered:
+                        if len(liste_points) >= 2:
+                            score2 = calcul_points(salle, liste_points[-2], nb_etage)
+                            score += score2
+                            submit_answer(room_code, round_num, pseudo, liste_points[-2][0], liste_points[-2][1], nb_etage, score2)
+                            player_has_answered = True
+                            valider_pressed = False
+                            
+                            score_button = Shape('score', "Score : " + str(score), scoreButtonWidth, scoreButtonHeight, scoreButtonPos, scoreButtonElevation, scoreButtonColor, False, (resource_path('GuessMyClass/font/MightySouly.ttf'), 30))
+                    
+                    elif etage_pressed:
+                        etage_pressed = False
+                        nb_etage = 0
+                
+                if player_has_answered:
+                    waiting_text = Shape(None, "En attente des autres joueurs...", 500, 60, (current_w/2 - 250, current_h - 150), 0, (255, 165, 0), False, (resource_path("GuessMyClass/font/MightySouly.ttf"), 30))
+                    waiting_text.draw()
+                    
+                    if time.time() - last_update > 1.0:
+                        results = get_round_results(room_code, round_num)
+                        room_data = get_room_info(room_code)
+                        
+                        if len(results) >= len(room_data["players"]):
+                            show_answer(salle, liste_points[-2] if len(liste_points) >= 2 else (0, 0))
+                            pygame.time.delay(3000)
+                            
+                            if is_host:
+                                if round_num < total_rounds:
+                                    from coordonées_salles import coo
+                                    salles = list(coo.keys())
+                                    new_salle = choice(salles)
+                                    next_round(room_code, new_salle)
+                                else:
+                                    finish_game(room_code)
+                            
+                            running = False
+                            nb_etage = 0
+                            path_plan = resource_path("GuessMyClass/img/plan/etage_0.png")
+                            map_image = pygame.image.load(path_plan)
+                            map_image = pygame.transform.scale(map_image, (current_w, current_h))
+                        
+                        last_update = time.time()
+            else:
+                leave_button.show()
+                pano_view.draw()
+            
+            leave_button.draw()
+            score_button.draw()
+            round_button.draw()
+            game_map.draw()
+            screen.blit(map_icon, (current_w - 75 - 17, current_h - 75 - 22))
+            
+            if timer > 0:
+                timer -= 0.015
+            if timer <= 0:
+                map_open = True
+                map_block = True
+                clickable = True
+            
+            timer_button = Shape('timer', "Temps : " + str(round(timer)) + "s", timerButtonWidth, timerButtonHeight, timerButtonPos, timerButtonElevation, timerButtonColor, False, (resource_path('GuessMyClass/font/MightySouly.ttf'), 30))
+            timer_button.draw()
+            
+            pygame.display.flip()
+            clock.tick(60)
+        
+        if not is_host:
+            waiting_host = True
+            while waiting_host:
+                screen.fill("#CDE4E2")
+                waiting_text = Shape(None, "En attente de l'hôte...", 500, 80, (current_w/2 - 250, current_h/2 - 40), 0, (255, 165, 0), False, (resource_path("GuessMyClass/font/MightySouly.ttf"), 40))
+                waiting_text.draw()
+                pygame.display.flip()
+                
+                room_data = get_room_info(room_code)
+                if room_data["current_round"] > round_num or room_data["status"] == "finished":
+                    waiting_host = False
+                
+                for event in pygame.event.get():
+                    if event.type == pygame.QUIT:
+                        return 'hell'
+                
+                time.sleep(0.5)
+        
+        room_data = get_room_info(room_code)
+        if room_data["status"] == "finished":
+            break
     
-    return ('game_multi', room_code)
-
-def display_results():
-    y = 200
-    title = Shape(None, "Résultats de la manche", 400, 60, (current_w/2 - 200, 130), 0, (104, 180, 229), False, (resource_path("GuessMyClass/font/MightySouly.ttf"), 40))
-    title.draw()
-    
-    sorted_results = sorted(results_data, key=lambda x: x['score'], reverse=True)
-    
-    for i, result in enumerate(sorted_results[:5]):
-        text = f"{i+1}. {result['pseudo']}: {result['score']} pts"
-        color = (0, 200, 0) if i == 0 else (184, 180, 229)
-        result_shape = Shape(None, text, 400, 45, (current_w/2 - 200, y), 0, color, False, (resource_path('GuessMyClass/font/MightySouly.ttf'), 30))
-        result_shape.draw()
-        y += 50
-
-def reset_round():
-    global player_answered, pin_position, show_results, results_data
-    player_answered = False
-    pin_position = None
-    show_results = False
-    results_data = []
+    return ('final_results_multi', room_code)
