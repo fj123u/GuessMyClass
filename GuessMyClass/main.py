@@ -1,5 +1,6 @@
 # Importe les bibliothèques nécessaires pour le fonctionnement du code
 import pygame
+import sys, os
 from shape_creator import *
 from home import *
 from about import *
@@ -11,12 +12,6 @@ from multiplayer_menu import multiplayer_menu_display
 from create_room_screen import create_room_screen_display
 from join_room_screen import join_room_screen_display
 from waiting_room import waiting_room_display
-
-pygame.init()
-current_w, current_h = pygame.display.Info().current_w, pygame.display.Info().current_h
-font = pygame.font.Font(resource_path('GuessMyClass/font/MightySouly.ttf'), 80)
-screen = pygame.display.set_mode((current_w, current_h))
-clock = pygame.time.Clock()
 
 running = True
 icon = pygame.image.load(resource_path('GuessMyClass/icon/gmc.png'))

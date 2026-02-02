@@ -184,28 +184,3 @@ def leave_room(room_code, pseudo):
     except Exception as e:
         print(f"Erreur leave room: {e}")
         return False
-
-class RoomListener:
-    def __init__(self, room_code, callback):
-        self.room_code = room_code
-        self.callback = callback
-        self.channel = None
-    
-    def start(self):
-        self.channel = supabase.channel(f'room-{self.room_code}')
-        
-        def handle_change(payload):
-            self.callback(payload)
-        
-        self.channel.on_postgres_changes(
-            event='UPDATE',
-            schema='public',
-            table='game_rooms',
-            filter=f'room_code=eq.{self.room_code}',
-            callback=handle_change
-        ).subscribe()
-    
-    def stop(self):
-        if self.channel:
-            supabase.remove_channel(self.channel)
-            self.channel = None

@@ -1,5 +1,6 @@
 import sys, os
 import pygame
+from shape_creator import *
 from utils import *
 from multiplayer import get_final_scores
 

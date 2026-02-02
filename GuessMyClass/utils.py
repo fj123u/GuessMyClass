@@ -132,21 +132,21 @@ nb5Height = 50
 nb5Pos = (current_w/2 -125, current_h/2)
 nb5Elevation = 2
 nb5Color = (255, 128, 0)
-nb_5 = Shape(None, "5", nb5Width, nb5Height, nb5Pos, nb5Elevation, nb5Color, True, (resource_path('GuessMyClass/font/MightySouly.ttf'), 40))
+nb_5 = Shape("5", "5", nb5Width, nb5Height, nb5Pos, nb5Elevation, nb5Color, True, (resource_path('GuessMyClass/font/MightySouly.ttf'), 40))
 
 nb10Width = 50
 nb10Height = 50
 nb10Pos = (current_w/2-25, current_h/2)
 nb10Elevation = 2
 nb10Color = (255, 128, 0)
-nb_10 = Shape(None, "10", nb10Width, nb10Height, nb10Pos, nb10Elevation, nb10Color, True, (resource_path('GuessMyClass/font/MightySouly.ttf'), 40))
+nb_10 = Shape("10", "10", nb10Width, nb10Height, nb10Pos, nb10Elevation, nb10Color, True, (resource_path('GuessMyClass/font/MightySouly.ttf'), 40))
 
 nb20Width = 50
 nb20Height = 50
 nb20Pos = (current_w/2 +75, current_h/2)
 nb20Elevation = 2
 nb20Color = (255, 128, 0)
-nb_20 = Shape(None, "20", nb20Width, nb20Height, nb20Pos, nb20Elevation, nb20Color, True, (resource_path('GuessMyClass/font/MightySouly.ttf'), 40))
+nb_20 = Shape("20", "20", nb20Width, nb20Height, nb20Pos, nb20Elevation, nb20Color, True, (resource_path('GuessMyClass/font/MightySouly.ttf'), 40))
 
 mapWidth = 100
 mapHeight = 100
@@ -217,4 +217,4 @@ onlineHeight = 50
 onlinePos = (current_w/2 - 125, current_h/2 + 50)
 onlineElevation = 2
 onlineColor = (104, 180, 229)
-online = Shape("multiplayer", "En ligne", onlineWidth, onlineHeight, onlinePos, onlineElevation, onlineColor, True, (resource_path('GuessMyClass/font/MightySouly.ttf'), 40))
+online = Shape("multiplayer_menu", "En ligne", onlineWidth, onlineHeight, onlinePos, onlineElevation, onlineColor, True, (resource_path('GuessMyClass/font/MightySouly.ttf'), 40))
