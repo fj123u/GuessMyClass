@@ -252,13 +252,18 @@ def game_multi_display(room_code):
                             pygame.display.flip()
                             pygame.time.delay(4000)
                             
+                            # L'HÔTE LANCE LE ROUND SUIVANT ICI
                             if is_host:
+                                print(f"HOST: Passage au round suivant (actuel: {round_num}, total: {total_rounds})")
                                 if round_num < total_rounds:
                                     from coordonées_salles import coo
                                     salles = list(coo.keys())
                                     new_salle = choice(salles)
+                                    print(f"HOST: Nouvelle salle choisie: {new_salle}")
                                     next_round(room_code, new_salle)
+                                    print(f"HOST: next_round() appelé avec succès")
                                 else:
+                                    print("HOST: Dernière manche, fin du jeu")
                                     finish_game(room_code)
                             
                             running = False
@@ -290,7 +295,7 @@ def game_multi_display(room_code):
             
             pygame.display.flip()
             clock.tick(60)
-        
+
         if not is_host:
             waiting_start = time.time()
             while True:
@@ -306,14 +311,19 @@ def game_multi_display(room_code):
                 room_data = get_room_info(room_code)
                 if not room_data:
                     return "multiplayer_menu"
-                
-                if room_data["current_round"] > round_num or room_data["status"] == "finished":
+                                
+                if room_data["current_round"] > round_num:
                     break
                 
-                if time.time() - waiting_start > 30:
+                if room_data["status"] == "finished":
+                    break
+                
+                if time.time() - waiting_start > 60:
                     return "multiplayer_menu"
                 
-                time.sleep(0.5)
+                clock.tick(2)
+        else:
+            pygame.time.delay(2000)
 
         room_data = get_room_info(room_code)
         if room_data["status"] == "finished":
