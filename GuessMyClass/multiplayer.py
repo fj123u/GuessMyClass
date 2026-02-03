@@ -2,6 +2,7 @@ import random
 import string
 from supabase import create_client
 import time
+from datetime import datetime, timedelta, timezone
 
 SUPABASE_URL = "https://dfrfhlvbckvakgtridzv.supabase.co"
 SUPABASE_KEY = "sb_publishable_OEqgvVyKwJGXy5rV1H1Y8Q_kGL98num"
@@ -10,9 +11,22 @@ supabase = create_client(SUPABASE_URL, SUPABASE_KEY)
 def generate_room_code():
     return ''.join(random.choices(string.ascii_uppercase + string.digits, k=6))
 
+def cleanup_old_rooms():
+    """Supprime les parties en attente de plus de 10 minutes"""
+    try:
+        ten_minutes_ago = (datetime.now(timezone.utc) - timedelta(minutes=10)).isoformat()
+        supabase.table("game_rooms")\
+            .delete()\
+            .eq("status", "waiting")\
+            .lt("created_at", ten_minutes_ago)\
+            .execute()
+    except Exception as e:
+        print(f"Erreur cleanup: {e}")
+
 def create_room(pseudo, mode=5):
     room_code = generate_room_code()
     try:
+        cleanup_old_rooms()
         supabase.table("game_rooms").insert({
             "room_code": room_code,
             "host": pseudo,
@@ -27,6 +41,8 @@ def create_room(pseudo, mode=5):
 
 def join_room(room_code, pseudo):
     try:
+        cleanup_old_rooms()
+        
         result = supabase.table("game_rooms")\
             .select("*")\
             .eq("room_code", room_code)\
@@ -36,6 +52,19 @@ def join_room(room_code, pseudo):
         
         if not result.data:
             return None
+        
+        # Vérifie l'âge de la partie
+        try:
+            created_at_str = result.data["created_at"].replace('Z', '+00:00')
+            created_at = datetime.fromisoformat(created_at_str)
+            now = datetime.now(timezone.utc)
+            
+            if now - created_at > timedelta(minutes=10):
+                supabase.table("game_rooms").delete().eq("room_code", room_code).execute()
+                return None
+        except Exception as date_error:
+            print(f"Erreur vérification date: {date_error}")
+            # Si erreur de date, on laisse passer
         
         players = result.data["players"]
         if pseudo not in players:

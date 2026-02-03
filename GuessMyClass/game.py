@@ -129,6 +129,7 @@ def game_display():
     score3 = 0
     score4 = 0
     truc2 = 0
+    manche = 1
     map_image_coo = (75, 75)
     etage_image_coo = (75, 75)
     end = False
@@ -174,7 +175,6 @@ def game_display():
                 map_image = pygame.transform.scale(map_image, (current_w, current_h))
                 timer = 30
                 nb_etage = 0
-                manche = 1
                 map_open = False
                 map_block = False
                 valider_pressed = False
@@ -193,21 +193,21 @@ def game_display():
             
                 scoreButtonWidth = 200
                 scoreButtonHeight = 50
-                scoreButtonPos = (current_w -200 -25, 20)
+                scoreButtonPos = (current_w -200 - 25, 20)
                 scoreButtonElevation = 5
                 scoreButtonColor = (220, 0, 0)
                 score_button = Shape('score', "Score J1 : " + str(score), scoreButtonWidth, scoreButtonHeight, scoreButtonPos, scoreButtonElevation, scoreButtonColor, False, (resource_path('GuessMyClass/font/MightySouly.ttf'), 30))
                 
                 scoreButton2Width = 200
                 scoreButton2Height = 50
-                scoreButton2Pos = (current_w -200 -25, 80)
+                scoreButton2Pos = (current_w -200 - 25, 80)
                 scoreButton2Elevation = 5
                 scoreButton2Color = (220, 0, 0)
                 score_button2 = Shape('score', "Score J2 : " + str(score4), scoreButton2Width, scoreButton2Height, scoreButton2Pos, scoreButton2Elevation, scoreButton2Color, False, (resource_path('GuessMyClass/font/MightySouly.ttf'), 30))
 
                 roundButtonWidth = 200
                 roundButtonHeight = 50
-                roundButtonPos = (current_w - 200 - 25, 80)
+                roundButtonPos = (current_w - 400 - 50, 20)
                 roundButtonElevation = 5
                 roundButtonColor = (104, 180, 229)
                 round_button = Shape('round', f"Manche {manche}/{nb}", roundButtonWidth, roundButtonHeight, roundButtonPos, roundButtonElevation, roundButtonColor, False, (resource_path('GuessMyClass/font/MightySouly.ttf'), 30))
@@ -292,6 +292,7 @@ def game_display():
                                 if valider_pressed :
                                     score += score2
                                     score4 += score3
+                                    manche += 1
                                     map_open = not map_open
                                     
                                     scoreButtonWidth = 200
@@ -330,6 +331,7 @@ def game_display():
                                 if valider_pressed :
                                     score += score2
                                     score4 += score3
+                                    manche += 1
                                     map_open = not map_open
                                     
                                     scoreButtonWidth = 200
@@ -367,6 +369,7 @@ def game_display():
                                 screen.blit(etage_icon, (current_w -75 - 17,current_h -75 -132))
                                 if valider_pressed :
                                     score += score2
+                                    manche += 1
                                     map_open = not map_open
                                     
                                     scoreButtonWidth = 200
@@ -396,6 +399,7 @@ def game_display():
                                 screen.blit(etage_icon2, (current_w -75 - 17,current_h -75 -132))
                                 if valider_pressed :
                                     score += score2
+                                    manche += 1
                                     map_open = not map_open
                                     
                                     scoreButtonWidth = 200
@@ -435,11 +439,11 @@ def game_display():
                         clickable = True
                     timer_button = Shape('timer', "Temps : " + str(round(timer)) + "s", timerButtonWidth, timerButtonHeight, timerButtonPos, timerButtonElevation, timerButtonColor, False, (resource_path('GuessMyClass/font/MightySouly.ttf'), 30))
                     timer_button.draw()
-                    manche += 1
+                    
                 
                     pygame.display.flip()
                     clock.tick(60)
-                    
+    
             pygame.time.delay(2000)
             end = True
         

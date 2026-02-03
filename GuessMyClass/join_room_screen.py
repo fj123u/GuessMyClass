@@ -43,6 +43,11 @@ def join_room_screen_display():
         else:
             messagebox.showerror("Erreur", "Partie introuvable ou déjà commencée")
     
+    def on_key_release(event):
+        current_text = room_code_entry.get().upper()
+        room_code_entry.delete(0, 'end')
+        room_code_entry.insert(0, current_text)
+    
     def close_window():
         global _join_window
         _join_window = None
@@ -62,6 +67,7 @@ def join_room_screen_display():
     
     room_code_entry = ctk.CTkEntry(frame, placeholder_text="ABC123", width=200, font=("Arial", 18))
     room_code_entry.place(x=50, y=70)
+    room_code_entry.bind("<KeyRelease>", on_key_release)
     
     button = ctk.CTkButton(frame, text="Rejoindre", command=validate_code, fg_color="#FF9100", hover_color="#C35500", width=200, font=("Arial", 16))
     button.place(x=50, y=120)

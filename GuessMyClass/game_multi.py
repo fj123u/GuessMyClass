@@ -223,8 +223,34 @@ def game_multi_display(room_code):
                         room_data = get_room_info(room_code)
                         
                         if len(results) >= len(room_data["players"]):
+                            screen.fill("#CDE4E2")
+                            
+                            results_title = Shape(None, "Résultats de la manche", 500, 60, (current_w/2 - 250, 50), 0, (104, 180, 229), False, (resource_path("GuessMyClass/font/MightySouly.ttf"), 40))
+                            results_title.draw()
+                            
+                            sorted_results = sorted(results, key=lambda x: x['score'], reverse=True)
+                            y = 130
+                            for i, res in enumerate(sorted_results):
+                                color = (0, 200, 0) if i == 0 else (184, 180, 229)
+                                result_text = Shape(None, f"{i+1}. {res['pseudo']}: {res['score']} pts", 400, 45, (current_w/2 - 200, y), 0, color, False, (resource_path('GuessMyClass/font/MightySouly.ttf'), 30))
+                                result_text.draw()
+                                y += 50
+                            
+                            pygame.display.flip()
+                            pygame.time.delay(5000)
+                            
+                            screen.fill((0, 0, 0))
+                            map_image = pygame.image.load(path_plan)
+                            map_image = pygame.transform.scale(map_image, (current_w, current_h))
+                            screen.blit(map_image, (screen.get_width() // 2 - map_image.get_width() // 2, screen.get_height() // 2 - map_image.get_height() // 2))
+                            
+                            for res in sorted_results:
+                                draw_points((res['x'], res['y']))
+                            
                             show_answer(salle, liste_points[-2] if len(liste_points) >= 2 else (0, 0))
-                            pygame.time.delay(3000)
+                            
+                            pygame.display.flip()
+                            pygame.time.delay(4000)
                             
                             if is_host:
                                 if round_num < total_rounds:
@@ -266,23 +292,29 @@ def game_multi_display(room_code):
             clock.tick(60)
         
         if not is_host:
-            waiting_host = True
-            while waiting_host:
+            waiting_start = time.time()
+            while True:
                 screen.fill("#CDE4E2")
-                waiting_text = Shape(None, "En attente de l'hôte...", 500, 80, (current_w/2 - 250, current_h/2 - 40), 0, (255, 165, 0), False, (resource_path("GuessMyClass/font/MightySouly.ttf"), 40))
+                waiting_text = Shape(None, "En attente de la manche suivante...", 600, 80, (current_w/2 - 300, current_h/2 - 40), 0, (255, 165, 0), False, (resource_path("GuessMyClass/font/MightySouly.ttf"), 40))
                 waiting_text.draw()
                 pygame.display.flip()
-                
-                room_data = get_room_info(room_code)
-                if room_data["current_round"] > round_num or room_data["status"] == "finished":
-                    waiting_host = False
                 
                 for event in pygame.event.get():
                     if event.type == pygame.QUIT:
                         return 'hell'
                 
+                room_data = get_room_info(room_code)
+                if not room_data:
+                    return "multiplayer_menu"
+                
+                if room_data["current_round"] > round_num or room_data["status"] == "finished":
+                    break
+                
+                if time.time() - waiting_start > 30:
+                    return "multiplayer_menu"
+                
                 time.sleep(0.5)
-        
+
         room_data = get_room_info(room_code)
         if room_data["status"] == "finished":
             break
