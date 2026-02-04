@@ -213,3 +213,136 @@ def leave_room(room_code, pseudo):
     except Exception as e:
         print(f"Erreur leave room: {e}")
         return False
+    
+def create_game_session(room_code, mode, total_players):
+    """Crée une session de jeu dans la BDD"""
+    try:
+        result = supabase.table("game_sessions").insert({
+            "room_code": room_code,
+            "mode": mode,
+            "game_type": "multiplayer",
+            "total_players": total_players
+        }).execute()
+        return result.data[0]["id"] if result.data else None
+    except Exception as e:
+        print(f"Erreur création session: {e}")
+        return None
+
+def finish_game_session(session_id, winner_pseudo, duration_seconds):
+    """Termine une session de jeu"""
+    try:
+        supabase.table("game_sessions").update({
+            "finished_at": "NOW()",
+            "duration_seconds": duration_seconds,
+            "winner_pseudo": winner_pseudo
+        }).eq("id", session_id).execute()
+        return True
+    except Exception as e:
+        print(f"Erreur fin de session: {e}")
+        return False
+
+def save_round_detail(session_id, round_num, room_name, pseudo, x, y, floor, score, distance, time_taken=None):
+    """Sauvegarde les détails d'une manche"""
+    try:
+        supabase.table("round_details").insert({
+            "game_session_id": session_id,
+            "round_number": round_num,
+            "room_name": room_name,
+            "pseudo": pseudo,
+            "x_position": x,
+            "y_position": y,
+            "floor": floor,
+            "score": score,
+            "distance_from_target": distance,
+            "time_taken_seconds": time_taken
+        }).execute()
+        return True
+    except Exception as e:
+        print(f"Erreur sauvegarde round: {e}")
+        return False
+
+def save_player_game_stats(session_id, pseudo, is_guest, stats):
+    """Sauvegarde les stats d'un joueur pour une partie"""
+    try:
+        supabase.table("player_game_stats").insert({
+            "game_session_id": session_id,
+            "pseudo": pseudo,
+            "is_guest": is_guest,
+            "total_score": stats.get("total_score", 0),
+            "final_rank": stats.get("rank", 0),
+            "rounds_played": stats.get("rounds_played", 0),
+            "average_score_per_round": stats.get("avg_score", 0),
+            "best_round_score": stats.get("best_score", 0),
+            "worst_round_score": stats.get("worst_score", 0),
+            "perfect_guesses": stats.get("perfect_guesses", 0)
+        }).execute()
+        return True
+    except Exception as e:
+        print(f"Erreur sauvegarde stats joueur: {e}")
+        return False
+
+def get_player_stats(pseudo):
+    """Récupère toutes les stats d'un joueur"""
+    try:
+        result = supabase.table("player_game_stats")\
+            .select("*")\
+            .eq("pseudo", pseudo)\
+            .execute()
+        return result.data
+    except Exception as e:
+        print(f"Erreur récupération stats: {e}")
+        return []
+
+def get_player_history(pseudo, limit=10):
+    """Récupère l'historique des parties d'un joueur"""
+    try:
+        result = supabase.table("player_game_stats")\
+            .select("*, game_sessions(*)")\
+            .eq("pseudo", pseudo)\
+            .order("played_at", desc=True)\
+            .limit(limit)\
+            .execute()
+        return result.data
+    except Exception as e:
+        print(f"Erreur récupération historique: {e}")
+        return []
+
+def get_game_session_details(session_id):
+    """Récupère tous les détails d'une partie"""
+    try:
+        session = supabase.table("game_sessions")\
+            .select("*")\
+            .eq("id", session_id)\
+            .single()\
+            .execute()
+        
+        players = supabase.table("player_game_stats")\
+            .select("*")\
+            .eq("game_session_id", session_id)\
+            .execute()
+        
+        rounds = supabase.table("round_details")\
+            .select("*")\
+            .eq("game_session_id", session_id)\
+            .order("round_number")\
+            .execute()
+        
+        return {
+            "session": session.data,
+            "players": players.data,
+            "rounds": rounds.data
+        }
+    except Exception as e:
+        print(f"Erreur récupération détails partie: {e}")
+        return None
+
+def is_player_guest(pseudo):
+    """Vérifie si un joueur est invité (non connecté)"""
+    # Tu peux utiliser ta logique existante
+    # Par exemple, vérifier s'il y a un fichier compte.txt
+    try:
+        from sql_link import load_local_profile
+        saved_pseudo = load_local_profile()
+        return pseudo != saved_pseudo or not saved_pseudo
+    except:
+        return True

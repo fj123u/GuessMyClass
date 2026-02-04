@@ -65,6 +65,14 @@ def game_multi_display(room_code):
     if not room_data:
         return "multiplayer_menu"
     
+    from multiplayer import create_game_session, is_player_guest, save_round_detail
+    session_id = create_game_session(room_code, nb, len(room_data["players"]))
+    game_start_time = time.time()
+    
+    # Détermine si le joueur est invité
+    is_guest = is_player_guest(pseudo)
+    print(f"Joueur {pseudo} - Invité: {is_guest}")
+
     nb = room_data["mode"]
     current_round = room_data["current_round"]
     total_rounds = nb
