@@ -27,6 +27,8 @@ a = False
 mail_text = ''
 room_code = None
 is_host = False
+session_id = None
+game_start_time = None
 
 def shade():
     s = pygame.Surface((current_w, current_h))
@@ -155,12 +157,16 @@ while running:
             dest = result[0]
             if len(result) > 1:
                 room_code = result[1]
+            if len(result) > 2:
+                session_id = result[2]
+            if len(result) > 3:
+                game_start_time = result[3]
         else:
             dest = result
     
     elif dest == "final_results_multi":
         from final_results_multi import final_results_multi_display
-        result = final_results_multi_display(room_code)
+        result = final_results_multi_display(room_code, session_id, game_start_time)
         if isinstance(result, tuple):
             dest = result[0]
         else:

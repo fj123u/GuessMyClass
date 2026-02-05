@@ -53,7 +53,6 @@ def join_room(room_code, pseudo):
         if not result.data:
             return None
         
-        # Vérifie l'âge de la partie
         try:
             created_at_str = result.data["created_at"].replace('Z', '+00:00')
             created_at = datetime.fromisoformat(created_at_str)
@@ -64,7 +63,6 @@ def join_room(room_code, pseudo):
                 return None
         except Exception as date_error:
             print(f"Erreur vérification date: {date_error}")
-            # Si erreur de date, on laisse passer
         
         players = result.data["players"]
         if pseudo not in players:
@@ -162,6 +160,19 @@ def get_round_results(room_code, round_num):
         print(f"Erreur get results: {e}")
         return []
 
+def get_all_round_results(room_code):
+    """Récupère TOUS les résultats pour un room_code"""
+    try:
+        result = supabase.table("game_answers")\
+            .select("*")\
+            .eq("room_code", room_code)\
+            .order("round")\
+            .execute()
+        return result.data
+    except Exception as e:
+        print(f"Erreur get all results: {e}")
+        return []
+
 def get_final_scores(room_code):
     try:
         result = supabase.table("game_answers")\
@@ -213,7 +224,9 @@ def leave_room(room_code, pseudo):
     except Exception as e:
         print(f"Erreur leave room: {e}")
         return False
-    
+
+# ===== FONCTIONS POUR SAUVEGARDER LES STATS =====
+
 def create_game_session(room_code, mode, total_players):
     """Crée une session de jeu dans la BDD"""
     try:
@@ -232,7 +245,7 @@ def finish_game_session(session_id, winner_pseudo, duration_seconds):
     """Termine une session de jeu"""
     try:
         supabase.table("game_sessions").update({
-            "finished_at": "NOW()",
+            "finished_at": datetime.now(timezone.utc).isoformat(),
             "duration_seconds": duration_seconds,
             "winner_pseudo": winner_pseudo
         }).eq("id", session_id).execute()
@@ -280,6 +293,10 @@ def save_player_game_stats(session_id, pseudo, is_guest, stats):
     except Exception as e:
         print(f"Erreur sauvegarde stats joueur: {e}")
         return False
+
+def is_player_guest(pseudo):
+    """Vérifie si un joueur est invité"""
+    return pseudo == "Invite" or pseudo == "invit" or not pseudo
 
 def get_player_stats(pseudo):
     """Récupère toutes les stats d'un joueur"""
@@ -335,14 +352,3 @@ def get_game_session_details(session_id):
     except Exception as e:
         print(f"Erreur récupération détails partie: {e}")
         return None
-
-def is_player_guest(pseudo):
-    """Vérifie si un joueur est invité (non connecté)"""
-    # Tu peux utiliser ta logique existante
-    # Par exemple, vérifier s'il y a un fichier compte.txt
-    try:
-        from sql_link import load_local_profile
-        saved_pseudo = load_local_profile()
-        return pseudo != saved_pseudo or not saved_pseudo
-    except:
-        return True
