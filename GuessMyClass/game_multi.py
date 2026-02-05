@@ -326,7 +326,7 @@ def game_multi_display(room_code):
                                 y += 50
                             
                             pygame.display.flip()
-                            pygame.time.delay(5000)  # Affiche les résultats pendant 5 secondes
+                            pygame.time.delay(2000)  # Affiche les résultats pendant 5 secondes
                             
                             if is_host:
                                 if round_num < total_rounds:

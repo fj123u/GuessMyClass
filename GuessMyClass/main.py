@@ -167,8 +167,16 @@ while running:
     elif dest == "final_results_multi":
         from final_results_multi import final_results_multi_display
         result = final_results_multi_display(room_code, session_id, game_start_time)
-        if isinstance(result, tuple):
+        
+        # Si result est None, on reste sur final_results_multi
+        if result is None:
+            dest = "final_results_multi"
+        elif isinstance(result, tuple):
             dest = result[0]
+            if len(result) > 1:
+                room_code = result[1]
+            if len(result) > 2:
+                is_host = result[2]
         else:
             dest = result
     

@@ -104,6 +104,30 @@ def start_game(room_code, first_room):
         print(f"Erreur start game: {e}")
         return False
 
+def restart_game(room_code):
+    """Remet la partie en attente pour rejouer (garde les joueurs)"""
+    try:
+        # Supprime les anciennes réponses
+        supabase.table("game_answers")\
+            .delete()\
+            .eq("room_code", room_code)\
+            .execute()
+        
+        # Remet la room en status waiting
+        supabase.table("game_rooms")\
+            .update({
+                "status": "waiting",
+                "current_round": 0,
+                "current_room": None
+            })\
+            .eq("room_code", room_code)\
+            .execute()
+        
+        return True
+    except Exception as e:
+        print(f"Erreur restart game: {e}")
+        return False
+
 def next_round(room_code, next_room_name):
     try:
         room = get_room_info(room_code)
