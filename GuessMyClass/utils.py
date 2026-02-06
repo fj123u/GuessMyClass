@@ -111,7 +111,7 @@ logInWelcomeHeight = current_h/8
 logInWelcomePos = (current_w/5, 600)
 logInWelcomeElevation = 2
 logInWelcomeColor = (184, 180, 229)
-log_in_welcome = Shape('home', 'Se connecter', logInWelcomeWidth, logInWelcomeHeight, logInWelcomePos, logInWelcomeElevation, logInWelcomeColor, True, (resource_path('GuessMyClass/font/MightySouly.ttf'), 70))
+log_in_welcome = Shape('home', 'Créer un compte', logInWelcomeWidth, logInWelcomeHeight, logInWelcomePos, logInWelcomeElevation, logInWelcomeColor, True, (resource_path('GuessMyClass/font/MightySouly.ttf'), 70))
 
 sansCompteWidth = ((current_w/4-6)*2+58)/1.8
 sansCompteHeight = current_h/8
