@@ -104,29 +104,35 @@ def start_game(room_code, first_room):
         print(f"Erreur start game: {e}")
         return False
 
-def restart_game(room_code):
-    """Remet la partie en attente pour rejouer (garde les joueurs)"""
+def restart_game_new_code(old_room_code):
+    """Crée une NOUVELLE room avec un nouveau code et les mêmes joueurs"""
     try:
-        # Supprime les anciennes réponses
-        supabase.table("game_answers")\
-            .delete()\
-            .eq("room_code", room_code)\
-            .execute()
+        # Récupère l'ancienne room
+        old_room = get_room_info(old_room_code)
+        if not old_room:
+            return None
         
-        # Remet la room en status waiting
+        # Crée une nouvelle room
+        new_room_code = generate_room_code()
+        supabase.table("game_rooms").insert({
+            "room_code": new_room_code,
+            "host": old_room["host"],
+            "players": old_room["players"],  # Garde les mêmes joueurs
+            "mode": old_room["mode"],
+            "status": "waiting"
+        }).execute()
+        
+        # Supprime l'ancienne room
         supabase.table("game_rooms")\
-            .update({
-                "status": "waiting",
-                "current_round": 0,
-                "current_room": None
-            })\
-            .eq("room_code", room_code)\
+            .delete()\
+            .eq("room_code", old_room_code)\
             .execute()
         
-        return True
+        print(f"Nouvelle room créée: {new_room_code} (ancienne: {old_room_code})")
+        return new_room_code
     except Exception as e:
         print(f"Erreur restart game: {e}")
-        return False
+        return None
 
 def next_round(room_code, next_room_name):
     try:

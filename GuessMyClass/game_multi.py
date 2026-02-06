@@ -30,10 +30,6 @@ E100 = ["GuessMyClass/img/E100/couloir E haut.webp", "GuessMyClass/img/E100/E116
 
 tout = [C000, C100, D100, D000, special, toilettes, A100, E000, E100]
 
-# Variables globales pour tracker la session
-_game_session_id = None
-_game_start_time = None
-
 class PanoramicView:
     def __init__(self, image_path, screen):
         self.screen = screen
@@ -93,33 +89,37 @@ def draw_points(point):
         pygame.draw.circle(screen, (255, 0, 0), point, 10)
 
 def draw_points3(last_point3):
-    """Point bleu de la solution"""
     if last_point3:
         pygame.draw.circle(screen, (0, 0, 255), last_point3, 10)
 
 def show_answer(salle, coo_pin):
-    """Affiche la solution (point bleu) et le point du joueur (rouge) avec ligne"""
     draw_points3((coo[salle][0], coo[salle][1]))
     draw_points(coo_pin)
     if coo_pin != (0, 0):
         pygame.draw.line(screen, (0, 0, 0), coo_pin, (coo[salle][0], coo[salle][1]), width=3)
 
+def wait_with_events(milliseconds):
+    """Attend X ms en gérant les événements QUIT"""
+    start = pygame.time.get_ticks()
+    while pygame.time.get_ticks() - start < milliseconds:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                return True  # Signal pour quitter
+        clock.tick(60)
+    return False
+
 def game_multi_display(room_code):
-    global last_point, _game_session_id, _game_start_time
+    global last_point
     
     room_data = get_room_info(room_code)
     if not room_data:
         return "multiplayer_menu"
     
-    # Crée la session de jeu AU DÉBUT
-    if _game_session_id is None:
-        nb = room_data["mode"]
-        total_players = len(room_data["players"])
-        _game_session_id = create_game_session(room_code, nb, total_players)
-        _game_start_time = time.time()
-        print(f"Session créée: {_game_session_id}")
-    
     nb = room_data["mode"]
+    total_players = len(room_data["players"])
+    session_id = create_game_session(room_code, nb, total_players)
+    start_time = time.time()
+    
     current_round = room_data["current_round"]
     total_rounds = nb
     
@@ -140,7 +140,6 @@ def game_multi_display(room_code):
         choose = get_image_for_room(salle)
         
         if not choose:
-            print(f"Image non trouvée pour la salle: {salle}")
             continue
         
         round_start_time = time.time()
@@ -243,8 +242,8 @@ def game_multi_display(room_code):
                             
                             submit_answer(room_code, round_num, pseudo, liste_points[-2][0], liste_points[-2][1], nb_etage, score2)
                             
-                            if _game_session_id:
-                                save_round_detail(_game_session_id, round_num, salle, pseudo, 
+                            if session_id:
+                                save_round_detail(session_id, round_num, salle, pseudo, 
                                                 liste_points[-2][0], liste_points[-2][1], nb_etage, 
                                                 score2, distance, round_time_taken)
                             
@@ -272,8 +271,8 @@ def game_multi_display(room_code):
                             
                             submit_answer(room_code, round_num, pseudo, liste_points[-2][0], liste_points[-2][1], nb_etage, score2)
                             
-                            if _game_session_id:
-                                save_round_detail(_game_session_id, round_num, salle, pseudo, 
+                            if session_id:
+                                save_round_detail(session_id, round_num, salle, pseudo, 
                                                 liste_points[-2][0], liste_points[-2][1], nb_etage, 
                                                 score2, distance, round_time_taken)
                             
@@ -295,26 +294,29 @@ def game_multi_display(room_code):
                         room_data = get_room_info(room_code)
                         
                         if len(results) >= len(room_data["players"]):
-                            # ÉTAPE 1: Affiche la SOLUTION d'abord
+                            sorted_results = sorted(results, key=lambda x: x['score'], reverse=True)
+                            
+                            # SORTIR de la boucle AVANT d'afficher
+                            running = False
+                            
+                            # ÉTAPE 1: Affiche solution (HORS de la boucle running)
                             screen.fill((0, 0, 0))
                             map_image_reload = pygame.image.load(path_plan)
                             map_image_reload = pygame.transform.scale(map_image_reload, (current_w, current_h))
                             screen.blit(map_image_reload, (screen.get_width() // 2 - map_image_reload.get_width() // 2, screen.get_height() // 2 - map_image_reload.get_height() // 2))
                             
-                            # Affiche tous les points des joueurs
-                            sorted_results = sorted(results, key=lambda x: x['score'], reverse=True)
                             for res in sorted_results:
                                 draw_points((res['x'], res['y']))
                             
-                            # Affiche la solution
                             show_answer(salle, liste_points[-2] if len(liste_points) >= 2 else (0, 0))
-                            
                             pygame.display.flip()
-                            pygame.time.delay(4000)  # Montre la solution pendant 4 secondes
                             
-                            # ÉTAPE 2: Affiche les RÉSULTATS après
+                            # Attend 4s en gérant les événements
+                            if wait_with_events(4000):
+                                return 'hell'
+                            
+                            # ÉTAPE 2: Affiche résultats
                             screen.fill("#CDE4E2")
-                            
                             results_title = Shape(None, "Résultats de la manche", 500, 60, (current_w/2 - 250, 50), 0, (104, 180, 229), False, (resource_path("GuessMyClass/font/MightySouly.ttf"), 40))
                             results_title.draw()
                             
@@ -326,7 +328,10 @@ def game_multi_display(room_code):
                                 y += 50
                             
                             pygame.display.flip()
-                            pygame.time.delay(2000)  # Affiche les résultats pendant 5 secondes
+                            
+                            # Attend 5s en gérant les événements
+                            if wait_with_events(5000):
+                                return 'hell'
                             
                             if is_host:
                                 if round_num < total_rounds:
@@ -336,7 +341,6 @@ def game_multi_display(room_code):
                                 else:
                                     finish_game(room_code)
                             
-                            running = False
                             nb_etage = 0
                             path_plan = resource_path("GuessMyClass/img/plan/etage_0.png")
                             map_image = pygame.image.load(path_plan)
@@ -399,4 +403,4 @@ def game_multi_display(room_code):
         if room_data["status"] == "finished":
             break
     
-    return ('final_results_multi', room_code, _game_session_id, _game_start_time)
+    return ('final_results_multi', room_code, session_id, start_time)
