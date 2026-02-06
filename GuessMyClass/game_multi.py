@@ -187,6 +187,7 @@ def game_multi_display(room_code):
         
         last_point = (0, 0)
         liste_points = [(0, 0)]
+        show_ui = True  # Flag pour afficher/cacher les UI elements
         
         while running:
             for event in pygame.event.get():
@@ -296,10 +297,13 @@ def game_multi_display(room_code):
                         if len(results) >= len(room_data["players"]):
                             sorted_results = sorted(results, key=lambda x: x['score'], reverse=True)
                             
+                            # CACHER les UI IMMÉDIATEMENT
+                            show_ui = False
+                            
                             # SORTIR de la boucle AVANT d'afficher
                             running = False
                             
-                            # ÉTAPE 1: Affiche solution (HORS de la boucle running)
+                            # ÉTAPE 1: Affiche solution directement (pas de wait)
                             screen.fill((0, 0, 0))
                             map_image_reload = pygame.image.load(path_plan)
                             map_image_reload = pygame.transform.scale(map_image_reload, (current_w, current_h))
@@ -351,21 +355,23 @@ def game_multi_display(room_code):
                 leave_button.show()
                 pano_view.draw()
             
-            leave_button.draw()
-            score_button.draw()
-            round_button.draw()
-            game_map.draw()
-            screen.blit(map_icon, (current_w - 75 - 17, current_h - 75 - 22))
-            
-            if timer > 0:
-                timer -= 0.015
-            if timer <= 0:
-                map_open = True
-                map_block = True
-                clickable = True
-            
-            timer_button = Shape('timer', "Temps : " + str(round(timer)) + "s", timerButtonWidth, timerButtonHeight, timerButtonPos, timerButtonElevation, timerButtonColor, False, (resource_path('GuessMyClass/font/MightySouly.ttf'), 30))
-            timer_button.draw()
+            # Ces shapes NE S'AFFICHENT QUE si show_ui est True
+            if show_ui:
+                leave_button.draw()
+                score_button.draw()
+                round_button.draw()
+                game_map.draw()
+                screen.blit(map_icon, (current_w - 75 - 17, current_h - 75 - 22))
+                
+                if timer > 0:
+                    timer -= 0.015
+                if timer <= 0:
+                    map_open = True
+                    map_block = True
+                    clickable = True
+                
+                timer_button = Shape('timer', "Temps : " + str(round(timer)) + "s", timerButtonWidth, timerButtonHeight, timerButtonPos, timerButtonElevation, timerButtonColor, False, (resource_path('GuessMyClass/font/MightySouly.ttf'), 30))
+                timer_button.draw()
             
             pygame.display.flip()
             clock.tick(60)
@@ -402,5 +408,8 @@ def game_multi_display(room_code):
         room_data = get_room_info(room_code)
         if room_data["status"] == "finished":
             break
+    
+    # IMPORTANT: Réaffiche le leave_button avant de sortir
+    leave_button.show()
     
     return ('final_results_multi', room_code, session_id, start_time)
