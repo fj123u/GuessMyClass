@@ -25,15 +25,30 @@ def final_results_multi_display(room_code, session_id=None, game_start_time=None
     
     # Sauvegarde UNE FOIS
     if session_id and game_start_time and session_id not in _stats_saved:
+        print(f"Sauvegarde stats session {session_id}")
+        
         scores = get_final_scores(room_code)
         duration = int(time.time() - game_start_time)
-        winner = scores[0][0] if scores else None
+        
+        # Trouve le gagnant (exclu les invités)
+        winner = None
+        for pseudo, score in scores:
+            if not is_player_guest(pseudo):
+                winner = pseudo
+                break
         
         finish_game_session(session_id, winner, duration)
         
         all_rounds = get_all_round_results(room_code)
         
+        # Sauvegarde SEULEMENT les vrais joueurs
         for rank, (pseudo, total_score) in enumerate(scores, 1):
+            is_guest = is_player_guest(pseudo)
+            
+            if is_guest:
+                print(f"Invité ignoré: {pseudo}")
+                continue  # Skip les invités
+            
             player_rounds = [r for r in all_rounds if r['pseudo'] == pseudo]
             
             if player_rounds:
@@ -49,7 +64,6 @@ def final_results_multi_display(room_code, session_id=None, game_start_time=None
                     "perfect_guesses": sum(1 for s in round_scores if s >= 4900)
                 }
                 
-                is_guest = is_player_guest(pseudo)
                 save_player_game_stats(session_id, pseudo, is_guest, stats)
         
         _stats_saved[session_id] = True
@@ -72,17 +86,21 @@ def final_results_multi_display(room_code, session_id=None, game_start_time=None
     
     y = 180
     for i, (pseudo_player, score) in enumerate(scores):
+        # Marque les invités
+        player_is_guest = is_player_guest(pseudo_player)
+        guest_marker = " 👤" if player_is_guest else ""
+        
         if i == 0:
-            text = f"🏆 {pseudo_player}: {score} pts"
+            text = f"🏆 {pseudo_player}{guest_marker}: {score} pts"
             color = (255, 215, 0)
         elif i == 1:
-            text = f"🥈 {pseudo_player}: {score} pts"
+            text = f"🥈 {pseudo_player}{guest_marker}: {score} pts"
             color = (192, 192, 192)
         elif i == 2:
-            text = f"🥉 {pseudo_player}: {score} pts"
+            text = f"🥉 {pseudo_player}{guest_marker}: {score} pts"
             color = (205, 127, 50)
         else:
-            text = f"{i+1}. {pseudo_player}: {score} pts"
+            text = f"{i+1}. {pseudo_player}{guest_marker}: {score} pts"
             color = (184, 180, 229)
         
         score_shape = Shape(None, text, 500, 50, (current_w/2 - 250, y), 0, color, False, (resource_path("GuessMyClass/font/MightySouly.ttf"), 35))
@@ -92,7 +110,6 @@ def final_results_multi_display(room_code, session_id=None, game_start_time=None
     if is_host:
         dest = replay_button_cached.draw()
         if dest == 'replay':
-            # Crée NOUVEAU room_code
             new_room_code = restart_game_new_code(room_code)
             if new_room_code:
                 if session_id in _stats_saved:

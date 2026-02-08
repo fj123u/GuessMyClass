@@ -559,12 +559,12 @@ def game_display():
                             with open(resource_path("GuessMyClass/score/option.txt"), "w") as f:
                                 f.write('False')
                             mult = False
+                            leave_button.draw()
                             return "home"
                     if reponse_donnee:
                         while truc != [] :
                             for k in truc :
                                 truc.remove(k)
-                        game_question.draw()
                         nb_5.draw()
                         nb_10.draw()
                         nb_20.draw()

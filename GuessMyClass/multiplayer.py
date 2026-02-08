@@ -8,6 +8,8 @@ SUPABASE_URL = "https://dfrfhlvbckvakgtridzv.supabase.co"
 SUPABASE_KEY = "sb_publishable_OEqgvVyKwJGXy5rV1H1Y8Q_kGL98num"
 supabase = create_client(SUPABASE_URL, SUPABASE_KEY)
 
+MAX_PLAYERS = 10  # Limite de joueurs par partie
+
 def generate_room_code():
     return ''.join(random.choices(string.ascii_uppercase + string.digits, k=6))
 
@@ -65,6 +67,12 @@ def join_room(room_code, pseudo):
             print(f"Erreur vérification date: {date_error}")
         
         players = result.data["players"]
+        
+        # Vérifie la limite de joueurs
+        if len(players) >= MAX_PLAYERS and pseudo not in players:
+            print(f"Partie pleine ({MAX_PLAYERS} joueurs max)")
+            return None
+        
         if pseudo not in players:
             players.append(pseudo)
             supabase.table("game_rooms")\
@@ -107,31 +115,28 @@ def start_game(room_code, first_room):
 def restart_game_new_code(old_room_code):
     """Crée une NOUVELLE room avec un nouveau code et les mêmes joueurs"""
     try:
-        # Récupère l'ancienne room
         old_room = get_room_info(old_room_code)
         if not old_room:
             return None
         
-        # Crée une nouvelle room
         new_room_code = generate_room_code()
         supabase.table("game_rooms").insert({
             "room_code": new_room_code,
             "host": old_room["host"],
-            "players": old_room["players"],  # Garde les mêmes joueurs
+            "players": old_room["players"],
             "mode": old_room["mode"],
             "status": "waiting"
         }).execute()
         
-        # Supprime l'ancienne room
         supabase.table("game_rooms")\
             .delete()\
             .eq("room_code", old_room_code)\
             .execute()
         
-        print(f"Nouvelle room créée: {new_room_code} (ancienne: {old_room_code})")
+        print(f"Nouvelle room: {new_room_code}")
         return new_room_code
     except Exception as e:
-        print(f"Erreur restart game: {e}")
+        print(f"Erreur restart: {e}")
         return None
 
 def next_round(room_code, next_room_name):
@@ -255,10 +260,10 @@ def leave_room(room_code, pseudo):
         print(f"Erreur leave room: {e}")
         return False
 
-# ===== FONCTIONS POUR SAUVEGARDER LES STATS =====
+# ===== FONCTIONS STATS =====
 
 def create_game_session(room_code, mode, total_players):
-    """Crée une session de jeu dans la BDD"""
+    """Crée une session de jeu"""
     try:
         result = supabase.table("game_sessions").insert({
             "room_code": room_code,
@@ -272,7 +277,7 @@ def create_game_session(room_code, mode, total_players):
         return None
 
 def finish_game_session(session_id, winner_pseudo, duration_seconds):
-    """Termine une session de jeu"""
+    """Termine une session"""
     try:
         supabase.table("game_sessions").update({
             "finished_at": datetime.now(timezone.utc).isoformat(),
@@ -281,11 +286,11 @@ def finish_game_session(session_id, winner_pseudo, duration_seconds):
         }).eq("id", session_id).execute()
         return True
     except Exception as e:
-        print(f"Erreur fin de session: {e}")
+        print(f"Erreur fin session: {e}")
         return False
 
 def save_round_detail(session_id, round_num, room_name, pseudo, x, y, floor, score, distance, time_taken=None):
-    """Sauvegarde les détails d'une manche"""
+    """Sauvegarde détails d'une manche"""
     try:
         supabase.table("round_details").insert({
             "game_session_id": session_id,
@@ -301,11 +306,15 @@ def save_round_detail(session_id, round_num, room_name, pseudo, x, y, floor, sco
         }).execute()
         return True
     except Exception as e:
-        print(f"Erreur sauvegarde round: {e}")
+        print(f"Erreur save round: {e}")
         return False
 
 def save_player_game_stats(session_id, pseudo, is_guest, stats):
-    """Sauvegarde les stats d'un joueur pour une partie"""
+    """Sauvegarde stats joueur - SEULEMENT si ce n'est PAS un invité"""
+    if is_guest:
+        print(f"Stats NON sauvegardées pour invité: {pseudo}")
+        return False
+    
     try:
         supabase.table("player_game_stats").insert({
             "game_session_id": session_id,
@@ -319,17 +328,21 @@ def save_player_game_stats(session_id, pseudo, is_guest, stats):
             "worst_round_score": stats.get("worst_score", 0),
             "perfect_guesses": stats.get("perfect_guesses", 0)
         }).execute()
+        print(f"Stats sauvegardées pour: {pseudo}")
         return True
     except Exception as e:
-        print(f"Erreur sauvegarde stats joueur: {e}")
+        print(f"Erreur save stats: {e}")
         return False
 
 def is_player_guest(pseudo):
-    """Vérifie si un joueur est invité"""
-    return pseudo == "Invite" or pseudo == "invit" or not pseudo
+    """Vérifie si c'est un invité"""
+    if not pseudo:
+        return True
+    # Le pseudo des invités est exactement "Invite\ninvit"
+    return pseudo == "Invite\ninvit"
 
 def get_player_stats(pseudo):
-    """Récupère toutes les stats d'un joueur"""
+    """Récupère stats d'un joueur"""
     try:
         result = supabase.table("player_game_stats")\
             .select("*")\
@@ -337,11 +350,11 @@ def get_player_stats(pseudo):
             .execute()
         return result.data
     except Exception as e:
-        print(f"Erreur récupération stats: {e}")
+        print(f"Erreur get stats: {e}")
         return []
 
 def get_player_history(pseudo, limit=10):
-    """Récupère l'historique des parties d'un joueur"""
+    """Récupère historique"""
     try:
         result = supabase.table("player_game_stats")\
             .select("*, game_sessions(*)")\
@@ -351,11 +364,11 @@ def get_player_history(pseudo, limit=10):
             .execute()
         return result.data
     except Exception as e:
-        print(f"Erreur récupération historique: {e}")
+        print(f"Erreur get history: {e}")
         return []
 
 def get_game_session_details(session_id):
-    """Récupère tous les détails d'une partie"""
+    """Récupère détails partie"""
     try:
         session = supabase.table("game_sessions")\
             .select("*")\
@@ -380,5 +393,5 @@ def get_game_session_details(session_id):
             "rounds": rounds.data
         }
     except Exception as e:
-        print(f"Erreur récupération détails partie: {e}")
+        print(f"Erreur get details: {e}")
         return None

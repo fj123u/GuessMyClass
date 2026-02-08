@@ -334,7 +334,7 @@ def game_multi_display(room_code):
                             pygame.display.flip()
                             
                             # Attend 5s en gérant les événements
-                            if wait_with_events(5000):
+                            if wait_with_events(2000):
                                 return 'hell'
                             
                             if is_host:

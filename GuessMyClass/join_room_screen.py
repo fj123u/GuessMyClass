@@ -1,7 +1,7 @@
 import sys, os
 import customtkinter as ctk
 from tkinter import messagebox
-from multiplayer import join_room
+from multiplayer import join_room, get_room_info, MAX_PLAYERS
 from sql_link import load_local_profile
 
 def resource_path(relative_path):
@@ -41,7 +41,12 @@ def join_room_screen_display():
             result = ('waiting_room', code, False)
             close_window()
         else:
-            messagebox.showerror("Erreur", "Partie introuvable ou déjà commencée")
+            # Vérifie si c'est un problème de limite ou autre
+            room_info = get_room_info(code)
+            if room_info and len(room_info["players"]) >= MAX_PLAYERS:
+                messagebox.showerror("Partie pleine", f"Cette partie est complète ({MAX_PLAYERS} joueurs max)")
+            else:
+                messagebox.showerror("Erreur", "Partie introuvable ou déjà commencée")
     
     def on_key_release(event):
         current_text = room_code_entry.get().upper()
