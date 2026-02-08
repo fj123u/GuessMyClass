@@ -4,7 +4,7 @@ import time
 from shape_creator import *
 from utils import *
 from multiplayer import get_final_scores, finish_game_session, save_player_game_stats, is_player_guest, get_all_round_results, get_room_info, restart_game_new_code
-from sql_link import load_local_profile
+from sql_link import load_local_profile, send_score
 
 def resource_path(relative_path):
     try:
@@ -30,6 +30,10 @@ def final_results_multi_display(room_code, session_id=None, game_start_time=None
         scores = get_final_scores(room_code)
         duration = int(time.time() - game_start_time)
         
+        # Récupère les infos de la room pour savoir le mode (nb de manches)
+        room_info = get_room_info(room_code)
+        nb_rounds = room_info["mode"] if room_info else 5
+        
         # Trouve le gagnant (exclu les invités)
         winner = None
         for pseudo, score in scores:
@@ -47,7 +51,7 @@ def final_results_multi_display(room_code, session_id=None, game_start_time=None
             
             if is_guest:
                 print(f"Invité ignoré: {pseudo}")
-                continue  # Skip les invités
+                continue
             
             player_rounds = [r for r in all_rounds if r['pseudo'] == pseudo]
             
@@ -65,6 +69,10 @@ def final_results_multi_display(room_code, session_id=None, game_start_time=None
                 }
                 
                 save_player_game_stats(session_id, pseudo, is_guest, stats)
+                
+                # Envoie aussi au LEADERBOARD
+                send_score(pseudo, nb_rounds, total_score)
+                print(f"Score envoyé au leaderboard pour {pseudo}: {total_score} pts ({nb_rounds} manches)")
         
         _stats_saved[session_id] = True
     
@@ -72,6 +80,8 @@ def final_results_multi_display(room_code, session_id=None, game_start_time=None
     if not room_data:
         if session_id in _stats_saved:
             del _stats_saved[session_id]
+        # IMPORTANT: Réaffiche le bouton leave avant de quitter
+        leave_button.show()
         return "multiplayer_menu"
     
     pseudo = load_local_profile()
@@ -120,12 +130,16 @@ def final_results_multi_display(room_code, session_id=None, game_start_time=None
         if dest == 'home':
             if session_id in _stats_saved:
                 del _stats_saved[session_id]
+            # IMPORTANT: Réaffiche le bouton leave
+            leave_button.show()
             return 'home'
     else:
         dest = menu_button_guest_cached.draw()
         if dest == 'home':
             if session_id in _stats_saved:
                 del _stats_saved[session_id]
+            # IMPORTANT: Réaffiche le bouton leave
+            leave_button.show()
             return 'home'
     
     return None

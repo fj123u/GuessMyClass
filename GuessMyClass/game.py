@@ -154,6 +154,7 @@ def game_display():
             x, y = event.pos
             if 20 <= x <= 140 and 20 <= y <= 70: 
                 pygame.time.delay(300)
+                leave_button.show()
                 return 'home'
             elif (current_w/2 -125) <= x <= (current_w/2 -125 +50) and (current_h/2) <= y <= (current_h/2 +50):
                 nb = 5
@@ -247,6 +248,7 @@ def game_display():
                             x, y = event.pos
                             if 20 <= x <= 140 and 20 <= y <= 70 and clickable == False: 
                                 pygame.time.delay(300)
+                                leave_button.show()
                                 return 'home'
                             if current_w - 120 <= x <= current_w - 20 and current_h - 120 <= y <= current_h - 20 and map_block == False:
                                 clickable = not clickable
@@ -549,6 +551,7 @@ def game_display():
 
                 for event in pygame.event.get():
                     if event.type == pygame.QUIT:
+                        leave_button.show()
                         return "home"
                     if event.type == pygame.MOUSEBUTTONDOWN:
                         x, y = event.pos
@@ -559,12 +562,13 @@ def game_display():
                             with open(resource_path("GuessMyClass/score/option.txt"), "w") as f:
                                 f.write('False')
                             mult = False
-                            leave_button.draw()
+                            leave_button.show()
                             return "home"
                     if reponse_donnee:
                         while truc != [] :
                             for k in truc :
                                 truc.remove(k)
+                        game_question.draw()
                         nb_5.draw()
                         nb_10.draw()
                         nb_20.draw()
