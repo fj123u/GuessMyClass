@@ -24,27 +24,29 @@ def cleanup_old_rooms():
     except Exception as e:
         print(f"Erreur cleanup: {e}")
 
+def is_player_guest(pseudo):
+    if not pseudo:
+        return True
+    return pseudo == "Invite\ninvit"
+
 def ensure_player_profile(pseudo, is_guest=False):
     """Crée ou met à jour le profil d'un joueur"""
     if is_guest:
-        return  # Ne crée pas de profil pour les invités
+        return
     
     try:
-        # Vérifie si le joueur existe déjà
         result = supabase.table("player_profiles")\
             .select("*")\
             .eq("pseudo", pseudo)\
             .execute()
         
         if result.data and len(result.data) > 0:
-            # Joueur existe → Met à jour last_played
             supabase.table("player_profiles")\
                 .update({"last_played": datetime.now(timezone.utc).isoformat()})\
                 .eq("pseudo", pseudo)\
                 .execute()
             print(f"Profil mis à jour: {pseudo}")
         else:
-            # Joueur n'existe pas → Crée le profil
             supabase.table("player_profiles").insert({
                 "pseudo": pseudo,
                 "is_guest": is_guest
@@ -54,13 +56,17 @@ def ensure_player_profile(pseudo, is_guest=False):
         print(f"Erreur ensure_player_profile pour {pseudo}: {e}")
 
 def create_room(pseudo, mode=5):
+    """Crée une room - INTERDIT aux invités"""
+    # Vérifie si c'est un invité
+    if is_player_guest(pseudo):
+        print(f"REFUSÉ: {pseudo} est un invité et ne peut pas créer de partie")
+        return None
+    
     room_code = generate_room_code()
     try:
         cleanup_old_rooms()
         
-        # Crée/Met à jour le profil du joueur
-        is_guest = is_player_guest(pseudo)
-        ensure_player_profile(pseudo, is_guest)
+        ensure_player_profile(pseudo, False)
         
         supabase.table("game_rooms").insert({
             "room_code": room_code,
@@ -106,7 +112,6 @@ def join_room(room_code, pseudo):
             return None
         
         if pseudo not in players:
-            # Crée/Met à jour le profil du joueur
             is_guest = is_player_guest(pseudo)
             ensure_player_profile(pseudo, is_guest)
             
@@ -346,7 +351,6 @@ def save_player_game_stats(session_id, pseudo, is_guest, stats):
         return False
     
     try:
-        # Met à jour le profil avec last_played
         ensure_player_profile(pseudo, is_guest)
         
         supabase.table("player_game_stats").insert({
@@ -366,11 +370,6 @@ def save_player_game_stats(session_id, pseudo, is_guest, stats):
     except Exception as e:
         print(f"Erreur save stats: {e}")
         return False
-
-def is_player_guest(pseudo):
-    if not pseudo:
-        return True
-    return pseudo == "Invite\ninvit"
 
 def get_player_stats(pseudo):
     try:
