@@ -8,13 +8,12 @@ SUPABASE_URL = "https://dfrfhlvbckvakgtridzv.supabase.co"
 SUPABASE_KEY = "sb_publishable_OEqgvVyKwJGXy5rV1H1Y8Q_kGL98num"
 supabase = create_client(SUPABASE_URL, SUPABASE_KEY)
 
-MAX_PLAYERS = 10  # Limite de joueurs par partie
+MAX_PLAYERS = 10
 
 def generate_room_code():
     return ''.join(random.choices(string.ascii_uppercase + string.digits, k=6))
 
 def cleanup_old_rooms():
-    """Supprime les parties en attente de plus de 10 minutes"""
     try:
         ten_minutes_ago = (datetime.now(timezone.utc) - timedelta(minutes=10)).isoformat()
         supabase.table("game_rooms")\
@@ -25,10 +24,44 @@ def cleanup_old_rooms():
     except Exception as e:
         print(f"Erreur cleanup: {e}")
 
+def ensure_player_profile(pseudo, is_guest=False):
+    """Crée ou met à jour le profil d'un joueur"""
+    if is_guest:
+        return  # Ne crée pas de profil pour les invités
+    
+    try:
+        # Vérifie si le joueur existe déjà
+        result = supabase.table("player_profiles")\
+            .select("*")\
+            .eq("pseudo", pseudo)\
+            .execute()
+        
+        if result.data and len(result.data) > 0:
+            # Joueur existe → Met à jour last_played
+            supabase.table("player_profiles")\
+                .update({"last_played": datetime.now(timezone.utc).isoformat()})\
+                .eq("pseudo", pseudo)\
+                .execute()
+            print(f"Profil mis à jour: {pseudo}")
+        else:
+            # Joueur n'existe pas → Crée le profil
+            supabase.table("player_profiles").insert({
+                "pseudo": pseudo,
+                "is_guest": is_guest
+            }).execute()
+            print(f"Profil créé: {pseudo}")
+    except Exception as e:
+        print(f"Erreur ensure_player_profile pour {pseudo}: {e}")
+
 def create_room(pseudo, mode=5):
     room_code = generate_room_code()
     try:
         cleanup_old_rooms()
+        
+        # Crée/Met à jour le profil du joueur
+        is_guest = is_player_guest(pseudo)
+        ensure_player_profile(pseudo, is_guest)
+        
         supabase.table("game_rooms").insert({
             "room_code": room_code,
             "host": pseudo,
@@ -68,12 +101,15 @@ def join_room(room_code, pseudo):
         
         players = result.data["players"]
         
-        # Vérifie la limite de joueurs
         if len(players) >= MAX_PLAYERS and pseudo not in players:
             print(f"Partie pleine ({MAX_PLAYERS} joueurs max)")
             return None
         
         if pseudo not in players:
+            # Crée/Met à jour le profil du joueur
+            is_guest = is_player_guest(pseudo)
+            ensure_player_profile(pseudo, is_guest)
+            
             players.append(pseudo)
             supabase.table("game_rooms")\
                 .update({"players": players})\
@@ -113,7 +149,6 @@ def start_game(room_code, first_room):
         return False
 
 def restart_game_new_code(old_room_code):
-    """Crée une NOUVELLE room avec un nouveau code et les mêmes joueurs"""
     try:
         old_room = get_room_info(old_room_code)
         if not old_room:
@@ -196,7 +231,6 @@ def get_round_results(room_code, round_num):
         return []
 
 def get_all_round_results(room_code):
-    """Récupère TOUS les résultats pour un room_code"""
     try:
         result = supabase.table("game_answers")\
             .select("*")\
@@ -260,10 +294,9 @@ def leave_room(room_code, pseudo):
         print(f"Erreur leave room: {e}")
         return False
 
-# ===== FONCTIONS STATS =====
+# ===== STATS =====
 
 def create_game_session(room_code, mode, total_players):
-    """Crée une session de jeu"""
     try:
         result = supabase.table("game_sessions").insert({
             "room_code": room_code,
@@ -277,7 +310,6 @@ def create_game_session(room_code, mode, total_players):
         return None
 
 def finish_game_session(session_id, winner_pseudo, duration_seconds):
-    """Termine une session"""
     try:
         supabase.table("game_sessions").update({
             "finished_at": datetime.now(timezone.utc).isoformat(),
@@ -290,7 +322,6 @@ def finish_game_session(session_id, winner_pseudo, duration_seconds):
         return False
 
 def save_round_detail(session_id, round_num, room_name, pseudo, x, y, floor, score, distance, time_taken=None):
-    """Sauvegarde détails d'une manche"""
     try:
         supabase.table("round_details").insert({
             "game_session_id": session_id,
@@ -310,12 +341,14 @@ def save_round_detail(session_id, round_num, room_name, pseudo, x, y, floor, sco
         return False
 
 def save_player_game_stats(session_id, pseudo, is_guest, stats):
-    """Sauvegarde stats joueur - SEULEMENT si ce n'est PAS un invité"""
     if is_guest:
         print(f"Stats NON sauvegardées pour invité: {pseudo}")
         return False
     
     try:
+        # Met à jour le profil avec last_played
+        ensure_player_profile(pseudo, is_guest)
+        
         supabase.table("player_game_stats").insert({
             "game_session_id": session_id,
             "pseudo": pseudo,
@@ -335,14 +368,11 @@ def save_player_game_stats(session_id, pseudo, is_guest, stats):
         return False
 
 def is_player_guest(pseudo):
-    """Vérifie si c'est un invité"""
     if not pseudo:
         return True
-    # Le pseudo des invités est exactement "Invite\ninvit"
     return pseudo == "Invite\ninvit"
 
 def get_player_stats(pseudo):
-    """Récupère stats d'un joueur"""
     try:
         result = supabase.table("player_game_stats")\
             .select("*")\
@@ -354,7 +384,6 @@ def get_player_stats(pseudo):
         return []
 
 def get_player_history(pseudo, limit=10):
-    """Récupère historique"""
     try:
         result = supabase.table("player_game_stats")\
             .select("*, game_sessions(*)")\
@@ -368,7 +397,6 @@ def get_player_history(pseudo, limit=10):
         return []
 
 def get_game_session_details(session_id):
-    """Récupère détails partie"""
     try:
         session = supabase.table("game_sessions")\
             .select("*")\
