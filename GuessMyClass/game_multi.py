@@ -104,7 +104,7 @@ def wait_with_events(milliseconds):
     while pygame.time.get_ticks() - start < milliseconds:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
-                return True  # Signal pour quitter
+                return True
         clock.tick(60)
     return False
 
@@ -187,7 +187,8 @@ def game_multi_display(room_code):
         
         last_point = (0, 0)
         liste_points = [(0, 0)]
-        show_ui = True  # Flag pour afficher/cacher les UI elements
+        show_ui = True
+        auto_submit_time = None  # ✅ Timer pour auto-submit après 10s
         
         while running:
             for event in pygame.event.get():
@@ -297,13 +298,9 @@ def game_multi_display(room_code):
                         if len(results) >= len(room_data["players"]):
                             sorted_results = sorted(results, key=lambda x: x['score'], reverse=True)
                             
-                            # CACHER les UI IMMÉDIATEMENT
                             show_ui = False
-                            
-                            # SORTIR de la boucle AVANT d'afficher
                             running = False
                             
-                            # ÉTAPE 1: Affiche solution directement (pas de wait)
                             screen.fill((0, 0, 0))
                             map_image_reload = pygame.image.load(path_plan)
                             map_image_reload = pygame.transform.scale(map_image_reload, (current_w, current_h))
@@ -315,11 +312,9 @@ def game_multi_display(room_code):
                             show_answer(salle, liste_points[-2] if len(liste_points) >= 2 else (0, 0))
                             pygame.display.flip()
                             
-                            # Attend 4s en gérant les événements
                             if wait_with_events(4000):
                                 return 'hell'
                             
-                            # ÉTAPE 2: Affiche résultats
                             screen.fill("#CDE4E2")
                             results_title = Shape(None, "Résultats de la manche", 500, 60, (current_w/2 - 250, 50), 0, (104, 180, 229), False, (resource_path("GuessMyClass/font/MightySouly.ttf"), 40))
                             results_title.draw()
@@ -333,7 +328,6 @@ def game_multi_display(room_code):
                             
                             pygame.display.flip()
                             
-                            # Attend 5s en gérant les événements
                             if wait_with_events(2000):
                                 return 'hell'
                             
@@ -355,7 +349,6 @@ def game_multi_display(room_code):
                 leave_button.show()
                 pano_view.draw()
             
-            # Ces shapes NE S'AFFICHENT QUE si show_ui est True
             if show_ui:
                 leave_button.draw()
                 score_button.draw()
@@ -369,6 +362,27 @@ def game_multi_display(room_code):
                     map_open = True
                     map_block = True
                     clickable = True
+                    
+                    # ✅ Démarre le timer auto-submit
+                    if auto_submit_time is None:
+                        auto_submit_time = time.time()
+                
+                # ✅ AUTO-SUBMIT après 10s de timer expiré
+                if auto_submit_time and not player_has_answered and time.time() - auto_submit_time > 10.0:
+                    print(f"⏰ Auto-submit pour {pseudo} après 10s de timer expiré")
+                    round_time_taken = int(time.time() - round_start_time)
+                    score2, distance = calcul_points(salle, (0, 0), nb_etage)
+                    score += score2
+                    
+                    submit_answer(room_code, round_num, pseudo, 0, 0, nb_etage, score2)
+                    
+                    if session_id:
+                        save_round_detail(session_id, round_num, salle, pseudo, 
+                                        0, 0, nb_etage, 
+                                        score2, distance, round_time_taken)
+                    
+                    player_has_answered = True
+                    score_button = Shape('score', "Score : " + str(score), scoreButtonWidth, scoreButtonHeight, scoreButtonPos, scoreButtonElevation, scoreButtonColor, False, (resource_path('GuessMyClass/font/MightySouly.ttf'), 30))
                 
                 timer_button = Shape('timer', "Temps : " + str(round(timer)) + "s", timerButtonWidth, timerButtonHeight, timerButtonPos, timerButtonElevation, timerButtonColor, False, (resource_path('GuessMyClass/font/MightySouly.ttf'), 30))
                 timer_button.draw()
@@ -409,7 +423,6 @@ def game_multi_display(room_code):
         if room_data["status"] == "finished":
             break
     
-    # IMPORTANT: Réaffiche le leave_button avant de sortir
     leave_button.show()
     
     return ('final_results_multi', room_code, session_id, start_time)
