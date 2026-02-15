@@ -14,6 +14,7 @@ def resource_path(relative_path):
     return os.path.join(base_path, relative_path)
 
 _stats_saved = {}
+_last_poll = {}  # ✅ Dictionnaire pour tracker le polling par room
 
 # Boutons UNE SEULE FOIS
 replay_button_cached = Shape('replay', 'Rejouer', 200, 70, (current_w/2 - 220, current_h - 100), 3, (0, 200, 0), True, (resource_path("GuessMyClass/font/MightySouly.ttf"), 35))
@@ -21,7 +22,11 @@ menu_button_host_cached = Shape('home', 'Menu', 200, 70, (current_w/2 + 20, curr
 menu_button_guest_cached = Shape('home', 'Retour au menu', 300, 70, (current_w/2 - 150, current_h - 100), 3, (104, 180, 229), True, (resource_path("GuessMyClass/font/MightySouly.ttf"), 35))
 
 def final_results_multi_display(room_code, session_id=None, game_start_time=None):
-    global _stats_saved
+    global _stats_saved, _last_poll
+    
+    # Initialise le polling pour cette room
+    if room_code not in _last_poll:
+        _last_poll[room_code] = time.time()
     
     # Sauvegarde UNE FOIS
     if session_id and game_start_time and session_id not in _stats_saved:
@@ -50,29 +55,31 @@ def final_results_multi_display(room_code, session_id=None, game_start_time=None
             is_guest = is_player_guest(pseudo)
             
             if is_guest:
-                print(f"Invité ignoré: {pseudo}")
+                print(f"Invité ignoré pour stats: {pseudo}")
                 continue
             
-            player_rounds = [r for r in all_rounds if r['pseudo'] == pseudo]
+            rounds_data = [r for r in all_rounds if r['pseudo'] == pseudo]
             
-            if player_rounds:
-                round_scores = [r['score'] for r in player_rounds]
-                
-                stats = {
-                    "total_score": total_score,
-                    "rank": rank,
-                    "rounds_played": len(player_rounds),
-                    "avg_score": int(total_score / len(player_rounds)),
-                    "best_score": max(round_scores),
-                    "worst_score": min(round_scores),
-                    "perfect_guesses": sum(1 for s in round_scores if s >= 4900)
-                }
-                
-                save_player_game_stats(session_id, pseudo, is_guest, stats)
-                
-                # Envoie aussi au LEADERBOARD
-                send_score(pseudo, nb_rounds, total_score)
-                print(f"Score envoyé au leaderboard pour {pseudo}: {total_score} pts ({nb_rounds} manches)")
+            if not rounds_data:
+                continue
+            
+            round_scores = [r['score'] for r in rounds_data]
+            
+            stats = {
+                "total_score": total_score,
+                "rank": rank,
+                "rounds_played": len(round_scores),
+                "avg_score": round(sum(round_scores) / len(round_scores)) if round_scores else 0,
+                "best_score": max(round_scores) if round_scores else 0,
+                "worst_score": min(round_scores) if round_scores else 0,
+                "perfect_guesses": sum(1 for s in round_scores if s >= 4900)
+            }
+            
+            save_player_game_stats(session_id, pseudo, is_guest, stats)
+            
+            # Envoie au leaderboard
+            send_score(pseudo, nb_rounds, total_score)
+            print(f"Score envoyé au leaderboard pour {pseudo}: {total_score} pts ({nb_rounds} manches)")
         
         _stats_saved[session_id] = True
     
@@ -80,7 +87,8 @@ def final_results_multi_display(room_code, session_id=None, game_start_time=None
     if not room_data:
         if session_id in _stats_saved:
             del _stats_saved[session_id]
-        # IMPORTANT: Réaffiche le bouton leave avant de quitter
+        if room_code in _last_poll:
+            del _last_poll[room_code]
         leave_button.show()
         return "multiplayer_menu"
     
@@ -96,7 +104,6 @@ def final_results_multi_display(room_code, session_id=None, game_start_time=None
     
     y = 180
     for i, (pseudo_player, score) in enumerate(scores):
-        # Marque les invités
         player_is_guest = is_player_guest(pseudo_player)
         guest_marker = " 👤" if player_is_guest else ""
         
@@ -117,6 +124,46 @@ def final_results_multi_display(room_code, session_id=None, game_start_time=None
         score_shape.draw()
         y += 60
     
+    # ✅ POUR LES NON-HÔTES : Détecte si l'hôte a créé une nouvelle partie
+    if not is_host:
+        # Polling toutes les 2 secondes
+        if time.time() - _last_poll[room_code] > 2.0:
+            _last_poll[room_code] = time.time()
+            
+            # Cherche une nouvelle room créée par l'hôte
+            try:
+                from supabase import create_client
+                SUPABASE_URL = "https://dfrfhlvbckvakgtridzv.supabase.co"
+                SUPABASE_KEY = "sb_publishable_OEqgvVyKwJGXy5rV1H1Y8Q_kGL98num"
+                supabase = create_client(SUPABASE_URL, SUPABASE_KEY)
+                
+                host_name = room_data["host"]
+                result = supabase.table("game_rooms")\
+                    .select("*")\
+                    .eq("host", host_name)\
+                    .eq("status", "waiting")\
+                    .order("created_at", desc=True)\
+                    .limit(1)\
+                    .execute()
+                
+                if result.data and len(result.data) > 0:
+                    new_room = result.data[0]
+                    new_room_code = new_room["room_code"]
+                    
+                    # Vérifie que c'est une NOUVELLE room (pas l'ancienne)
+                    if new_room_code != room_code:
+                        # Vérifie que le joueur actuel est dans la nouvelle room
+                        if pseudo in new_room["players"]:
+                            print(f"🎮 Nouvelle partie détectée: {new_room_code}")
+                            if session_id in _stats_saved:
+                                del _stats_saved[session_id]
+                            if room_code in _last_poll:
+                                del _last_poll[room_code]
+                            return ('waiting_room', new_room_code, False)
+            except Exception as e:
+                print(f"Erreur polling nouvelle room: {e}")
+    
+    # Boutons
     if is_host:
         dest = replay_button_cached.draw()
         if dest == 'replay':
@@ -124,13 +171,16 @@ def final_results_multi_display(room_code, session_id=None, game_start_time=None
             if new_room_code:
                 if session_id in _stats_saved:
                     del _stats_saved[session_id]
+                if room_code in _last_poll:
+                    del _last_poll[room_code]
                 return ('waiting_room', new_room_code, True)
         
         dest = menu_button_host_cached.draw()
         if dest == 'home':
             if session_id in _stats_saved:
                 del _stats_saved[session_id]
-            # IMPORTANT: Réaffiche le bouton leave
+            if room_code in _last_poll:
+                del _last_poll[room_code]
             leave_button.show()
             return 'home'
     else:
@@ -138,7 +188,8 @@ def final_results_multi_display(room_code, session_id=None, game_start_time=None
         if dest == 'home':
             if session_id in _stats_saved:
                 del _stats_saved[session_id]
-            # IMPORTANT: Réaffiche le bouton leave
+            if room_code in _last_poll:
+                del _last_poll[room_code]
             leave_button.show()
             return 'home'
     
