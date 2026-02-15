@@ -1,4 +1,3 @@
-
 # Importe les bibliothèques nécessaires pour le fonctionnement du code
 
 import pygame
@@ -107,7 +106,15 @@ class Shape:
 
 pygame.init()
 pygame.font.get_init()
+
+# ✅ SOLUTION UNIVERSELLE : NOFRAME (fonctionne sur TOUS les PC)
+# Fenêtre sans bordure qui prend tout l'écran
+import os
+os.environ['SDL_VIDEO_WINDOW_POS'] = "0,0"  # Force la position en haut à gauche
+
 current_w, current_h = pygame.display.Info().current_w, pygame.display.Info().current_h
-screen =  pygame.display.set_mode((current_w, current_h))
+screen = pygame.display.set_mode((current_w, current_h), pygame.NOFRAME)
+
+# Met à jour les dimensions
+current_w, current_h = screen.get_size()
 clock = pygame.time.Clock()
-        
