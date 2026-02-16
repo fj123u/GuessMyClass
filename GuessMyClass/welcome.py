@@ -1,6 +1,5 @@
 import sys, os
 import pygame
-import customtkinter as ctk
 from supabase import create_client
 from utils import resource_path
 
@@ -15,14 +14,6 @@ def save_local_profile(pseudo):
     os.makedirs(os.path.dirname(path), exist_ok=True)
     with open(path, "w", encoding="utf-8") as f:
         f.write(pseudo)
-
-def load_local_profile():
-    """Charge le pseudo local"""
-    try:
-        with open(resource_path("GuessMyClass/profile/compte.txt"), "r", encoding="utf-8") as f:
-            return f.read().strip()
-    except FileNotFoundError:
-        return ""
 
 def check_or_create_profile(pseudo):
     """Vérifie si le pseudo existe, sinon le crée automatiquement"""
@@ -49,107 +40,141 @@ def check_or_create_profile(pseudo):
         print(f"Erreur: {e}")
         return False
 
-def open_login_window():
-    """Fenêtre unique pour se connecter OU créer un compte"""
-    result = [None]
+def show_login_popup(screen, w, h):
+    """Fenêtre de connexion en Pygame pur (pas de Tkinter !)"""
+    font_title = pygame.font.Font(resource_path("GuessMyClass/font/MightySouly.ttf"), 35)
+    font_text = pygame.font.Font(resource_path("GuessMyClass/font/MightySouly.ttf"), 20)
+    font_input = pygame.font.Font(resource_path("GuessMyClass/font/MightySouly.ttf"), 25)
     
-    root = ctk.CTk()
-    root.title("Connexion")
-    root.geometry("350x250")  # ✅ Plus petite : 350x250 au lieu de 400x300
-    root.configure(fg_color="#CDE4E2")
-    root.resizable(False, False)  # Empêche le redimensionnement
+    # Variables
+    pseudo_text = ""
+    error_message = ""
+    input_active = True
     
-    root.lift()
-    root.focus_force()
-    root.attributes('-topmost', True)
-    root.after(100, lambda: root.attributes('-topmost', False))
+    # Rectangles
+    popup_w, popup_h = 400, 280
+    popup_x, popup_y = w//2 - popup_w//2, h//2 - popup_h//2
     
-    # Titre plus petit
-    title = ctk.CTkLabel(root, text="Connexion", font=("Arial", 20, "bold"))
-    title.pack(pady=15)
+    input_rect = pygame.Rect(popup_x + 50, popup_y + 110, 300, 40)
+    button_valider_rect = pygame.Rect(popup_x + 100, popup_y + 180, 200, 45)
+    button_annuler_rect = pygame.Rect(popup_x + 100, popup_y + 235, 200, 30)
     
-    # Info plus compacte
-    info_label = ctk.CTkLabel(
-        root, 
-        text="Entrez votre pseudo", 
-        font=("Arial", 11),
-        text_color="#555555"
-    )
-    info_label.pack(pady=3)
+    clock = pygame.time.Clock()
     
-    # Champ pseudo
-    pseudo_label = ctk.CTkLabel(root, text="Pseudo:", font=("Arial", 14))
-    pseudo_label.pack(pady=3)
-    pseudo_entry = ctk.CTkEntry(root, width=250, font=("Arial", 13))
-    pseudo_entry.pack(pady=3)
-    pseudo_entry.focus()
-    
-    # Message d'erreur
-    message_label = ctk.CTkLabel(root, text="", font=("Arial", 11))
-    message_label.pack(pady=3)
-    
-    def validate_and_login():
-        pseudo = pseudo_entry.get().strip()
+    while True:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                return None
+            
+            if event.type == pygame.KEYDOWN:
+                if input_active:
+                    if event.key == pygame.K_RETURN:
+                        # Validation avec Entrée
+                        if len(pseudo_text) < 3:
+                            error_message = "Minimum 3 caractères"
+                        elif len(pseudo_text) > 20:
+                            error_message = "Maximum 20 caractères"
+                        else:
+                            success = check_or_create_profile(pseudo_text)
+                            if success:
+                                save_local_profile(pseudo_text)
+                                return True
+                            else:
+                                error_message = "Erreur de connexion"
+                    elif event.key == pygame.K_BACKSPACE:
+                        pseudo_text = pseudo_text[:-1]
+                        error_message = ""
+                    elif event.key == pygame.K_ESCAPE:
+                        return None
+                    else:
+                        if len(pseudo_text) < 20 and event.unicode.isprintable():
+                            pseudo_text += event.unicode
+                            error_message = ""
+            
+            if event.type == pygame.MOUSEBUTTONUP:
+                x, y = event.pos
+                
+                # Clic sur champ de saisie
+                if input_rect.collidepoint(x, y):
+                    input_active = True
+                
+                # Bouton Valider
+                if button_valider_rect.collidepoint(x, y):
+                    if len(pseudo_text) < 3:
+                        error_message = "Minimum 3 caractères"
+                    elif len(pseudo_text) > 20:
+                        error_message = "Maximum 20 caractères"
+                    else:
+                        success = check_or_create_profile(pseudo_text)
+                        if success:
+                            save_local_profile(pseudo_text)
+                            return True
+                        else:
+                            error_message = "Erreur de connexion"
+                
+                # Bouton Annuler
+                if button_annuler_rect.collidepoint(x, y):
+                    return None
         
-        if not pseudo:
-            message_label.configure(text="Le pseudo ne peut pas être vide", text_color="red")
-            return
+        # Assombrit l'arrière-plan
+        overlay = pygame.Surface((w, h))
+        overlay.set_alpha(180)
+        overlay.fill((0, 0, 0))
+        screen.blit(overlay, (0, 0))
         
-        if len(pseudo) < 3:
-            message_label.configure(text="Minimum 3 caractères", text_color="red")
-            return
+        # Popup
+        pygame.draw.rect(screen, (205, 228, 226), (popup_x, popup_y, popup_w, popup_h), border_radius=15)
         
-        if len(pseudo) > 20:
-            message_label.configure(text="Maximum 20 caractères", text_color="red")
-            return
+        # Titre
+        title = font_title.render("Connexion", True, (0, 0, 0))
+        screen.blit(title, (popup_x + popup_w//2 - title.get_width()//2, popup_y + 20))
         
-        success = check_or_create_profile(pseudo)
+        # Label
+        label = font_text.render("Entrez votre pseudo :", True, (85, 85, 85))
+        screen.blit(label, (popup_x + 50, popup_y + 75))
         
-        if success:
-            save_local_profile(pseudo)
-            result[0] = True
-            root.destroy()
-        else:
-            message_label.configure(text="Erreur de connexion", text_color="red")
-    
-    # Boutons plus compacts
-    validate_btn = ctk.CTkButton(
-        root, 
-        text="Valider", 
-        command=validate_and_login,
-        fg_color="#FF9100",
-        hover_color="#C35500",
-        font=("Arial", 14),
-        width=150,
-        height=35
-    )
-    validate_btn.pack(pady=10)
-    
-    cancel_btn = ctk.CTkButton(
-        root, 
-        text="Annuler", 
-        command=root.destroy,
-        fg_color="#888888",
-        hover_color="#666666",
-        font=("Arial", 14),
-        width=150,
-        height=35
-    )
-    cancel_btn.pack(pady=3)
-    
-    root.bind('<Return>', lambda e: validate_and_login())
-    
-    root.mainloop()
-    return result[0]
+        # Champ de saisie
+        input_color = (255, 145, 0) if input_active else (150, 150, 150)
+        pygame.draw.rect(screen, input_color, input_rect, 3, border_radius=5)
+        
+        # Texte saisi
+        text_surface = font_input.render(pseudo_text, True, (0, 0, 0))
+        screen.blit(text_surface, (input_rect.x + 10, input_rect.y + 8))
+        
+        # Curseur clignotant
+        if input_active and pygame.time.get_ticks() % 1000 < 500:
+            cursor_x = input_rect.x + 10 + text_surface.get_width() + 2
+            pygame.draw.line(screen, (0, 0, 0), (cursor_x, input_rect.y + 8), (cursor_x, input_rect.y + 32), 2)
+        
+        # Message d'erreur
+        if error_message:
+            error_surf = font_text.render(error_message, True, (255, 0, 0))
+            screen.blit(error_surf, (popup_x + popup_w//2 - error_surf.get_width()//2, popup_y + 155))
+        
+        # Bouton Valider
+        mouse_pos = pygame.mouse.get_pos()
+        valider_color = (200, 110, 0) if button_valider_rect.collidepoint(mouse_pos) else (255, 145, 0)
+        pygame.draw.rect(screen, valider_color, button_valider_rect, border_radius=10)
+        valider_text = font_text.render("Valider", True, (255, 255, 255))
+        screen.blit(valider_text, (button_valider_rect.centerx - valider_text.get_width()//2, button_valider_rect.centery - valider_text.get_height()//2))
+        
+        # Bouton Annuler
+        annuler_color = (100, 100, 100) if button_annuler_rect.collidepoint(mouse_pos) else (150, 150, 150)
+        pygame.draw.rect(screen, annuler_color, button_annuler_rect, border_radius=8)
+        annuler_text = font_text.render("Annuler", True, (255, 255, 255))
+        screen.blit(annuler_text, (button_annuler_rect.centerx - annuler_text.get_width()//2, button_annuler_rect.centery - annuler_text.get_height()//2))
+        
+        pygame.display.flip()
+        clock.tick(60)
 
 def welcome_display():
-    """Écran d'accueil simplifié"""
+    """Écran d'accueil avec popup Pygame (pas de Tkinter !)"""
     screen = pygame.display.get_surface()
     w, h = screen.get_size()
     
     font_title = pygame.font.Font(resource_path("GuessMyClass/font/MightySouly.ttf"), 80)
     font_subtitle = pygame.font.Font(resource_path("GuessMyClass/font/MightySouly.ttf"), 50)
-    font_button = pygame.font.Font(resource_path("GuessMyClass/font/MightySouly.ttf"), 30)  # ✅ Police plus petite pour le texte long
+    font_button = pygame.font.Font(resource_path("GuessMyClass/font/MightySouly.ttf"), 30)
     
     bg_color = (205, 228, 226)
     title_color = (255, 255, 255)
@@ -185,11 +210,10 @@ def welcome_display():
             if login_hovered and login_was_pressed:
                 login_was_pressed = False
                 
-                pygame.event.clear()
-                result = open_login_window()
+                # Affiche le popup PYGAME (pas de Tkinter !)
+                result = show_login_popup(screen, w, h)
                 
                 if result:
-                    pygame.time.delay(100)
                     return 'home'
             
             # ===== BOUTON INVITÉ =====
@@ -219,7 +243,7 @@ def welcome_display():
         pygame.draw.rect(screen, (150, 180, 220), subtitle_bg, border_radius=15)
         screen.blit(subtitle_text, subtitle_rect)
         
-        # ✅ Bouton "Créer/Se connecter"
+        # Bouton "Créer/Se connecter"
         color_login = button_login_hover if login_hovered else button_login_color
         pygame.draw.rect(screen, color_login, button_login_rect, border_radius=15)
         login_text = font_button.render("Créer/Se connecter", True, (255, 255, 255))

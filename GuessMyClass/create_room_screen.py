@@ -1,6 +1,5 @@
 import sys, os
 import pygame
-import customtkinter as ctk
 from utils import *
 from multiplayer import create_room, is_player_guest
 from sql_link import load_local_profile
@@ -13,48 +12,85 @@ def resource_path(relative_path):
     return os.path.join(base_path, relative_path)
 
 leave_button_create = Shape('multiplayer_menu', '<', 50, 50, (10, 10), 2, (200, 0, 0), True, (resource_path("GuessMyClass/font/MightySouly.ttf"), 40))
-
 title_create = Shape(None, 'Créer une partie', current_w/2 - 300, 100, (current_w/2 - 300, 50), 0, (104, 180, 229), False, (resource_path("GuessMyClass/font/MightySouly.ttf"), 80))
 
+def show_error_popup_pygame(screen, message):
+    """Popup d'erreur en Pygame pur (pas de Tkinter !)"""
+    w, h = screen.get_size()
+    font_title = pygame.font.Font(resource_path("GuessMyClass/font/MightySouly.ttf"), 30)
+    font_text = pygame.font.Font(resource_path("GuessMyClass/font/MightySouly.ttf"), 20)
+    
+    # Rectangles
+    popup_w, popup_h = 500, 200
+    popup_x, popup_y = w//2 - popup_w//2, h//2 - popup_h//2
+    button_rect = pygame.Rect(popup_x + 200, popup_y + 140, 100, 40)
+    
+    clock = pygame.time.Clock()
+    
+    while True:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                return
+            
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_RETURN or event.key == pygame.K_ESCAPE:
+                    return
+            
+            if event.type == pygame.MOUSEBUTTONUP:
+                if button_rect.collidepoint(event.pos):
+                    return
+        
+        # Assombrit l'arrière-plan
+        overlay = pygame.Surface((w, h))
+        overlay.set_alpha(180)
+        overlay.fill((0, 0, 0))
+        screen.blit(overlay, (0, 0))
+        
+        # Popup
+        pygame.draw.rect(screen, (205, 228, 226), (popup_x, popup_y, popup_w, popup_h), border_radius=15)
+        
+        # Titre
+        title = font_title.render("Accès refusé", True, (255, 0, 0))
+        screen.blit(title, (popup_x + popup_w//2 - title.get_width()//2, popup_y + 20))
+        
+        # Message (2 lignes)
+        lines = [
+            "Les invités ne peuvent pas créer de partie.",
+            "Veuillez vous connecter avec un compte."
+        ]
+        
+        y_offset = popup_y + 70
+        for line in lines:
+            text = font_text.render(line, True, (0, 0, 0))
+            screen.blit(text, (popup_x + popup_w//2 - text.get_width()//2, y_offset))
+            y_offset += 30
+        
+        # Bouton OK
+        mouse_pos = pygame.mouse.get_pos()
+        button_color = (200, 110, 0) if button_rect.collidepoint(mouse_pos) else (255, 145, 0)
+        pygame.draw.rect(screen, button_color, button_rect, border_radius=10)
+        ok_text = font_text.render("OK", True, (255, 255, 255))
+        screen.blit(ok_text, (button_rect.centerx - ok_text.get_width()//2, button_rect.centery - ok_text.get_height()//2))
+        
+        pygame.display.flip()
+        clock.tick(60)
+
 def create_room_screen_display():
+    screen = pygame.display.get_surface()
+    
     pseudo = load_local_profile()
+    
+    # ✅ Vérifie si invité SANS Tkinter
     if is_player_guest(pseudo):
-        # Affiche un message d'erreur
-        error_window = ctk.CTk()
-        error_window.geometry("400x150")
-        error_window.title("Accès refusé")
-        error_window.resizable(False, False)
-        error_window.configure(fg_color="#CDE4E2")
-        
-        error_label = ctk.CTkLabel(
-            error_window, 
-            text="Les invités ne peuvent pas créer de partie.\nVeuillez vous connecter avec un compte.", 
-            font=("Arial", 16),
-            text_color="#FF0000"
-        )
-        error_label.place(x=50, y=30)
-        
-        ok_button = ctk.CTkButton(
-            error_window, 
-            text="OK", 
-            command=error_window.destroy,
-            fg_color="#FF9100",
-            hover_color="#C35500",
-            width=100,
-            font=("Arial", 16)
-        )
-        ok_button.place(x=150, y=90)
-        
-        error_window.mainloop()
+        show_error_popup_pygame(screen, "Invité bloqué")
         return "multiplayer_menu"
+    
     dest = leave_button_create.draw()
     if dest:
         return dest
     
     title_create.draw()
     game_question.draw()
-    
-    pseudo = load_local_profile()
     
     dest = nb_5.draw()
     if dest == '5':
