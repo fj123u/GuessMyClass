@@ -11,10 +11,6 @@ def resource_path(relative_path):
         base_path = os.path.abspath(".")
     return os.path.join(base_path, relative_path)
 
-# ✅ Bouton retour en haut à gauche
-leave_button_join = Shape('multiplayer_menu', '<', 50, 50, (10, 10), 2, (200, 0, 0), True, (resource_path("GuessMyClass/font/MightySouly.ttf"), 40))
-title_join = Shape(None, 'Rejoindre une partie', current_w/2 - 350, 100, (current_w/2 - 350, 50), 0, (104, 180, 229), False, (resource_path("GuessMyClass/font/MightySouly.ttf"), 80))
-
 def show_error_popup(screen, title_text, message):
     """Popup d'erreur en Pygame"""
     w, h = screen.get_size()
@@ -74,11 +70,12 @@ def show_join_popup(screen):
     
     code_text = ""
     
-    popup_w, popup_h = 400, 250
+    popup_w, popup_h = 400, 290
     popup_x, popup_y = w//2 - popup_w//2, h//2 - popup_h//2
     
     input_rect = pygame.Rect(popup_x + 50, popup_y + 100, 300, 45)
     button_join_rect = pygame.Rect(popup_x + 100, popup_y + 170, 200, 45)
+    button_cancel_rect = pygame.Rect(popup_x + 100, popup_y + 230, 200, 35)
     
     clock = pygame.time.Clock()
     
@@ -118,6 +115,10 @@ def show_join_popup(screen):
             
             if event.type == pygame.MOUSEBUTTONUP:
                 x, y = event.pos
+                
+                # Bouton Annuler
+                if button_cancel_rect.collidepoint(x, y):
+                    return None
                 
                 # Bouton Rejoindre
                 if button_join_rect.collidepoint(x, y):
@@ -177,46 +178,22 @@ def show_join_popup(screen):
         join_text = font_text.render("Rejoindre", True, (255, 255, 255))
         screen.blit(join_text, (button_join_rect.centerx - join_text.get_width()//2, button_join_rect.centery - join_text.get_height()//2))
         
+        # ✅ Bouton Annuler ROUGE
+        button_cancel_color = (180, 0, 0) if button_cancel_rect.collidepoint(mouse_pos) else (200, 0, 0)
+        pygame.draw.rect(screen, button_cancel_color, button_cancel_rect, border_radius=8)
+        cancel_text = font_text.render("Annuler", True, (255, 255, 255))
+        screen.blit(cancel_text, (button_cancel_rect.centerx - cancel_text.get_width()//2, button_cancel_rect.centery - cancel_text.get_height()//2))
+        
         pygame.display.flip()
         clock.tick(60)
 
 def join_room_screen_display():
-    """Écran avec bouton retour visible AVANT d'ouvrir le popup"""
     screen = pygame.display.get_surface()
-    clock = pygame.time.Clock()
     
-    # ✅ Boucle d'affichage de l'écran de fond avec bouton retour
-    show_popup = False
+    # Affiche le popup de saisie du code
+    result = show_join_popup(screen)
     
-    while True:
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                return 'hell'
-        
-        # Fond
-        screen.fill((205, 228, 226))
-        
-        # ✅ Bouton retour visible
-        dest = leave_button_join.draw()
-        if dest:
-            return dest
-        
-        # Titre
-        title_join.draw()
-        
-        # Si on n'a pas encore ouvert le popup, on l'ouvre au premier frame
-        if not show_popup:
-            show_popup = True
-            pygame.display.flip()
-            
-            # Maintenant on ouvre le popup PAR-DESSUS
-            result = show_join_popup(screen)
-            
-            if result:
-                return result
-            else:
-                # Si popup annulé, retour au menu
-                return "multiplayer_menu"
-        
-        pygame.display.flip()
-        clock.tick(60)
+    if result:
+        return result
+    
+    return "multiplayer_menu"

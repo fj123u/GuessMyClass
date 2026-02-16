@@ -15,6 +15,14 @@ def save_local_profile(pseudo):
     with open(path, "w", encoding="utf-8") as f:
         f.write(pseudo)
 
+def load_local_profile():
+    """Charge le pseudo local"""
+    try:
+        with open(resource_path("GuessMyClass/profile/compte.txt"), "r", encoding="utf-8") as f:
+            return f.read().strip()
+    except FileNotFoundError:
+        return ""
+
 def check_or_create_profile(pseudo):
     """Vérifie si le pseudo existe, sinon le crée automatiquement"""
     try:
@@ -158,8 +166,8 @@ def show_login_popup(screen, w, h):
         valider_text = font_text.render("Valider", True, (255, 255, 255))
         screen.blit(valider_text, (button_valider_rect.centerx - valider_text.get_width()//2, button_valider_rect.centery - valider_text.get_height()//2))
         
-        # Bouton Annuler
-        annuler_color = (100, 100, 100) if button_annuler_rect.collidepoint(mouse_pos) else (150, 150, 150)
+        # ✅ Bouton Annuler ROUGE
+        annuler_color = (180, 0, 0) if button_annuler_rect.collidepoint(mouse_pos) else (200, 0, 0)
         pygame.draw.rect(screen, annuler_color, button_annuler_rect, border_radius=8)
         annuler_text = font_text.render("Annuler", True, (255, 255, 255))
         screen.blit(annuler_text, (button_annuler_rect.centerx - annuler_text.get_width()//2, button_annuler_rect.centery - annuler_text.get_height()//2))
