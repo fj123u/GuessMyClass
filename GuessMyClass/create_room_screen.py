@@ -12,7 +12,39 @@ def resource_path(relative_path):
     return os.path.join(base_path, relative_path)
 
 leave_button_create = Shape('multiplayer_menu', '<', 50, 50, (10, 10), 2, (200, 0, 0), True, (resource_path("GuessMyClass/font/MightySouly.ttf"), 40))
-title_create = Shape(None, 'Créer une partie', current_w/2 - 300, 100, (current_w/2 - 300, 50), 0, (104, 180, 229), False, (resource_path("GuessMyClass/font/MightySouly.ttf"), 80))
+
+# ✅ Titre centré dynamiquement
+font_temp = pygame.font.Font(resource_path("GuessMyClass/font/MightySouly.ttf"), 80)
+title_text_surf = font_temp.render("Créer une partie", True, (255, 255, 255))
+title_width = title_text_surf.get_width()
+title_x = (current_w - title_width) / 2
+
+title_create = Shape(None, 'Créer une partie', title_width, 100, (title_x, 50), 0, (104, 180, 229), False, (resource_path("GuessMyClass/font/MightySouly.ttf"), 80))
+
+# Question centrée
+game_question = Shape(None, 'Combien de round voulez-vous jouer ?', 600, 100, (current_w/2 - 300, current_h/2 - 150), 0, (200, 0, 0), False, (resource_path("GuessMyClass/font/MightySouly.ttf"), 35))
+
+# ✅ Boutons avec les MÊMES tailles que utils.py
+nb5Width = 50
+nb5Height = 50
+nb5Pos = (current_w/2 - 125, current_h/2 + 20)
+nb5Elevation = 2
+nb5Color = (255, 128, 0)
+nb_5 = Shape("5", "5", nb5Width, nb5Height, nb5Pos, nb5Elevation, nb5Color, True, (resource_path('GuessMyClass/font/MightySouly.ttf'), 40))
+
+nb10Width = 50
+nb10Height = 50
+nb10Pos = (current_w/2 - 25, current_h/2 + 20)
+nb10Elevation = 2
+nb10Color = (255, 128, 0)
+nb_10 = Shape("10", "10", nb10Width, nb10Height, nb10Pos, nb10Elevation, nb10Color, True, (resource_path('GuessMyClass/font/MightySouly.ttf'), 40))
+
+nb20Width = 50
+nb20Height = 50
+nb20Pos = (current_w/2 + 75, current_h/2 + 20)
+nb20Elevation = 2
+nb20Color = (255, 128, 0)
+nb_20 = Shape("20", "20", nb20Width, nb20Height, nb20Pos, nb20Elevation, nb20Color, True, (resource_path('GuessMyClass/font/MightySouly.ttf'), 40))
 
 def show_error_popup_pygame(screen, message):
     """Popup d'erreur en Pygame pur (pas de Tkinter !)"""
@@ -91,6 +123,8 @@ def create_room_screen_display():
     
     title_create.draw()
     game_question.draw()
+    
+    pseudo = load_local_profile()
     
     dest = nb_5.draw()
     if dest == '5':
