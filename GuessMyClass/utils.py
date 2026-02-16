@@ -204,14 +204,6 @@ popupVersus1Elevation = 3
 popupVersus1Color = (184, 180, 229)
 popup_versus1 = Shape('versus_friend', 'Versus friend', popupVersus1Width, popupVersus1Height, popupVersus1Pos, popupVersus1Elevation, popupVersus1Color, True, (resource_path('GuessMyClass/font/MightySouly.ttf'), 50))
 
-logInMainWidth = 350
-logInMainHeight = 50
-logInMainPos = (6, current_h/6 + 6 + 5 + 55)
-logInMainElevation = 2
-logInMainColor = (184, 180, 229)
-log_in_main = Shape('log_in', 'Changer de pseudo', logInMainWidth, logInMainHeight, logInMainPos, logInMainElevation, logInMainColor, True, (resource_path('GuessMyClass/font/MightySouly.ttf'), 40))
-
-
 onlineWidth = 250
 onlineHeight = 50
 onlinePos = (current_w/2 - 125, current_h/2 + 50)

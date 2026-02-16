@@ -4,7 +4,6 @@ import sys, os
 from shape_creator import *
 from home import *
 from about import *
-from log_in import *
 from game import *
 from welcome import *
 from utils import *
@@ -93,12 +92,6 @@ while running:
                 v = False
             elif dest == 'versus_random':
                 v = False
-        if a:
-            dest = log_in_main.draw()
-            if dest is None:
-                dest = 'home'
-            if s:
-                a = False
     
     elif dest == 'leaderboard':
         from leaderboard import *
@@ -112,10 +105,6 @@ while running:
     
     elif dest == 'game':
         dest = game_display()
-    
-    elif dest == 'log_in':
-        log_in_display()
-        dest = 'home'
     
     elif dest == "welcome":
         dest = welcome_display()
