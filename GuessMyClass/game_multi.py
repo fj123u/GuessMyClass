@@ -6,7 +6,8 @@ from math import sqrt, exp
 from shape_creator import *
 from utils import *
 from multiplayer import (get_room_info, submit_answer, get_round_results, next_round, finish_game,
-                         create_game_session, save_round_detail, is_player_guest)
+                         create_game_session, save_round_detail, is_player_guest,
+                         PLAYER_COLORS, SOLUTION_COLOR)
 from sql_link import load_local_profile
 from coordonées_salles import coo
 
@@ -68,7 +69,6 @@ def get_image_for_room(room_name):
 
 def calcul_points(salle, coo_pin, nb_etage):
     distance = sqrt((coo_pin[0] - coo[salle][0])**2 + (coo_pin[1] - coo[salle][1])**2)
-    
     if distance <= 10:
         score = 5000
     elif distance <= 300:
@@ -78,28 +78,58 @@ def calcul_points(salle, coo_pin, nb_etage):
     else:
         score = 500 - ((distance - 300) / 700) * 450
         score = max(score, 50)
-    
     if nb_etage != coo[salle][2]:
         score *= 0.25
-    
     return round(score), distance
 
-def draw_points(point):
+def draw_player_point(point, color):
+    """✅ Dessine le point d'un joueur avec sa couleur"""
     if point and point != (0, 0):
-        pygame.draw.circle(screen, (255, 0, 0), point, 10)
+        pygame.draw.circle(screen, color, point, 10)
+        pygame.draw.circle(screen, (0, 0, 0), point, 10, 2)
 
-def draw_points3(last_point3):
-    if last_point3:
-        pygame.draw.circle(screen, (0, 0, 255), last_point3, 10)
+def draw_solution_point(salle):
+    """✅ Dessine la solution en OR avec un point blanc au centre"""
+    x, y = coo[salle][0], coo[salle][1]
+    pygame.draw.circle(screen, SOLUTION_COLOR, (x, y), 13)
+    pygame.draw.circle(screen, (0, 0, 0), (x, y), 13, 2)
+    pygame.draw.circle(screen, (255, 255, 255), (x, y), 4)
 
-def show_answer(salle, coo_pin):
-    draw_points3((coo[salle][0], coo[salle][1]))
-    draw_points(coo_pin)
-    if coo_pin != (0, 0):
-        pygame.draw.line(screen, (0, 0, 0), coo_pin, (coo[salle][0], coo[salle][1]), width=3)
+def show_answer_multi(salle, results, player_colors):
+    """✅ Affiche lignes + points colorés + solution en or"""
+    # D'abord les lignes (derrière)
+    for res in results:
+        color = tuple(player_colors.get(res['pseudo'], [255, 255, 255]))
+        point = (res['x'], res['y'])
+        if point != (0, 0):
+            pygame.draw.line(screen, color, point, (coo[salle][0], coo[salle][1]), width=2)
+    # Puis les points joueurs
+    for res in results:
+        color = tuple(player_colors.get(res['pseudo'], [255, 255, 255]))
+        draw_player_point((res['x'], res['y']), color)
+    # Solution PAR-DESSUS tout
+    draw_solution_point(salle)
+
+def draw_legend(results, player_colors, font_path):
+    """✅ Légende des couleurs en bas à gauche"""
+    font = pygame.font.Font(font_path, 18)
+    x_start = 20
+    y_start = current_h - 30 - ((len(results) + 1) * 25)
+    for res in results:
+        color = tuple(player_colors.get(res['pseudo'], [255, 255, 255]))
+        pygame.draw.rect(screen, color, (x_start, y_start, 15, 15), border_radius=2)
+        pygame.draw.rect(screen, (0, 0, 0), (x_start, y_start, 15, 15), 1, border_radius=2)
+        text = font.render(res['pseudo'][:12], True, (0, 0, 0))
+        screen.blit(text, (x_start + 20, y_start - 2))
+        y_start += 22
+    # Solution
+    pygame.draw.circle(screen, SOLUTION_COLOR, (x_start + 7, y_start + 7), 7)
+    pygame.draw.circle(screen, (0, 0, 0), (x_start + 7, y_start + 7), 7, 1)
+    pygame.draw.circle(screen, (255, 255, 255), (x_start + 7, y_start + 7), 2)
+    text = font.render("Solution", True, (0, 0, 0))
+    screen.blit(text, (x_start + 20, y_start))
 
 def wait_with_events(milliseconds):
-    """Attend X ms en gérant les événements QUIT"""
     start = pygame.time.get_ticks()
     while pygame.time.get_ticks() - start < milliseconds:
         for event in pygame.event.get():
@@ -120,9 +150,11 @@ def game_multi_display(room_code):
     session_id = create_game_session(room_code, nb, total_players)
     start_time = time.time()
     
+    # ✅ Récupère les couleurs des joueurs
+    player_colors = room_data.get("player_colors", {})
+    
     current_round = room_data["current_round"]
     total_rounds = nb
-    
     score = 0
     map_image_coo = (75, 75)
     etage_image_coo = (75, 75)
@@ -131,19 +163,24 @@ def game_multi_display(room_code):
     is_host = room_data["host"] == pseudo
     last_update = time.time()
     
+    # ✅ Couleur du joueur actuel
+    my_color = tuple(player_colors.get(pseudo, [255, 255, 255]))
+    
     for round_num in range(current_round, nb + 1):
         room_data = get_room_info(room_code)
         if not room_data or room_data["status"] == "finished":
             break
         
+        # ✅ Rafraîchit les couleurs à chaque manche
+        player_colors = room_data.get("player_colors", {})
+        my_color = tuple(player_colors.get(pseudo, [255, 255, 255]))
+        
         salle = room_data["current_room"]
         choose = get_image_for_room(salle)
-        
         if not choose:
             continue
         
         round_start_time = time.time()
-        
         pano_view = PanoramicView(resource_path(choose), screen)
         map_image = pygame.image.load(path_plan)
         map_image = pygame.transform.scale(map_image, (current_w, current_h))
@@ -159,7 +196,6 @@ def game_multi_display(room_code):
         
         map_icon = pygame.image.load(resource_path('GuessMyClass/icon/map.png'))
         map_icon = pygame.transform.scale(map_icon, map_image_coo)
-        
         etage_icon = pygame.image.load(resource_path('GuessMyClass/icon/fleche haut.png'))
         etage_icon = pygame.transform.scale(etage_icon, etage_image_coo)
         etage_icon2 = pygame.image.load(resource_path('GuessMyClass/icon/fleche bas.png'))
@@ -188,7 +224,7 @@ def game_multi_display(room_code):
         last_point = (0, 0)
         liste_points = [(0, 0)]
         show_ui = True
-        auto_submit_time = None  # ✅ Timer pour auto-submit après 10s
+        auto_submit_time = None
         
         while running:
             for event in pygame.event.get():
@@ -215,77 +251,48 @@ def game_multi_display(room_code):
                             map_image = pygame.transform.scale(map_image, (current_w, current_h))
                         etage_pressed = True
                     else:
-                        if map_open == True:
+                        if map_open:
                             if current_w - 120 <= x <= current_w - 20 and current_h - 120 <= y <= current_h - 20:
                                 pass
                             else:
-                                last_point = pygame.mouse.get_pos()  
-                                x, y = last_point                          
+                                last_point = pygame.mouse.get_pos()
+                                x, y = last_point
                                 liste_points.append(last_point)
-                
                 pano_view.handle_event(event)
             
             screen.fill((0, 0, 0))
             
             if map_open:
+                leave_button.hide()
+                screen.blit(map_image, (screen.get_width() // 2 - map_image.get_width() // 2, screen.get_height() // 2 - map_image.get_height() // 2))
+                
+                # ✅ Point du joueur avec SA couleur
+                draw_player_point(last_point, my_color)
+                
                 if nb_etage == 0:
-                    leave_button.hide()
-                    screen.blit(map_image, (screen.get_width() // 2 - map_image.get_width() // 2, screen.get_height() // 2 - map_image.get_height() // 2))
-                    draw_points(last_point)
                     game_valider.draw()
                     game_etage.draw()
                     screen.blit(etage_icon, (current_w - 75 - 17, current_h - 75 - 132))
-                    
-                    if valider_pressed and not player_has_answered:
-                        if len(liste_points) >= 2:
-                            round_time_taken = int(time.time() - round_start_time)
-                            score2, distance = calcul_points(salle, liste_points[-2], nb_etage)
-                            score += score2
-                            
-                            submit_answer(room_code, round_num, pseudo, liste_points[-2][0], liste_points[-2][1], nb_etage, score2)
-                            
-                            if session_id:
-                                save_round_detail(session_id, round_num, salle, pseudo, 
-                                                liste_points[-2][0], liste_points[-2][1], nb_etage, 
-                                                score2, distance, round_time_taken)
-                            
-                            player_has_answered = True
-                            valider_pressed = False
-                            
-                            score_button = Shape('score', "Score : " + str(score), scoreButtonWidth, scoreButtonHeight, scoreButtonPos, scoreButtonElevation, scoreButtonColor, False, (resource_path('GuessMyClass/font/MightySouly.ttf'), 30))
-                    
-                    elif etage_pressed:
-                        etage_pressed = False
-                        nb_etage = 1
                 else:
-                    leave_button.hide()
-                    screen.blit(map_image, (screen.get_width() // 2 - map_image.get_width() // 2, screen.get_height() // 2 - map_image.get_height() // 2))
-                    draw_points(last_point)
                     game_valider.draw()
                     game_etage.draw()
                     screen.blit(etage_icon2, (current_w - 75 - 17, current_h - 75 - 132))
-                    
-                    if valider_pressed and not player_has_answered:
-                        if len(liste_points) >= 2:
-                            round_time_taken = int(time.time() - round_start_time)
-                            score2, distance = calcul_points(salle, liste_points[-2], nb_etage)
-                            score += score2
-                            
-                            submit_answer(room_code, round_num, pseudo, liste_points[-2][0], liste_points[-2][1], nb_etage, score2)
-                            
-                            if session_id:
-                                save_round_detail(session_id, round_num, salle, pseudo, 
-                                                liste_points[-2][0], liste_points[-2][1], nb_etage, 
-                                                score2, distance, round_time_taken)
-                            
-                            player_has_answered = True
-                            valider_pressed = False
-                            
-                            score_button = Shape('score', "Score : " + str(score), scoreButtonWidth, scoreButtonHeight, scoreButtonPos, scoreButtonElevation, scoreButtonColor, False, (resource_path('GuessMyClass/font/MightySouly.ttf'), 30))
-                    
-                    elif etage_pressed:
-                        etage_pressed = False
-                        nb_etage = 0
+                
+                if valider_pressed and not player_has_answered:
+                    if len(liste_points) >= 2:
+                        round_time_taken = int(time.time() - round_start_time)
+                        score2, distance = calcul_points(salle, liste_points[-2], nb_etage)
+                        score += score2
+                        submit_answer(room_code, round_num, pseudo, liste_points[-2][0], liste_points[-2][1], nb_etage, score2)
+                        if session_id:
+                            save_round_detail(session_id, round_num, salle, pseudo, liste_points[-2][0], liste_points[-2][1], nb_etage, score2, distance, round_time_taken)
+                        player_has_answered = True
+                        valider_pressed = False
+                        score_button = Shape('score', "Score : " + str(score), scoreButtonWidth, scoreButtonHeight, scoreButtonPos, scoreButtonElevation, scoreButtonColor, False, (resource_path('GuessMyClass/font/MightySouly.ttf'), 30))
+                
+                if etage_pressed:
+                    etage_pressed = False
+                    nb_etage = 1 if nb_etage == 0 else 0
                 
                 if player_has_answered:
                     waiting_text = Shape(None, "En attente des autres joueurs...", 500, 60, (current_w/2 - 250, current_h - 150), 0, (255, 165, 0), False, (resource_path("GuessMyClass/font/MightySouly.ttf"), 30))
@@ -297,37 +304,40 @@ def game_multi_display(room_code):
                         
                         if len(results) >= len(room_data["players"]):
                             sorted_results = sorted(results, key=lambda x: x['score'], reverse=True)
-                            
                             show_ui = False
                             running = False
                             
+                            # ✅ Carte avec points colorés + solution en or
                             screen.fill((0, 0, 0))
                             map_image_reload = pygame.image.load(path_plan)
                             map_image_reload = pygame.transform.scale(map_image_reload, (current_w, current_h))
                             screen.blit(map_image_reload, (screen.get_width() // 2 - map_image_reload.get_width() // 2, screen.get_height() // 2 - map_image_reload.get_height() // 2))
                             
-                            for res in sorted_results:
-                                draw_points((res['x'], res['y']))
-                            
-                            show_answer(salle, liste_points[-2] if len(liste_points) >= 2 else (0, 0))
+                            show_answer_multi(salle, sorted_results, player_colors)
+                            draw_legend(sorted_results, player_colors, resource_path("GuessMyClass/font/MightySouly.ttf"))
                             pygame.display.flip()
                             
                             if wait_with_events(4000):
                                 return 'hell'
                             
+                            # ✅ Résultats de la manche avec carré coloré par joueur
                             screen.fill("#CDE4E2")
                             results_title = Shape(None, "Résultats de la manche", 500, 60, (current_w/2 - 250, 50), 0, (104, 180, 229), False, (resource_path("GuessMyClass/font/MightySouly.ttf"), 40))
                             results_title.draw()
                             
-                            y = 130
+                            font_result = pygame.font.Font(resource_path("GuessMyClass/font/MightySouly.ttf"), 30)
+                            y_res = 130
                             for i, res in enumerate(sorted_results):
-                                color = (0, 200, 0) if i == 0 else (184, 180, 229)
-                                result_text = Shape(None, f"{i+1}. {res['pseudo']}: {res['score']} pts", 400, 45, (current_w/2 - 200, y), 0, color, False, (resource_path('GuessMyClass/font/MightySouly.ttf'), 30))
-                                result_text.draw()
-                                y += 50
+                                player_color = tuple(player_colors.get(res['pseudo'], [184, 180, 229]))
+                                # Carré de couleur
+                                pygame.draw.rect(screen, player_color, (current_w//2 - 220, y_res + 8, 20, 20), border_radius=3)
+                                pygame.draw.rect(screen, (0, 0, 0), (current_w//2 - 220, y_res + 8, 20, 20), 1, border_radius=3)
+                                # Texte toujours en noir pour lisibilité
+                                text = font_result.render(f"{i+1}. {res['pseudo']}: {res['score']} pts", True, (0, 0, 0))
+                                screen.blit(text, (current_w//2 - 190, y_res))
+                                y_res += 50
                             
                             pygame.display.flip()
-                            
                             if wait_with_events(2000):
                                 return 'hell'
                             
@@ -362,25 +372,17 @@ def game_multi_display(room_code):
                     map_open = True
                     map_block = True
                     clickable = True
-                    
-                    # ✅ Démarre le timer auto-submit
                     if auto_submit_time is None:
                         auto_submit_time = time.time()
                 
-                # ✅ AUTO-SUBMIT après 10s de timer expiré
                 if auto_submit_time and not player_has_answered and time.time() - auto_submit_time > 10.0:
                     print(f"⏰ Auto-submit pour {pseudo} après 10s de timer expiré")
                     round_time_taken = int(time.time() - round_start_time)
                     score2, distance = calcul_points(salle, (0, 0), nb_etage)
                     score += score2
-                    
                     submit_answer(room_code, round_num, pseudo, 0, 0, nb_etage, score2)
-                    
                     if session_id:
-                        save_round_detail(session_id, round_num, salle, pseudo, 
-                                        0, 0, nb_etage, 
-                                        score2, distance, round_time_taken)
-                    
+                        save_round_detail(session_id, round_num, salle, pseudo, 0, 0, nb_etage, score2, distance, round_time_taken)
                     player_has_answered = True
                     score_button = Shape('score', "Score : " + str(score), scoreButtonWidth, scoreButtonHeight, scoreButtonPos, scoreButtonElevation, scoreButtonColor, False, (resource_path('GuessMyClass/font/MightySouly.ttf'), 30))
                 
@@ -397,24 +399,18 @@ def game_multi_display(room_code):
                 waiting_text = Shape(None, "En attente de la manche suivante...", 600, 80, (current_w/2 - 300, current_h/2 - 40), 0, (255, 165, 0), False, (resource_path("GuessMyClass/font/MightySouly.ttf"), 40))
                 waiting_text.draw()
                 pygame.display.flip()
-                
                 for event in pygame.event.get():
                     if event.type == pygame.QUIT:
                         return 'hell'
-                
                 room_data = get_room_info(room_code)
                 if not room_data:
                     return "multiplayer_menu"
-                                
                 if room_data["current_round"] > round_num:
                     break
-                
                 if room_data["status"] == "finished":
                     break
-                
                 if time.time() - waiting_start > 60:
                     return "multiplayer_menu"
-                
                 clock.tick(2)
         else:
             pygame.time.delay(2000)
@@ -424,5 +420,4 @@ def game_multi_display(room_code):
             break
     
     leave_button.show()
-    
     return ('final_results_multi', room_code, session_id, start_time)

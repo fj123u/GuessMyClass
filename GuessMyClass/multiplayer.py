@@ -10,6 +10,34 @@ supabase = create_client(SUPABASE_URL, SUPABASE_KEY)
 
 MAX_PLAYERS = 10
 
+# 🎨 Palette de 10 couleurs vives et distinctes (RGB) - Style Among Us
+PLAYER_COLORS = [
+    (255, 0, 0),      # 🔴 Rouge
+    (0, 0, 255),      # 🔵 Bleu
+    (0, 255, 0),      # 🟢 Vert
+    (255, 255, 0),    # 🟡 Jaune
+    (255, 0, 255),    # 🟣 Magenta
+    (0, 255, 255),    # 🔷 Cyan
+    (255, 128, 0),    # 🟠 Orange
+    (128, 0, 255),    # 🟣 Violet
+    (0, 255, 128),    # 🟩 Vert menthe
+    (255, 192, 203),  # 🌸 Rose
+]
+
+# ⭐ Couleur pour la SOLUTION (le bon emplacement)
+SOLUTION_COLOR = (255, 215, 0)  # 🟡 Or/Doré
+
+def get_player_color(player_index):
+    """Retourne la couleur d'un joueur selon son index (0-9)"""
+    return PLAYER_COLORS[player_index % len(PLAYER_COLORS)]
+
+def assign_player_colors(players):
+    """Retourne un dictionnaire {pseudo: [R, G, B]}"""
+    colors = {}
+    for i, pseudo in enumerate(players):
+        colors[pseudo] = list(PLAYER_COLORS[i % len(PLAYER_COLORS)])
+    return colors
+
 def generate_room_code():
     return ''.join(random.choices(string.ascii_uppercase + string.digits, k=6))
 
@@ -68,10 +96,14 @@ def create_room(pseudo, mode=5):
         
         ensure_player_profile(pseudo, False)
         
+        # ✅ Attribue la couleur au host (première couleur - Rouge)
+        player_colors = {pseudo: list(PLAYER_COLORS[0])}
+        
         supabase.table("game_rooms").insert({
             "room_code": room_code,
             "host": pseudo,
             "players": [pseudo],
+            "player_colors": player_colors,  # ✅ Nouveau champ
             "mode": mode,
             "status": "waiting"
         }).execute()
@@ -115,9 +147,17 @@ def join_room(room_code, pseudo):
             is_guest = is_player_guest(pseudo)
             ensure_player_profile(pseudo, is_guest)
             
+            # ✅ Récupère les couleurs actuelles et attribue une couleur au nouveau joueur
+            current_colors = result.data.get("player_colors", {})
+            player_index = len(players)  # Index du nouveau joueur
+            current_colors[pseudo] = list(PLAYER_COLORS[player_index])
+            
             players.append(pseudo)
             supabase.table("game_rooms")\
-                .update({"players": players})\
+                .update({
+                    "players": players,
+                    "player_colors": current_colors  # ✅ Met à jour les couleurs
+                })\
                 .eq("room_code", room_code)\
                 .execute()
         
@@ -160,10 +200,15 @@ def restart_game_new_code(old_room_code):
             return None
         
         new_room_code = generate_room_code()
+        
+        # ✅ Réattribue les couleurs aux mêmes joueurs
+        player_colors = assign_player_colors(old_room["players"])
+        
         supabase.table("game_rooms").insert({
             "room_code": new_room_code,
             "host": old_room["host"],
             "players": old_room["players"],
+            "player_colors": player_colors,  # ✅ Nouvelles couleurs
             "mode": old_room["mode"],
             "status": "waiting"
         }).execute()
@@ -279,13 +324,21 @@ def leave_room(room_code, pseudo):
         if pseudo in players:
             players.remove(pseudo)
             
+            # ✅ Retire la couleur du joueur qui quitte
+            current_colors = room.get("player_colors", {})
+            if pseudo in current_colors:
+                del current_colors[pseudo]
+            
             if len(players) == 0:
                 supabase.table("game_rooms")\
                     .delete()\
                     .eq("room_code", room_code)\
                     .execute()
             else:
-                update_data = {"players": players}
+                update_data = {
+                    "players": players,
+                    "player_colors": current_colors  # ✅ Met à jour les couleurs
+                }
                 if room["host"] == pseudo:
                     update_data["host"] = players[0]
                 
