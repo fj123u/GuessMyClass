@@ -31,6 +31,37 @@ def get_player_color(player_index):
     """Retourne la couleur d'un joueur selon son index (0-9)"""
     return PLAYER_COLORS[player_index % len(PLAYER_COLORS)]
 
+def update_player_color(room_code, pseudo, new_color):
+    """
+    Met à jour la couleur d'un joueur dans la room.
+    Retourne False si la couleur est déjà prise par un autre joueur.
+    """
+    try:
+        room = get_room_info(room_code)
+        if not room:
+            return False
+
+        current_colors = room.get("player_colors", {})
+
+        # Vérifie que la couleur n'est pas déjà prise par quelqu'un d'autre
+        for player, color in current_colors.items():
+            if player != pseudo and tuple(color) == tuple(new_color):
+                print(f"❌ Couleur déjà prise par {player}")
+                return False
+
+        current_colors[pseudo] = list(new_color)
+        supabase.table("game_rooms")\
+            .update({"player_colors": current_colors})\
+            .eq("room_code", room_code.upper())\
+            .execute()
+
+        print(f"✅ Couleur mise à jour pour {pseudo}")
+        return True
+
+    except Exception as e:
+        print(f"❌ Erreur update_player_color: {e}")
+        return False
+
 def assign_player_colors(players):
     """Retourne un dictionnaire {pseudo: [R, G, B]}"""
     colors = {}
