@@ -1,13 +1,25 @@
 import sys, os
 import pygame
+import httpx
 from supabase import create_client
 from utils import resource_path
 from text_input import TextInput
+from error_popup import show_error_popup_connection
 
-# Initialisation Supabase
+# Initialisation Supabase avec timeout
 SUPABASE_URL = "https://dfrfhlvbckvakgtridzv.supabase.co"
 SUPABASE_KEY = "sb_publishable_OEqgvVyKwJGXy5rV1H1Y8Q_kGL98num"
-supabase = create_client(SUPABASE_URL, SUPABASE_KEY)
+
+try:
+    http_client = httpx.Client(timeout=3.0)
+    supabase = create_client(
+        SUPABASE_URL, 
+        SUPABASE_KEY,
+        options={"http_client": http_client}
+    )
+except Exception as e:
+    print(f"❌ Erreur init Supabase: {e}")
+    supabase = None
 
 def save_local_profile(pseudo):
     path = resource_path("GuessMyClass/profile/compte.txt")
@@ -23,6 +35,10 @@ def load_local_profile():
         return ""
 
 def check_or_create_profile(pseudo):
+    if not supabase:
+        print("❌ Pas de connexion BDD")
+        return False
+    
     try:
         result = supabase.table("leaderboard")\
             .select("pseudo")\
@@ -41,7 +57,7 @@ def check_or_create_profile(pseudo):
             print(f"✅ Compte créé: {pseudo}")
             return True
     except Exception as e:
-        print(f"Erreur: {e}")
+        print(f"❌ Erreur connexion BDD (pare-feu/réseau ?): {e}")
         return False
 
 def show_login_popup(screen, w, h):
@@ -76,7 +92,9 @@ def show_login_popup(screen, w, h):
                 save_local_profile(pseudo)
                 return True
             else:
-                error_message = "Erreur de connexion"
+                # ✅ Popup d'erreur de connexion au lieu de message dans le champ
+                show_error_popup_connection(screen, "Erreur de connexion", "Impossible de se connecter\nau serveur")
+                error_message = ""
         return False
 
     while True:

@@ -3,6 +3,7 @@ import pygame
 from utils import *
 from multiplayer import create_room, is_player_guest
 from sql_link import load_local_profile
+from error_popup import show_error_popup_connection
 
 def resource_path(relative_path):
     try:
@@ -136,6 +137,7 @@ def create_room_screen_display():
             return ('waiting_room', room_code, True)
         else:
             print("Erreur création room")
+            show_error_popup_connection(screen, "Erreur de connexion", "Impossible de créer la partie")
     
     dest = nb_10.draw()
     if dest == '10':
@@ -147,6 +149,7 @@ def create_room_screen_display():
             return ('waiting_room', room_code, True)
         else:
             print("Erreur création room")
+            show_error_popup_connection(screen, "Erreur de connexion", "Impossible de créer la partie")
     
     dest = nb_20.draw()
     if dest == '20':
@@ -158,5 +161,6 @@ def create_room_screen_display():
             return ('waiting_room', room_code, True)
         else:
             print("Erreur création room")
+            show_error_popup_connection(screen, "Erreur de connexion", "Impossible de créer la partie")
     
     return "create_room_screen"

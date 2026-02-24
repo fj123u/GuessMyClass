@@ -1,12 +1,23 @@
 import random
 import string
+import httpx
 from supabase import create_client
 import time
 from datetime import datetime, timedelta, timezone
 
 SUPABASE_URL = "https://dfrfhlvbckvakgtridzv.supabase.co"
 SUPABASE_KEY = "sb_publishable_OEqgvVyKwJGXy5rV1H1Y8Q_kGL98num"
-supabase = create_client(SUPABASE_URL, SUPABASE_KEY)
+
+try:
+    http_client = httpx.Client(timeout=3.0)
+    supabase = create_client(
+        SUPABASE_URL, 
+        SUPABASE_KEY,
+        options={"http_client": http_client}
+    )
+except Exception as e:
+    print(f"❌ Erreur initialisation Supabase: {e}")
+    supabase = None
 
 MAX_PLAYERS = 10
 
@@ -73,6 +84,8 @@ def generate_room_code():
     return ''.join(random.choices(string.ascii_uppercase + string.digits, k=6))
 
 def cleanup_old_rooms():
+    if not supabase:
+        return
     try:
         ten_minutes_ago = (datetime.now(timezone.utc) - timedelta(minutes=10)).isoformat()
         supabase.table("game_rooms")\
@@ -81,7 +94,7 @@ def cleanup_old_rooms():
             .lt("created_at", ten_minutes_ago)\
             .execute()
     except Exception as e:
-        print(f"Erreur cleanup: {e}")
+        print(f"❌ Erreur cleanup (connexion coupée ?): {e}")
 
 def is_player_guest(pseudo):
     if not pseudo:
@@ -116,6 +129,10 @@ def ensure_player_profile(pseudo, is_guest=False):
 
 def create_room(pseudo, mode=5):
     """Crée une room - INTERDIT aux invités"""
+    if not supabase:
+        print("❌ Pas de connexion à la base de données")
+        return None
+    
     # Vérifie si c'est un invité
     if is_player_guest(pseudo):
         print(f"REFUSÉ: {pseudo} est un invité et ne peut pas créer de partie")
@@ -140,10 +157,14 @@ def create_room(pseudo, mode=5):
         }).execute()
         return room_code
     except Exception as e:
-        print(f"Erreur création room: {e}")
+        print(f"❌ Erreur création room (connexion coupée ?): {e}")
         return None
 
 def join_room(room_code, pseudo):
+    if not supabase:
+        print("❌ Pas de connexion à la base de données")
+        return None
+    
     try:
         cleanup_old_rooms()
         
@@ -194,7 +215,7 @@ def join_room(room_code, pseudo):
         
         return result.data
     except Exception as e:
-        print(f"Erreur join room: {e}")
+        print(f"❌ Erreur join room (connexion coupée ?): {e}")
         return None
 
 def get_room_info(room_code):
