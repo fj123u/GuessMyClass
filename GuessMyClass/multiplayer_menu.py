@@ -31,6 +31,13 @@ _is_online = False
 def multiplayer_menu_display():
     global _connection_checked, _is_online
     
+    # ✅ Lance la musique de menu
+    try:
+        from audio_manager import audio
+        audio.play_music_menu()
+    except:
+        pass
+    
     screen = pygame.display.get_surface()
     
     # ✅ Vérifie la connexion au premier affichage

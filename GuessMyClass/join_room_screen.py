@@ -185,6 +185,13 @@ def show_join_popup(screen):
 
 
 def join_room_screen_display():
+    # ✅ Lance la musique de menu
+    try:
+        from audio_manager import audio
+        audio.play_music_menu()
+    except:
+        pass
+    
     screen = pygame.display.get_surface()
     result = show_join_popup(screen)
     if result:

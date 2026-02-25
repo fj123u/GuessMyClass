@@ -141,6 +141,13 @@ def wait_with_events(milliseconds):
 def game_multi_display(room_code):
     global last_point
     
+    # ✅ Lance la musique de gameplay
+    try:
+        from audio_manager import audio
+        audio.play_music_game()
+    except:
+        pass
+    
     room_data = get_room_info(room_code)
     if not room_data:
         return "multiplayer_menu"

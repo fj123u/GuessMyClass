@@ -92,6 +92,12 @@ class Shape:
                 self.dynamic_elecation = self.elevation
                 if self.pressed == True:
                     self.pressed = False
+                    # ✅ Joue le son de clic
+                    try:
+                        from audio_manager import audio
+                        audio.play_click()
+                    except:
+                        pass  # Ignore si audio_manager non dispo
                     return self.destination
         else:
             self.dynamic_elecation = self.elevation

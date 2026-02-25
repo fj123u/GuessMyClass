@@ -106,6 +106,14 @@ class TextInput:
                 if len(self.text) < self.max_length:
                     self.text = self.text[:self.cursor_pos] + char + self.text[self.cursor_pos:]
                     self.cursor_pos += 1
+                    
+                    # ✅ Joue le son typing
+                    try:
+                        from audio_manager import audio
+                        audio.play_typing()
+                    except:
+                        pass  # Ignore si audio_manager non dispo
+                    
                     return True
         
         return False

@@ -100,6 +100,12 @@ class PanoramicView:
 
 # Fonction principale du gameplay
 def game_display():
+    # ✅ Lance la musique de gameplay
+    try:
+        from audio_manager import audio
+        audio.play_music_game()
+    except:
+        pass
     
     # Gère le multijoueur
     with open(resource_path("GuessMyClass/score/option.txt"), "r") as f:

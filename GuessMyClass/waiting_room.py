@@ -86,6 +86,13 @@ def draw_color_picker(screen, swatches, my_color, taken_colors, font_small):
 def waiting_room_display(room_code, host):
     global room_data, is_host, current_room_code, last_update_time, start_button_cached
 
+    # ✅ Lance la musique de menu
+    try:
+        from audio_manager import audio
+        audio.play_music_menu()
+    except:
+        pass
+
     current_room_code = room_code
     is_host = host
 

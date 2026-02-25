@@ -25,6 +25,13 @@ menu_button_guest_cached = Shape('home', 'Retour au menu', 300, 70, (current_w/2
 def final_results_multi_display(room_code, session_id=None, game_start_time=None):
     global _stats_saved, _last_poll
     
+    # ✅ Lance la musique de menu
+    try:
+        from audio_manager import audio
+        audio.play_music_menu()
+    except:
+        pass
+    
     if room_code not in _last_poll:
         _last_poll[room_code] = time.time()
     

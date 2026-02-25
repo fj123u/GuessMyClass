@@ -109,6 +109,13 @@ def show_error_popup_pygame(screen, message):
         clock.tick(60)
 
 def create_room_screen_display():
+    # ✅ Lance la musique de menu
+    try:
+        from audio_manager import audio
+        audio.play_music_menu()
+    except:
+        pass
+    
     screen = pygame.display.get_surface()
     
     pseudo = load_local_profile()

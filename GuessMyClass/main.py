@@ -1,6 +1,7 @@
 # Importe les bibliothèques nécessaires pour le fonctionnement du code
 import pygame
 import sys, os
+from audio_manager import audio
 from shape_creator import *
 from home import *
 from about import *

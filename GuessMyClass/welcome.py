@@ -171,6 +171,13 @@ def show_login_popup(screen, w, h):
 
 
 def welcome_display():
+    # ✅ Lance la musique de menu
+    try:
+        from audio_manager import audio
+        audio.play_music_menu()
+    except:
+        pass
+    
     screen = pygame.display.get_surface()
     w, h = screen.get_size()
 
