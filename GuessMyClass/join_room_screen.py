@@ -70,6 +70,12 @@ class UppercaseTextInput(TextInput):
                 if len(self.text) < self.max_length:
                     self.text = self.text[:self.cursor_pos] + upper_char + self.text[self.cursor_pos:]
                     self.cursor_pos += 1
+                    # ✅ Joue le son typing
+                    try:
+                        from audio_manager import audio
+                        audio.play_typing()
+                    except:
+                        pass
                     return True
                 return False
         # Pour tout le reste (backspace, flèches, delete...) on délègue au parent

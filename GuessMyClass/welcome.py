@@ -1,22 +1,18 @@
 import sys, os
 import pygame
-import httpx
 from supabase import create_client
 from utils import resource_path
 from text_input import TextInput
 from error_popup import show_error_popup_connection
+from connection_check import reset_connection_status, check_supabase_connection
 
-# Initialisation Supabase avec timeout
+# Initialisation Supabase
 SUPABASE_URL = "https://dfrfhlvbckvakgtridzv.supabase.co"
 SUPABASE_KEY = "sb_publishable_OEqgvVyKwJGXy5rV1H1Y8Q_kGL98num"
 
 try:
-    http_client = httpx.Client(timeout=3.0)
-    supabase = create_client(
-        SUPABASE_URL, 
-        SUPABASE_KEY,
-        options={"http_client": http_client}
-    )
+    supabase = create_client(SUPABASE_URL, SUPABASE_KEY)
+    print("✅ Supabase welcome initialisé")
 except Exception as e:
     print(f"❌ Erreur init Supabase: {e}")
     supabase = None
@@ -47,6 +43,8 @@ def check_or_create_profile(pseudo):
             .execute()
         if result.data and len(result.data) > 0:
             print(f"✅ Connexion: {pseudo}")
+            # ✅ Force la mise à jour du statut de connexion global
+            reset_connection_status()
             return True
         else:
             supabase.table("leaderboard").insert({
@@ -55,9 +53,14 @@ def check_or_create_profile(pseudo):
                 "score": 0
             }).execute()
             print(f"✅ Compte créé: {pseudo}")
+            # ✅ Force la mise à jour du statut de connexion global
+            reset_connection_status()
             return True
+    except (TimeoutError, ConnectionError, OSError) as e:
+        print(f"❌ Erreur connexion BDD (timeout/réseau): {type(e).__name__}")
+        return False
     except Exception as e:
-        print(f"❌ Erreur connexion BDD (pare-feu/réseau ?): {e}")
+        print(f"❌ Erreur connexion BDD: {type(e).__name__} - {str(e)}")
         return False
 
 def show_login_popup(screen, w, h):
@@ -87,6 +90,14 @@ def show_login_popup(screen, w, h):
         elif len(pseudo) > 20:
             error_message = "Maximum 20 caractères"
         else:
+            # ✅ Vérifie d'abord la connexion BDD
+            print("🔍 Vérification connexion BDD avant login...")
+            if not check_supabase_connection(force=True):
+                print("❌ BDD inaccessible")
+                show_error_popup_connection(screen, "Erreur de connexion", "Impossible de se connecter\nau serveur")
+                error_message = ""
+                return False
+            
             success = check_or_create_profile(pseudo)
             if success:
                 save_local_profile(pseudo)

@@ -80,12 +80,24 @@ class TextInput:
                 if self.cursor_pos > 0:
                     self.text = self.text[:self.cursor_pos - 1] + self.text[self.cursor_pos:]
                     self.cursor_pos -= 1
+                    # ✅ Joue le son typing lors de la suppression
+                    try:
+                        from audio_manager import audio
+                        audio.play_typing()
+                    except:
+                        pass  # Ignore si audio_manager non dispo
                 return True
             
             # ✅ Delete : supprime le caractère APRÈS le curseur (répété si maintenu)
             if event.key == pygame.K_DELETE:
                 if self.cursor_pos < len(self.text):
                     self.text = self.text[:self.cursor_pos] + self.text[self.cursor_pos + 1:]
+                    # ✅ Joue le son typing lors de la suppression
+                    try:
+                        from audio_manager import audio
+                        audio.play_typing()
+                    except:
+                        pass  # Ignore si audio_manager non dispo
                 return True
             
             # ✅ Ctrl+A : sélectionne tout (puis backspace supprime tout)

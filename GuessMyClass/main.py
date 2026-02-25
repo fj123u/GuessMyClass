@@ -12,6 +12,11 @@ from multiplayer_menu import multiplayer_menu_display
 from create_room_screen import create_room_screen_display
 from join_room_screen import join_room_screen_display
 from waiting_room import waiting_room_display
+from connection_check import check_supabase_connection
+
+# ✅ Vérifie la connexion BDD au démarrage
+print("🔍 Vérification connexion BDD au démarrage...")
+check_supabase_connection(force=True)
 
 running = True
 icon = pygame.image.load(resource_path('GuessMyClass/icon/gmc.png'))

@@ -9,14 +9,10 @@ SUPABASE_URL = "https://dfrfhlvbckvakgtridzv.supabase.co"
 SUPABASE_KEY = "sb_publishable_OEqgvVyKwJGXy5rV1H1Y8Q_kGL98num"
 
 try:
-    http_client = httpx.Client(timeout=3.0)
-    supabase = create_client(
-        SUPABASE_URL, 
-        SUPABASE_KEY,
-        options={"http_client": http_client}
-    )
+    supabase = create_client(SUPABASE_URL, SUPABASE_KEY)
+    print("✅ Supabase multiplayer initialisé")
 except Exception as e:
-    print(f"❌ Erreur initialisation Supabase: {e}")
+    print(f"❌ Erreur initialisation Supabase multiplayer: {e}")
     supabase = None
 
 MAX_PLAYERS = 10

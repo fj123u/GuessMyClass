@@ -6,6 +6,7 @@ Vérifie si la base de données est accessible
 from supabase import create_client
 import time
 import httpx
+from httpx import Timeout
 
 SUPABASE_URL = "https://dfrfhlvbckvakgtridzv.supabase.co"
 SUPABASE_KEY = "sb_publishable_OEqgvVyKwJGXy5rV1H1Y8Q_kGL98num"
@@ -17,7 +18,7 @@ _check_interval = 30  # Revérifie toutes les 30 secondes
 
 def check_supabase_connection(force=False):
     """
-    Vérifie si Supabase est accessible avec timeout de 3 secondes.
+    Vérifie si Supabase est accessible avec timeout de 2 secondes.
     
     Args:
         force (bool): Force une nouvelle vérification même si cache valide
@@ -34,29 +35,41 @@ def check_supabase_connection(force=False):
         return _connection_status
     
     try:
-        # ✅ Timeout de 3 secondes pour ne pas bloquer
-        http_client = httpx.Client(timeout=3.0)
-        supabase = create_client(
-            SUPABASE_URL, 
-            SUPABASE_KEY,
-            options={"http_client": http_client}
-        )
+        # ✅ Test HTTP simple avec timeout court (2s)
+        timeout = Timeout(2.0, connect=2.0)
+        client = httpx.Client(timeout=timeout)
         
-        # Test simple : récupère 1 entrée de la table leaderboard
-        result = supabase.table("leaderboard")\
-            .select("pseudo")\
-            .limit(1)\
-            .execute()
+        # Test direct de l'API REST Supabase
+        url = f"{SUPABASE_URL}/rest/v1/leaderboard?limit=1"
+        headers = {
+            "apikey": SUPABASE_KEY,
+            "Authorization": f"Bearer {SUPABASE_KEY}"
+        }
         
-        _connection_status = True
+        response = client.get(url, headers=headers)
+        client.close()
+        
+        if response.status_code == 200:
+            _connection_status = True
+            _last_check_time = current_time
+            print("✅ Connexion Supabase : OK")
+            return True
+        else:
+            _connection_status = False
+            _last_check_time = current_time
+            print(f"❌ Connexion Supabase : ÉCHEC (HTTP {response.status_code})")
+            return False
+        
+    except (httpx.TimeoutException, httpx.ConnectTimeout, httpx.ReadTimeout) as e:
+        _connection_status = False
         _last_check_time = current_time
-        print("✅ Connexion Supabase : OK")
-        return True
+        print(f"❌ Connexion Supabase : TIMEOUT (pas de réponse en 2s)")
+        return False
         
     except Exception as e:
         _connection_status = False
         _last_check_time = current_time
-        print(f"❌ Connexion Supabase : ÉCHEC ({type(e).__name__})")
+        print(f"❌ Connexion Supabase : ÉCHEC ({type(e).__name__}: {str(e)})")
         return False
 
 def is_online():

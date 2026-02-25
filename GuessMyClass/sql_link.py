@@ -1,23 +1,20 @@
 #Importe les bibliothèques nécessaires pour le fonctionnement du code
 import sys, os
-import httpx
-from supabase import create_client
 from utils import *
+from supabase_wrapper import get_supabase, with_timeout
 
-SUPABASE_URL = "https://dfrfhlvbckvakgtridzv.supabase.co"
-SUPABASE_KEY = "sb_publishable_OEqgvVyKwJGXy5rV1H1Y8Q_kGL98num"
+# Obtient le client Supabase via le wrapper
+supabase = get_supabase()
 
-# ✅ Initialisation sécurisée avec timeout de 3 secondes
-try:
-    http_client = httpx.Client(timeout=3.0)
-    supabase = create_client(
-        SUPABASE_URL, 
-        SUPABASE_KEY,
-        options={"http_client": http_client}
-    )
-except Exception as e:
-    print(f"❌ Erreur initialisation Supabase: {e}")
-    supabase = None
+
+@with_timeout(2)
+def _send_score_impl(pseudo: str, mode: int, score: int):
+    """Implémentation réelle de send_score avec timeout"""
+    supabase.table("leaderboard").insert({
+        "pseudo": pseudo,
+        "mode": mode,
+        "score": score
+    }).execute()
 
 
 # Fonction qui envoie un score sur la BDD
@@ -27,16 +24,31 @@ def send_score(pseudo: str, mode: int, score: int):
         return False
     
     try:
-        supabase.table("leaderboard").insert({
-            "pseudo": pseudo,
-            "mode": mode,
-            "score": score
-        }).execute()
+        _send_score_impl(pseudo, mode, score)
         print(f"✅ Score envoyé: {pseudo} → {score}")
         return True
-    except Exception as e:
-        print(f"❌ Erreur envoi score (connexion coupée ?): {e}")
+    except TimeoutError:
+        print(f"❌ Timeout envoi score (BDD trop lente)")
         return False
+    except Exception as e:
+        print(f"❌ Erreur envoi score: {type(e).__name__}")
+        return False
+
+
+@with_timeout(2)
+def _get_best_score_impl(pseudo: str, mode: int):
+    """Implémentation réelle de get_best_score avec timeout"""
+    res = supabase.table("leaderboard") \
+        .select("score") \
+        .eq("pseudo", pseudo) \
+        .eq("mode", mode) \
+        .order("score", desc=True) \
+        .limit(1) \
+        .execute()
+    
+    if res.data:
+        return res.data[0]["score"]
+    return 0
 
 
 # Fonction pour récupérer le meilleur score du joueur
@@ -46,21 +58,36 @@ def get_best_score(pseudo: str, mode: int):
         return 0
     
     try:
-        res = supabase.table("leaderboard") \
-            .select("score") \
-            .eq("pseudo", pseudo) \
-            .eq("mode", mode) \
-            .order("score", desc=True) \
-            .limit(1) \
-            .execute()
-        
-        if res.data:
-            return res.data[0]["score"]
+        return _get_best_score_impl(pseudo, mode)
+    except TimeoutError:
+        print(f"❌ Timeout récupération best score (BDD trop lente)")
         return 0
-    
     except Exception as e:
-        print(f"❌ Erreur récupération best score (connexion coupée ?): {e}")
+        print(f"❌ Erreur récupération best score: {type(e).__name__}")
         return 0
+
+
+@with_timeout(2)
+def _get_leaderboard_impl(mode: int):
+    """Implémentation réelle de get_leaderboard avec timeout"""
+    res = supabase.table("leaderboard") \
+        .select("pseudo, score") \
+        .eq("mode", mode) \
+        .order("score", desc=True) \
+        .execute()
+    
+    best_scores = {}
+    for row in res.data:
+        pseudo = row['pseudo']
+        score = row['score']
+        if pseudo not in best_scores or score > best_scores[pseudo]:
+            best_scores[pseudo] = score
+    
+    leaderboard = [{'pseudo': pseudo, 'score': score} 
+                   for pseudo, score in best_scores.items()]
+    leaderboard.sort(key=lambda x: x['score'], reverse=True)
+    
+    return leaderboard
 
 
 # Fonction pour récupérer l'ensemble des données de la BDD
@@ -70,27 +97,13 @@ def get_leaderboard(mode: int, limit: int = 20):
         return []
     
     try:
-        res = supabase.table("leaderboard") \
-            .select("pseudo, score") \
-            .eq("mode", mode) \
-            .order("score", desc=True) \
-            .execute()
-        
-        best_scores = {}
-        for row in res.data:
-            pseudo = row['pseudo']
-            score = row['score']
-            if pseudo not in best_scores or score > best_scores[pseudo]:
-                best_scores[pseudo] = score
-        
-        leaderboard = [{'pseudo': pseudo, 'score': score} 
-                       for pseudo, score in best_scores.items()]
-        leaderboard.sort(key=lambda x: x['score'], reverse=True)
-        
+        leaderboard = _get_leaderboard_impl(mode)
         return leaderboard[:limit]
-    
+    except TimeoutError:
+        print(f"❌ Timeout récupération leaderboard (BDD trop lente)")
+        return []
     except Exception as e:
-        print(f"❌ Erreur récupération leaderboard (connexion coupée ?): {e}")
+        print(f"❌ Erreur récupération leaderboard: {type(e).__name__}")
         return []
 
 
