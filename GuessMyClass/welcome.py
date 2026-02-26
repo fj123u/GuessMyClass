@@ -5,6 +5,7 @@ from utils import resource_path
 from text_input import TextInput
 from error_popup import show_error_popup_connection
 from connection_check import reset_connection_status, check_supabase_connection
+from config_manager import set_pseudo, get_pseudo
 
 # Initialisation Supabase
 SUPABASE_URL = "https://dfrfhlvbckvakgtridzv.supabase.co"
@@ -100,7 +101,7 @@ def show_login_popup(screen, w, h):
             
             success = check_or_create_profile(pseudo)
             if success:
-                save_local_profile(pseudo)
+                set_pseudo(pseudo)  # ✅ Sauvegarde dans config JSON
                 return True
             else:
                 # ✅ Popup d'erreur de connexion au lieu de message dans le champ
@@ -230,7 +231,7 @@ def welcome_display():
 
             if guest_hovered and guest_was_pressed:
                 guest_was_pressed = False
-                save_local_profile("Invite\ninvit")
+                set_pseudo("Invite\ninvit")  # ✅ Sauvegarde dans config JSON
                 return 'home'
 
         if mouse_pressed:

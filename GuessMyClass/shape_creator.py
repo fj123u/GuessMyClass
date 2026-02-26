@@ -109,18 +109,29 @@ class Shape:
     def show(self):
         self.visible = True
 
-
 pygame.init()
 pygame.font.get_init()
 
-# ✅ SOLUTION UNIVERSELLE : NOFRAME (fonctionne sur TOUS les PC)
-# Fenêtre sans bordure qui prend tout l'écran
+# ✅ Charge la résolution depuis la config
 import os
-os.environ['SDL_VIDEO_WINDOW_POS'] = "0,0"  # Force la position en haut à gauche
+os.environ['SDL_VIDEO_WINDOW_POS'] = "0,0"
 
-current_w, current_h = pygame.display.Info().current_w, pygame.display.Info().current_h
-screen = pygame.display.set_mode((current_w, current_h), pygame.NOFRAME)
+try:
+    from config_manager import get_resolution
+    saved_w, saved_h, fullscreen = get_resolution()
+    
+    if fullscreen:
+        screen = pygame.display.set_mode((0, 0), pygame.FULLSCREEN)
+        print(f"✅ Mode plein écran chargé")
+    else:
+        screen = pygame.display.set_mode((saved_w, saved_h), pygame.NOFRAME)
+        print(f"✅ Résolution chargée : {saved_w}x{saved_h}")
+    
+    current_w, current_h = screen.get_size()
+except Exception as e:
+    print(f"⚠️ Erreur chargement résolution: {e}, utilisation par défaut")
+    current_w, current_h = pygame.display.Info().current_w, pygame.display.Info().current_h
+    screen = pygame.display.set_mode((current_w, current_h), pygame.NOFRAME)
+    current_w, current_h = screen.get_size()
 
-# Met à jour les dimensions
-current_w, current_h = screen.get_size()
 clock = pygame.time.Clock()

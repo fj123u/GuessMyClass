@@ -1,4 +1,3 @@
-
 # Importe les bibliothèques nécessaires pour le fonctionnement du code
 
 import sys, os
@@ -71,9 +70,18 @@ buttonList3Elevation = 2
 buttonList3Color = (144, 180, 229)
 button_list3 = Shape('leaderboard', 'Classements', buttonList3Width, buttonList3Height, buttonList3Pos, buttonList3Elevation, buttonList3Color, True, (resource_path('GuessMyClass/font/MightySouly.ttf'), 40))
 
+# Bouton Paramètres (au-dessus de Quitter)
+settingsWidth = 250
+settingsHeight = 50
+settingsPos = (current_w/2 - 125, current_h/2 + 218)
+settingsElevation = 2
+settingsColor = (144, 140, 189)
+settings_button = Shape("settings", "Paramètres", settingsWidth, settingsHeight, settingsPos, settingsElevation, settingsColor, True, (resource_path('GuessMyClass/font/MightySouly.ttf'), 40))
+
+# Bouton Quitter (tout en bas)
 buttonList4Width = 250
 buttonList4Height = 50
-buttonList4Pos = (current_w/2-125, current_h/2+218)
+buttonList4Pos = (current_w/2-125, current_h/2+275)
 buttonList4Elevation = 2
 buttonList4Color = (104, 180, 229)
 button_list4 = Shape('leave', 'Quitter', buttonList4Width, buttonList4Height, buttonList4Pos, buttonList4Elevation, buttonList4Color, True, (resource_path('GuessMyClass/font/MightySouly.ttf'), 40))

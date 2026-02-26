@@ -1,0 +1,10 @@
+{
+    "pseudo": "Invite\ninvit",
+    "music_volume": 0.1,
+    "sfx_volume": 0.2,
+    "resolution": {
+        "width": 1920,
+        "height": 1080,
+        "fullscreen": true
+    }
+}

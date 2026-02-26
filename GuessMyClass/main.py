@@ -8,6 +8,7 @@ from about import *
 from game import *
 from welcome import *
 from utils import *
+from settings import settings_display
 from multiplayer_menu import multiplayer_menu_display
 from create_room_screen import create_room_screen_display
 from join_room_screen import join_room_screen_display
@@ -105,6 +106,9 @@ while running:
     
     elif dest == 'about':
         dest = about_display()
+    
+    elif dest == 'settings':
+        dest = settings_display()
     
     elif dest == 'hell':
         running = False

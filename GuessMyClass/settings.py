@@ -1,0 +1,355 @@
+"""
+Menu des paramètres du jeu
+- Volume musique de fond
+- Volume effets sonores (popup, clicks, typing)
+- Taille de la fenêtre
+- Changement de pseudo
+"""
+
+import pygame
+import sys, os
+from shape_creator import *
+from utils import *
+from audio_manager import audio
+from config_manager import load_config, save_config, set_pseudo, set_volumes, set_resolution
+from text_input import TextInput
+
+def resource_path(relative_path):
+    try:
+        base_path = sys._MEIPASS
+    except Exception:
+        base_path = os.path.abspath(".")
+    return os.path.join(base_path, relative_path)
+
+
+# ═══════════════════════════════════════════════════════════
+# CLASSES POUR LES SLIDERS
+# ═══════════════════════════════════════════════════════════
+
+class Slider:
+    """Slider pour régler un volume (0.0 à 1.0)"""
+    
+    def __init__(self, x, y, width, height, initial_value=0.5):
+        self.rect = pygame.Rect(x, y, width, height)
+        self.value = initial_value  # 0.0 à 1.0
+        self.dragging = False
+        
+        # Couleurs
+        self.bg_color = (100, 100, 100)
+        self.bar_color = (255, 145, 0)
+        self.handle_color = (255, 255, 255)
+        self.handle_hover_color = (200, 200, 200)
+    
+    def handle_event(self, event):
+        """Gère les événements souris"""
+        mouse_pos = pygame.mouse.get_pos()
+        handle_x = self.rect.x + int(self.value * self.rect.width)
+        handle_rect = pygame.Rect(handle_x - 8, self.rect.y - 5, 16, self.rect.height + 10)
+        
+        if event.type == pygame.MOUSEBUTTONDOWN:
+            if handle_rect.collidepoint(mouse_pos) or self.rect.collidepoint(mouse_pos):
+                self.dragging = True
+                self._update_value(mouse_pos[0])
+                return True
+        
+        elif event.type == pygame.MOUSEBUTTONUP:
+            if self.dragging:
+                self.dragging = False
+                return True
+        
+        elif event.type == pygame.MOUSEMOTION:
+            if self.dragging:
+                self._update_value(mouse_pos[0])
+                return True
+        
+        return False
+    
+    def _update_value(self, mouse_x):
+        """Met à jour la valeur selon la position de la souris"""
+        relative_x = mouse_x - self.rect.x
+        self.value = max(0.0, min(1.0, relative_x / self.rect.width))
+    
+    def draw(self, screen):
+        """Dessine le slider"""
+        # Barre de fond
+        pygame.draw.rect(screen, self.bg_color, self.rect, border_radius=5)
+        
+        # Barre de progression
+        progress_width = int(self.value * self.rect.width)
+        if progress_width > 0:
+            progress_rect = pygame.Rect(self.rect.x, self.rect.y, progress_width, self.rect.height)
+            pygame.draw.rect(screen, self.bar_color, progress_rect, border_radius=5)
+        
+        # Poignée
+        handle_x = self.rect.x + int(self.value * self.rect.width)
+        handle_rect = pygame.Rect(handle_x - 8, self.rect.y - 5, 16, self.rect.height + 10)
+        
+        mouse_pos = pygame.mouse.get_pos()
+        handle_color = self.handle_hover_color if handle_rect.collidepoint(mouse_pos) or self.dragging else self.handle_color
+        
+        pygame.draw.rect(screen, handle_color, handle_rect, border_radius=3)
+        pygame.draw.rect(screen, (0, 0, 0), handle_rect, 2, border_radius=3)
+        
+        # Pourcentage
+        font = pygame.font.Font(resource_path("GuessMyClass/font/MightySouly.ttf"), 20)
+        percentage_text = font.render(f"{int(self.value * 100)}%", True, (255, 255, 255))
+        screen.blit(percentage_text, (self.rect.right + 15, self.rect.centery - percentage_text.get_height() // 2))
+    
+    def get_value(self):
+        """Retourne la valeur actuelle (0.0 à 1.0)"""
+        return self.value
+    
+    def set_value(self, value):
+        """Définit la valeur (0.0 à 1.0)"""
+        self.value = max(0.0, min(1.0, value))
+
+
+class ResolutionButton:
+    """Bouton pour une résolution"""
+    
+    def __init__(self, x, y, width, height, resolution_text, is_current=False):
+        self.rect = pygame.Rect(x, y, width, height)
+        self.text = resolution_text
+        self.is_current = is_current
+        self.hovered = False
+        
+        self.normal_color = (144, 180, 229)
+        self.hover_color = (104, 140, 189)
+        self.current_color = (255, 145, 0)
+    
+    def handle_event(self, event):
+        """Gère les événements"""
+        mouse_pos = pygame.mouse.get_pos()
+        self.hovered = self.rect.collidepoint(mouse_pos)
+        
+        if event.type == pygame.MOUSEBUTTONUP and self.hovered:
+            audio.play_click()
+            return True
+        
+        return False
+    
+    def draw(self, screen):
+        """Dessine le bouton"""
+        if self.is_current:
+            color = self.current_color
+        elif self.hovered:
+            color = self.hover_color
+        else:
+            color = self.normal_color
+        
+        pygame.draw.rect(screen, color, self.rect, border_radius=10)
+        pygame.draw.rect(screen, (0, 0, 0), self.rect, 2, border_radius=10)
+        
+        font = pygame.font.Font(resource_path("GuessMyClass/font/MightySouly.ttf"), 25)
+        text_surf = font.render(self.text, True, (255, 255, 255))
+        text_rect = text_surf.get_rect(center=self.rect.center)
+        screen.blit(text_surf, text_rect)
+
+
+# ═══════════════════════════════════════════════════════════
+# FONCTION PRINCIPALE
+# ═══════════════════════════════════════════════════════════
+
+def settings_display():
+    """Affiche le menu des paramètres"""
+    
+    # Lance la musique de menu
+    try:
+        audio.play_music_menu()
+    except:
+        pass
+    
+    screen = pygame.display.get_surface()
+    w, h = screen.get_size()
+    
+    # Bouton retour
+    leave_settings = Shape('home', '<', 50, 50, (10, 10), 2, (200, 0, 0), True, 
+                          (resource_path("GuessMyClass/font/MightySouly.ttf"), 40))
+    
+    # Titre
+    font_title = pygame.font.Font(resource_path("GuessMyClass/font/MightySouly.ttf"), 60)
+    font_label = pygame.font.Font(resource_path("GuessMyClass/font/MightySouly.ttf"), 30)
+    
+    # ─────────────────────────────────────────────────────
+    # SLIDERS AUDIO
+    # ─────────────────────────────────────────────────────
+    
+    slider_music = Slider(w // 2 - 150, 200, 300, 20, audio.music_volume)
+    slider_sfx = Slider(w // 2 - 150, 280, 300, 20, audio.sfx_volume)
+    
+    # ─────────────────────────────────────────────────────
+    # BOUTONS RÉSOLUTION
+    # ─────────────────────────────────────────────────────
+    
+    current_res = f"{w}x{h}"
+    resolutions = [
+        ("1920x1080", 1920, 1080),
+        ("1600x900", 1600, 900),
+        ("1280x720", 1280, 720),
+        ("Plein écran", -1, -1)  # -1 = fullscreen
+    ]
+    
+    resolution_buttons = []
+    y_start = 380
+    for i, (text, res_w, res_h) in enumerate(resolutions):
+        is_current = (text == current_res) or (text == "Plein écran" and w >= 1900)
+        btn = ResolutionButton(w // 2 - 100, y_start + i * 60, 200, 45, text, is_current)
+        resolution_buttons.append((btn, res_w, res_h))
+    
+    # ─────────────────────────────────────────────────────
+    # BOUTON CHANGER DE PSEUDO
+    # ─────────────────────────────────────────────────────
+    
+    change_pseudo_button = Shape('change_pseudo', 'Changer de pseudo', 300, 50, 
+                                 (w // 2 - 150, h - 120), 3, (104, 180, 229), True,
+                                 (resource_path("GuessMyClass/font/MightySouly.ttf"), 30))
+    
+    # État pour le popup de changement de pseudo
+    show_pseudo_popup = False
+    pseudo_input = None
+    
+    clock = pygame.time.Clock()
+    
+    # ═══════════════════════════════════════════════════════════
+    # BOUCLE PRINCIPALE
+    # ═══════════════════════════════════════════════════════════
+    
+    while True:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                return 'hell'
+            
+            # Gestion des sliders
+            if slider_music.handle_event(event):
+                audio.set_music_volume(slider_music.get_value())
+                # ✅ Sauvegarde dans la config
+                set_volumes(slider_music.get_value(), slider_sfx.get_value())
+            
+            if slider_sfx.handle_event(event):
+                audio.set_sfx_volume(slider_sfx.get_value())
+                # ✅ Sauvegarde dans la config
+                set_volumes(slider_music.get_value(), slider_sfx.get_value())
+            
+            # Gestion des boutons de résolution
+            for btn, res_w, res_h in resolution_buttons:
+                if btn.handle_event(event):
+                    # ✅ Sauvegarde la résolution
+                    if res_w == -1:  # Plein écran
+                        set_resolution(1920, 1080, fullscreen=True)
+                    else:
+                        set_resolution(res_w, res_h, fullscreen=False)
+                    
+                    print(f"✅ Résolution sauvegardée")
+                    
+                    # Message de redémarrage
+                    screen = pygame.display.get_surface()
+                    w, h = screen.get_size()
+                    overlay = pygame.Surface((w, h))
+                    overlay.fill((0, 0, 0))
+                    overlay.set_alpha(220)
+                    screen.blit(overlay, (0, 0))
+                    
+                    font_msg = pygame.font.Font(resource_path("GuessMyClass/font/MightySouly.ttf"), 40)
+                    msg = font_msg.render("Résolution sauvegardée !", True, (255, 255, 255))
+                    msg2 = font_msg.render("Veuillez redémarrer le jeu", True, (255, 255, 255))
+                    screen.blit(msg, (w//2 - msg.get_width()//2, h//2 - 50))
+                    screen.blit(msg2, (w//2 - msg2.get_width()//2, h//2 + 10))
+                    
+                    pygame.display.flip()
+                    pygame.time.delay(2000)
+                    
+                    return 'hell'  # Quitte le jeu
+            
+            # Gestion du popup de changement de pseudo
+            if show_pseudo_popup and pseudo_input:
+                if event.type == pygame.KEYDOWN:
+                    if event.key == pygame.K_RETURN:
+                        new_pseudo = pseudo_input.get_text()
+                        if len(new_pseudo) >= 3:
+                            set_pseudo(new_pseudo)  # ✅ Sauvegarde dans config
+                            print(f"✅ Pseudo sauvegardé : {new_pseudo}")
+                            show_pseudo_popup = False
+                            pseudo_input = None
+                    elif event.key == pygame.K_ESCAPE:
+                        show_pseudo_popup = False
+                        pseudo_input = None
+                    else:
+                        pseudo_input.handle_event(event)
+                
+                elif event.type in (pygame.MOUSEBUTTONDOWN, pygame.MOUSEBUTTONUP):
+                    pseudo_input.handle_event(event)
+        
+        # ─────────────────────────────────────────────────────
+        # DESSIN
+        # ─────────────────────────────────────────────────────
+        
+        screen.fill((205, 228, 226))
+        
+        # Bouton retour
+        dest = leave_settings.draw()
+        if dest:
+            return dest
+        
+        # Titre
+        title_text = font_title.render("Paramètres", True, (255, 255, 255))
+        title_bg = pygame.Rect(w // 2 - title_text.get_width() // 2 - 20, 30, 
+                               title_text.get_width() + 40, title_text.get_height() + 20)
+        pygame.draw.rect(screen, (104, 180, 229), title_bg, border_radius=15)
+        screen.blit(title_text, (w // 2 - title_text.get_width() // 2, 40))
+        
+        # Labels et sliders audio
+        music_label = font_label.render("Volume musique :", True, (0, 0, 0))
+        screen.blit(music_label, (w // 2 - 150, 165))
+        slider_music.draw(screen)
+        
+        sfx_label = font_label.render("Volume effets sonores :", True, (0, 0, 0))
+        screen.blit(sfx_label, (w // 2 - 150, 245))
+        slider_sfx.draw(screen)
+        
+        # Label résolution
+        res_label = font_label.render("Taille de la fenêtre :", True, (0, 0, 0))
+        screen.blit(res_label, (w // 2 - 150, 340))
+        
+        # Boutons résolution
+        for btn, _, _ in resolution_buttons:
+            btn.draw(screen)
+        
+        # Bouton changer de pseudo
+        dest = change_pseudo_button.draw()
+        if dest == 'change_pseudo':
+            show_pseudo_popup = True
+            from config_manager import get_pseudo
+            current_pseudo = get_pseudo()
+            input_rect = pygame.Rect(w // 2 - 150, h // 2 - 20, 300, 40)
+            pseudo_input = TextInput(input_rect, 
+                                    pygame.font.Font(resource_path("GuessMyClass/font/MightySouly.ttf"), 25),
+                                    max_length=20)
+            pseudo_input.set_text(current_pseudo)
+        
+        # Popup changement de pseudo
+        if show_pseudo_popup and pseudo_input:
+            # Overlay sombre
+            overlay = pygame.Surface((w, h))
+            overlay.set_alpha(180)
+            overlay.fill((0, 0, 0))
+            screen.blit(overlay, (0, 0))
+            
+            # Popup
+            popup_w, popup_h = 400, 200
+            popup_x, popup_y = w // 2 - popup_w // 2, h // 2 - popup_h // 2
+            pygame.draw.rect(screen, (205, 228, 226), (popup_x, popup_y, popup_w, popup_h), border_radius=15)
+            
+            # Titre
+            popup_title = font_label.render("Nouveau pseudo", True, (0, 0, 0))
+            screen.blit(popup_title, (popup_x + popup_w // 2 - popup_title.get_width() // 2, popup_y + 20))
+            
+            # Champ de saisie
+            pseudo_input.draw(screen)
+            
+            # Instructions
+            font_small = pygame.font.Font(resource_path("GuessMyClass/font/MightySouly.ttf"), 18)
+            instr = font_small.render("Appuyez sur Entrée pour valider, Échap pour annuler", True, (100, 100, 100))
+            screen.blit(instr, (popup_x + popup_w // 2 - instr.get_width() // 2, popup_y + popup_h - 40))
+        
+        pygame.display.flip()
+        clock.tick(60)

@@ -40,9 +40,18 @@ class AudioManager:
             self.sound_click = None
             self.sound_typing = None
             
-            # États
-            self.music_volume = 0.3  # Volume musique (0.0 à 1.0)
-            self.sfx_volume = 0.5    # Volume effets sonores
+            # ✅ Charge les volumes depuis la config
+            try:
+                from config_manager import get_volumes
+                music_vol, sfx_vol = get_volumes()
+                self.music_volume = music_vol
+                self.sfx_volume = sfx_vol
+                print(f"✅ Volumes chargés : Musique={int(music_vol*100)}%, SFX={int(sfx_vol*100)}%")
+            except Exception as e:
+                print(f"⚠️ Erreur chargement volumes: {e}, valeurs par défaut")
+                self.music_volume = 0.3
+                self.sfx_volume = 0.5
+            
             self.music_enabled = True
             self.sfx_enabled = True
             

@@ -1,6 +1,7 @@
 # Importe les bibliothèques nécessaires pour le fonctionnement du code
 from shape_creator import *
 from utils import *
+from config_manager import get_pseudo
 
 # Menu de l'écran d'acceuil
 # Affiche le menu
@@ -13,12 +14,9 @@ def home_display(icon):
         pass
     
     screen.fill((205,228,226))
-    with open(resource_path("GuessMyClass/profile/compte.txt"), "r") as f:
-        lines = f.readlines()
-        f.close()
-    ide = ''
-    for i in range(len(lines[0])):
-        ide = ide + lines[0][i]
+    
+    # ✅ Charge le pseudo depuis la config
+    ide = get_pseudo()
     
     button1Width = current_w/4-12
     button1Height = current_h/6
@@ -51,6 +49,9 @@ def home_display(icon):
     if dest != None:
         return dest
     dest = online.draw()
+    if dest != None:
+        return dest
+    dest = settings_button.draw()
     if dest != None:
         return dest
     infos_left.draw()
