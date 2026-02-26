@@ -2,7 +2,7 @@ import sys, os
 import pygame
 from utils import *
 from multiplayer import create_room, is_player_guest
-from sql_link import load_local_profile
+from config_manager import get_pseudo
 from error_popup import show_error_popup_connection
 
 def resource_path(relative_path):
@@ -118,7 +118,7 @@ def create_room_screen_display():
     
     screen = pygame.display.get_surface()
     
-    pseudo = load_local_profile()
+    pseudo = get_pseudo()  # ✅ Charge depuis JSON
     
     # ✅ Vérifie si invité SANS Tkinter
     if is_player_guest(pseudo):
@@ -132,7 +132,7 @@ def create_room_screen_display():
     title_create.draw()
     game_question.draw()
     
-    pseudo = load_local_profile()
+    pseudo = get_pseudo()  # ✅ Charge depuis JSON
     
     dest = nb_5.draw()
     if dest == '5':

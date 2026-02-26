@@ -12,7 +12,7 @@ try:
     supabase = create_client(SUPABASE_URL, SUPABASE_KEY)
     print("✅ Supabase multiplayer initialisé")
 except Exception as e:
-    print(f"❌ Erreur initialisation Supabase multiplayer: {e}")
+    print(f"❌ Erreur initialisation Supabase: {e}")
     supabase = None
 
 MAX_PLAYERS = 10
@@ -93,9 +93,12 @@ def cleanup_old_rooms():
         print(f"❌ Erreur cleanup (connexion coupée ?): {e}")
 
 def is_player_guest(pseudo):
+    """Vérifie si le pseudo correspond à un invité"""
     if not pseudo:
         return True
-    return pseudo == "Invite\ninvit"
+    # ✅ Vérifie les différentes formes du pseudo invité
+    pseudo_lower = pseudo.lower()
+    return pseudo == "Invite\ninvit" or "invit" in pseudo_lower or pseudo == "Invité"
 
 def ensure_player_profile(pseudo, is_guest=False):
     """Crée ou met à jour le profil d'un joueur"""

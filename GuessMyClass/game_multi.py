@@ -8,7 +8,7 @@ from utils import *
 from multiplayer import (get_room_info, submit_answer, get_round_results, next_round, finish_game,
                          create_game_session, save_round_detail, is_player_guest,
                          PLAYER_COLORS, SOLUTION_COLOR)
-from sql_link import load_local_profile
+from config_manager import get_pseudo
 from coordonées_salles import coo
 
 def resource_path(relative_path):
@@ -166,7 +166,7 @@ def game_multi_display(room_code):
     map_image_coo = (75, 75)
     etage_image_coo = (75, 75)
     path_plan = resource_path("GuessMyClass/img/plan/etage_0.png")
-    pseudo = load_local_profile()
+    pseudo = get_pseudo()  # ✅ Charge depuis JSON
     is_host = room_data["host"] == pseudo
     last_update = time.time()
     

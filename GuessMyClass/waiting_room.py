@@ -4,7 +4,7 @@ import random
 from shape_creator import *
 from utils import *
 from multiplayer import get_room_info, start_game, leave_room, update_player_color, PLAYER_COLORS
-from sql_link import load_local_profile
+from config_manager import get_pseudo
 
 leave_button_waiting = Shape('multiplayer_menu', '<', 50, 50, (10, 10), 2, (200, 0, 0), True, (resource_path("GuessMyClass/font/MightySouly.ttf"), 40))
 
@@ -96,7 +96,7 @@ def waiting_room_display(room_code, host):
     current_room_code = room_code
     is_host = host
 
-    pseudo = load_local_profile()
+    pseudo = get_pseudo()  # ✅ Charge depuis JSON
     font_small = pygame.font.Font(resource_path('GuessMyClass/font/MightySouly.ttf'), 22)
 
     # ── Polling Supabase (toutes les 1 s) ──────

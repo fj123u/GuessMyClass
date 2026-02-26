@@ -1,4 +1,3 @@
-
 # Importe les bibliothèques nécessaires pour le fonctionnement du code
 
 import pygame
@@ -8,6 +7,8 @@ from random import *
 from time import *
 from sql_link import *
 from utils import *
+from config_manager import get_pseudo
+from multiplayer import is_player_guest
 
 
 # Définition de last_point
@@ -110,8 +111,6 @@ def game_display():
     # Gère le multijoueur
     with open(resource_path("GuessMyClass/score/option.txt"), "r") as f:
         testread = f.readlines()
-    
-    
     try:
         if testread[0] == "True":
             f.close()
@@ -455,25 +454,11 @@ def game_display():
             pygame.time.delay(2000)
             end = True
         
-            # Ouvre le fichier de score du joueur et met son meilleur score dedans, et envoie le résultat en BDD sauf si le joueur n'est pas connecté
-            with open(resource_path("GuessMyClass/profile/compte.txt"), "r") as f:
-                pseudo = f.read().strip()
-
-            if pseudo != "Invite\ninvit":
-                score_path = resource_path(f"GuessMyClass/score/{pseudo}_{nb}.txt")
-                os.makedirs(os.path.dirname(score_path), exist_ok=True)
-
-                best_score = 0
-                if os.path.exists(score_path):
-                    with open(score_path, "r") as f:
-                        best_score = int(f.read().strip())
-
-                if score > best_score:
-                    with open(score_path, "w") as f:
-                        f.write(str(score))
-                        send_score(pseudo, nb, score)
-
-
+            # ✅ Charge le pseudo depuis le JSON et envoie le score en BDD sauf si invité
+            pseudo = get_pseudo()
+            if not is_player_guest(pseudo):
+                send_score(pseudo, nb, score)
+                
             # Ecran de fin de partie
             if mult == True:
                 scoreTotJ1Width = 650

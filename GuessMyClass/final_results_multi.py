@@ -6,7 +6,8 @@ from utils import *
 from multiplayer import (get_final_scores, finish_game_session, save_player_game_stats,
                          is_player_guest, get_all_round_results, get_room_info,
                          restart_game_new_code, SOLUTION_COLOR)
-from sql_link import load_local_profile, send_score
+from config_manager import get_pseudo
+from sql_link import send_score
 
 def resource_path(relative_path):
     try:
@@ -89,7 +90,7 @@ def final_results_multi_display(room_code, session_id=None, game_start_time=None
         leave_button.show()
         return "multiplayer_menu"
     
-    pseudo = load_local_profile()
+    pseudo = get_pseudo()  # ✅ Charge depuis JSON
     is_host = room_data["host"] == pseudo
     
     # ✅ Récupère les couleurs des joueurs

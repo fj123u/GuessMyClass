@@ -2,7 +2,7 @@ import sys, os
 import pygame
 from utils import *
 from multiplayer import join_room, get_room_info, MAX_PLAYERS
-from sql_link import load_local_profile
+from config_manager import get_pseudo
 from text_input import TextInput
 
 def resource_path(relative_path):
@@ -106,7 +106,7 @@ def show_join_popup(screen):
         if len(code) != 6:
             show_error_popup(screen, "Code invalide", "Le code doit contenir 6 caractères")
             return None
-        pseudo = load_local_profile()
+        pseudo = get_pseudo()  # ✅ Charge depuis JSON
         room = join_room(code, pseudo)
         if room:
             return ('waiting_room', code, False)
