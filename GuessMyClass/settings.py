@@ -166,16 +166,16 @@ def settings_display():
     leave_settings = Shape('home', '<', 50, 50, (10, 10), 2, (200, 0, 0), True, 
                           (resource_path("GuessMyClass/font/MightySouly.ttf"), 40))
     
-    # Titre
-    font_title = pygame.font.Font(resource_path("GuessMyClass/font/MightySouly.ttf"), 60)
-    font_label = pygame.font.Font(resource_path("GuessMyClass/font/MightySouly.ttf"), 30)
+    # Titre avec fond bleu comme les autres menus
+    font_title = pygame.font.Font(resource_path("GuessMyClass/font/MightySouly.ttf"), 80)
+    font_label = pygame.font.Font(resource_path("GuessMyClass/font/MightySouly.ttf"), 35)
     
     # ─────────────────────────────────────────────────────
     # SLIDERS AUDIO
     # ─────────────────────────────────────────────────────
     
-    slider_music = Slider(w // 2 - 150, 200, 300, 20, audio.music_volume)
-    slider_sfx = Slider(w // 2 - 150, 280, 300, 20, audio.sfx_volume)
+    slider_music = Slider(w // 2 - 150, 250, 300, 20, audio.music_volume)
+    slider_sfx = Slider(w // 2 - 150, 350, 300, 20, audio.sfx_volume)
     
     # ─────────────────────────────────────────────────────
     # BOUTONS RÉSOLUTION
@@ -186,11 +186,11 @@ def settings_display():
         ("1920x1080", 1920, 1080),
         ("1600x900", 1600, 900),
         ("1280x720", 1280, 720),
-        ("Plein écran", -1, -1)  # -1 = fullscreen
+        ("Plein écran", -1, -1)
     ]
     
     resolution_buttons = []
-    y_start = 380
+    y_start = 470
     for i, (text, res_w, res_h) in enumerate(resolutions):
         is_current = (text == current_res) or (text == "Plein écran" and w >= 1900)
         btn = ResolutionButton(w // 2 - 100, y_start + i * 60, 200, 45, text, is_current)
@@ -201,12 +201,11 @@ def settings_display():
     # ─────────────────────────────────────────────────────
     
     change_pseudo_button = Shape('change_pseudo', 'Changer de pseudo', 300, 50, 
-                                 (w // 2 - 150, h - 120), 3, (104, 180, 229), True,
+                                 (w // 2 - 150, h - 150), 3, (184, 180, 229), True,
                                  (resource_path("GuessMyClass/font/MightySouly.ttf"), 30))
     
     # État pour le popup de changement de pseudo
     show_pseudo_popup = False
-    pseudo_input = None
     
     clock = pygame.time.Clock()
     
@@ -259,25 +258,6 @@ def settings_display():
                     pygame.time.delay(2000)
                     
                     return 'hell'  # Quitte le jeu
-            
-            # Gestion du popup de changement de pseudo
-            if show_pseudo_popup and pseudo_input:
-                if event.type == pygame.KEYDOWN:
-                    if event.key == pygame.K_RETURN:
-                        new_pseudo = pseudo_input.get_text()
-                        if len(new_pseudo) >= 3:
-                            set_pseudo(new_pseudo)  # ✅ Sauvegarde dans config
-                            print(f"✅ Pseudo sauvegardé : {new_pseudo}")
-                            show_pseudo_popup = False
-                            pseudo_input = None
-                    elif event.key == pygame.K_ESCAPE:
-                        show_pseudo_popup = False
-                        pseudo_input = None
-                    else:
-                        pseudo_input.handle_event(event)
-                
-                elif event.type in (pygame.MOUSEBUTTONDOWN, pygame.MOUSEBUTTONUP):
-                    pseudo_input.handle_event(event)
         
         # ─────────────────────────────────────────────────────
         # DESSIN
@@ -290,25 +270,26 @@ def settings_display():
         if dest:
             return dest
         
-        # Titre
+        # Titre avec fond bleu style GMC
         title_text = font_title.render("Paramètres", True, (255, 255, 255))
-        title_bg = pygame.Rect(w // 2 - title_text.get_width() // 2 - 20, 30, 
-                               title_text.get_width() + 40, title_text.get_height() + 20)
+        title_width = title_text.get_width()
+        title_bg = pygame.Rect(w // 2 - title_width // 2 - 30, 30, 
+                               title_width + 60, title_text.get_height() + 30)
         pygame.draw.rect(screen, (104, 180, 229), title_bg, border_radius=15)
-        screen.blit(title_text, (w // 2 - title_text.get_width() // 2, 40))
+        screen.blit(title_text, (w // 2 - title_width // 2, 45))
         
-        # Labels et sliders audio
-        music_label = font_label.render("Volume musique :", True, (0, 0, 0))
-        screen.blit(music_label, (w // 2 - 150, 165))
+        # Labels et sliders audio avec style cohérent
+        music_label = font_label.render("Volume musique :", True, (50, 50, 50))
+        screen.blit(music_label, (w // 2 - 150, 210))
         slider_music.draw(screen)
         
-        sfx_label = font_label.render("Volume effets sonores :", True, (0, 0, 0))
-        screen.blit(sfx_label, (w // 2 - 150, 245))
+        sfx_label = font_label.render("Volume effets sonores :", True, (50, 50, 50))
+        screen.blit(sfx_label, (w // 2 - 150, 310))
         slider_sfx.draw(screen)
         
         # Label résolution
-        res_label = font_label.render("Taille de la fenêtre :", True, (0, 0, 0))
-        screen.blit(res_label, (w // 2 - 150, 340))
+        res_label = font_label.render("Taille de la fenêtre :", True, (50, 50, 50))
+        screen.blit(res_label, (w // 2 - 150, 425))
         
         # Boutons résolution
         for btn, _, _ in resolution_buttons:
@@ -317,39 +298,17 @@ def settings_display():
         # Bouton changer de pseudo
         dest = change_pseudo_button.draw()
         if dest == 'change_pseudo':
-            show_pseudo_popup = True
+            # ✅ Utilise la même fonction que welcome
+            from welcome import show_login_popup
             from config_manager import get_pseudo
-            current_pseudo = get_pseudo()
-            input_rect = pygame.Rect(w // 2 - 150, h // 2 - 20, 300, 40)
-            pseudo_input = TextInput(input_rect, 
-                                    pygame.font.Font(resource_path("GuessMyClass/font/MightySouly.ttf"), 25),
-                                    max_length=20)
-            pseudo_input.set_text(current_pseudo)
+            
+            # Affiche le popup de connexion (réutilisé pour changement de pseudo)
+            result = show_login_popup(screen, w, h)
+            if result:
+                print(f"✅ Pseudo changé avec succès")
         
-        # Popup changement de pseudo
-        if show_pseudo_popup and pseudo_input:
-            # Overlay sombre
-            overlay = pygame.Surface((w, h))
-            overlay.set_alpha(180)
-            overlay.fill((0, 0, 0))
-            screen.blit(overlay, (0, 0))
-            
-            # Popup
-            popup_w, popup_h = 400, 200
-            popup_x, popup_y = w // 2 - popup_w // 2, h // 2 - popup_h // 2
-            pygame.draw.rect(screen, (205, 228, 226), (popup_x, popup_y, popup_w, popup_h), border_radius=15)
-            
-            # Titre
-            popup_title = font_label.render("Nouveau pseudo", True, (0, 0, 0))
-            screen.blit(popup_title, (popup_x + popup_w // 2 - popup_title.get_width() // 2, popup_y + 20))
-            
-            # Champ de saisie
-            pseudo_input.draw(screen)
-            
-            # Instructions
-            font_small = pygame.font.Font(resource_path("GuessMyClass/font/MightySouly.ttf"), 18)
-            instr = font_small.render("Appuyez sur Entrée pour valider, Échap pour annuler", True, (100, 100, 100))
-            screen.blit(instr, (popup_x + popup_w // 2 - instr.get_width() // 2, popup_y + popup_h - 40))
+        # Popup changement de pseudo (SUPPRIMÉ - on utilise celui de welcome)
+        # Plus besoin de ce code, on réutilise show_login_popup
         
         pygame.display.flip()
         clock.tick(60)

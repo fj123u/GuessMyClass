@@ -19,12 +19,20 @@ from connection_check import check_supabase_connection
 print("🔍 Vérification connexion BDD au démarrage...")
 check_supabase_connection(force=True)
 
+# ✅ Vérifie si un pseudo est déjà défini
+from config_manager import get_pseudo
+saved_pseudo = get_pseudo()
+if saved_pseudo and saved_pseudo != "Invité" and "invit" not in saved_pseudo.lower():
+    print(f"✅ Pseudo trouvé: {saved_pseudo}, skip welcome")
+    dest = 'home'
+else:
+    print("ℹ️ Pas de pseudo valide, affichage welcome")
+    dest = 'welcome'
+
 running = True
 icon = pygame.image.load(resource_path('GuessMyClass/icon/gmc.png'))
 pygame.display.set_icon(icon)
 icon = pygame.transform.scale(icon, (25, 25))
-
-dest = 'welcome'
 mult = None
 l = False
 v = False
