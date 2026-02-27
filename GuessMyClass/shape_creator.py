@@ -112,20 +112,9 @@ class Shape:
 pygame.init()
 pygame.font.get_init()
 
-# ✅ Charge le numéro d'écran depuis la config et configure SDL
+# ✅ Fenêtre sans bordure qui prend tout l'écran
 import os
-
-try:
-    from config_manager import load_config
-    config = load_config()
-    display_screen = config.get("display_screen", 0)
-    
-    # ✅ Configure SDL pour utiliser l'écran sélectionné
-    os.environ['SDL_VIDEO_WINDOW_POS'] = f"{display_screen},0"  # Utilise l'index d'écran SDL
-    print(f"✅ Écran sélectionné : {display_screen}")
-except Exception as e:
-    print(f"⚠️ Erreur config écran: {e}")
-    display_screen = 0
+os.environ['SDL_VIDEO_CENTERED'] = '1'
 
 # Détecte la résolution de l'écran
 info = pygame.display.Info()

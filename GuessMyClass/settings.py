@@ -178,14 +178,6 @@ def settings_display():
     slider_sfx = Slider(w // 2 - 150, 350, 300, 20, audio.sfx_volume)
     
     # ─────────────────────────────────────────────────────
-    # BOUTON CHANGER D'ÉCRAN
-    # ─────────────────────────────────────────────────────
-    
-    change_screen_button = Shape('change_screen', "Changer d'écran", 280, 50, 
-                                 (w // 2 - 140, 470), 3, (104, 180, 229), True,
-                                 (resource_path("GuessMyClass/font/MightySouly.ttf"), 28))
-    
-    # ─────────────────────────────────────────────────────
     # BOUTONS PSEUDO
     # ─────────────────────────────────────────────────────
     
@@ -249,44 +241,6 @@ def settings_display():
         sfx_label = font_label.render("Volume effets sonores :", True, (50, 50, 50))
         screen.blit(sfx_label, (w // 2 - 150, 310))
         slider_sfx.draw(screen)
-        
-        # Bouton changer d'écran
-        dest = change_screen_button.draw()
-        if dest == 'change_screen':
-            # ✅ Bascule l'écran dans la config
-            from config_manager import load_config, save_config
-            import os
-            
-            config = load_config()
-            
-            # Récupère ou initialise le numéro d'écran actuel
-            current_screen = config.get("display_screen", 0)
-            
-            # Bascule entre écran 0 et 1
-            next_screen = 1 if current_screen == 0 else 0
-            config["display_screen"] = next_screen
-            save_config(config)
-            
-            print(f"✅ Écran changé : {current_screen} → {next_screen}")
-            
-            # Message
-            overlay = pygame.Surface((w, h))
-            overlay.fill((0, 0, 0))
-            overlay.set_alpha(220)
-            screen.blit(overlay, (0, 0))
-            
-            font_msg = pygame.font.Font(resource_path("GuessMyClass/font/MightySouly.ttf"), 40)
-            font_msg2 = pygame.font.Font(resource_path("GuessMyClass/font/MightySouly.ttf"), 35)
-            msg = font_msg.render(f"Passage à l'écran {next_screen + 1}", True, (255, 255, 255))
-            msg2 = font_msg2.render("Le jeu va redémarrer...", True, (255, 255, 255))
-            
-            screen.blit(msg, (w//2 - msg.get_width()//2, h//2 - 50))
-            screen.blit(msg2, (w//2 - msg2.get_width()//2, h//2 + 10))
-            
-            pygame.display.flip()
-            pygame.time.delay(2000)
-            
-            return 'hell'  # Redémarre
         
         # Bouton changer de pseudo
         dest = change_pseudo_button.draw()
