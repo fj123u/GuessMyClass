@@ -178,31 +178,24 @@ def settings_display():
     slider_sfx = Slider(w // 2 - 150, 350, 300, 20, audio.sfx_volume)
     
     # ─────────────────────────────────────────────────────
-    # BOUTONS RÉSOLUTION
+    # BOUTON CHANGER D'ÉCRAN
     # ─────────────────────────────────────────────────────
     
-    current_res = f"{w}x{h}"
-    resolutions = [
-        ("1920x1080", 1920, 1080),
-        ("1600x900", 1600, 900),
-        ("1280x720", 1280, 720),
-        ("Plein écran", -1, -1)
-    ]
-    
-    resolution_buttons = []
-    y_start = 470
-    for i, (text, res_w, res_h) in enumerate(resolutions):
-        is_current = (text == current_res) or (text == "Plein écran" and w >= 1900)
-        btn = ResolutionButton(w // 2 - 100, y_start + i * 60, 200, 45, text, is_current)
-        resolution_buttons.append((btn, res_w, res_h))
+    change_screen_button = Shape('change_screen', "Changer d'écran", 280, 50, 
+                                 (w // 2 - 140, 470), 3, (104, 180, 229), True,
+                                 (resource_path("GuessMyClass/font/MightySouly.ttf"), 28))
     
     # ─────────────────────────────────────────────────────
-    # BOUTON CHANGER DE PSEUDO
+    # BOUTONS PSEUDO
     # ─────────────────────────────────────────────────────
     
-    change_pseudo_button = Shape('change_pseudo', 'Changer de pseudo', 300, 50, 
-                                 (w // 2 - 150, h - 150), 3, (184, 180, 229), True,
-                                 (resource_path("GuessMyClass/font/MightySouly.ttf"), 30))
+    change_pseudo_button = Shape('change_pseudo', 'Changer de pseudo', 280, 50, 
+                                 (w // 2 - 290, h - 150), 3, (184, 180, 229), True,
+                                 (resource_path("GuessMyClass/font/MightySouly.ttf"), 28))
+    
+    guest_mode_button = Shape('guest_mode', 'Mode invité', 280, 50, 
+                             (w // 2 + 10, h - 150), 3, (144, 140, 189), True,
+                             (resource_path("GuessMyClass/font/MightySouly.ttf"), 28))
     
     # État pour le popup de changement de pseudo
     show_pseudo_popup = False
@@ -228,36 +221,6 @@ def settings_display():
                 audio.set_sfx_volume(slider_sfx.get_value())
                 # ✅ Sauvegarde dans la config
                 set_volumes(slider_music.get_value(), slider_sfx.get_value())
-            
-            # Gestion des boutons de résolution
-            for btn, res_w, res_h in resolution_buttons:
-                if btn.handle_event(event):
-                    # ✅ Sauvegarde la résolution
-                    if res_w == -1:  # Plein écran
-                        set_resolution(1920, 1080, fullscreen=True)
-                    else:
-                        set_resolution(res_w, res_h, fullscreen=False)
-                    
-                    print(f"✅ Résolution sauvegardée")
-                    
-                    # Message de redémarrage
-                    screen = pygame.display.get_surface()
-                    w, h = screen.get_size()
-                    overlay = pygame.Surface((w, h))
-                    overlay.fill((0, 0, 0))
-                    overlay.set_alpha(220)
-                    screen.blit(overlay, (0, 0))
-                    
-                    font_msg = pygame.font.Font(resource_path("GuessMyClass/font/MightySouly.ttf"), 40)
-                    msg = font_msg.render("Résolution sauvegardée !", True, (255, 255, 255))
-                    msg2 = font_msg.render("Veuillez redémarrer le jeu", True, (255, 255, 255))
-                    screen.blit(msg, (w//2 - msg.get_width()//2, h//2 - 50))
-                    screen.blit(msg2, (w//2 - msg2.get_width()//2, h//2 + 10))
-                    
-                    pygame.display.flip()
-                    pygame.time.delay(2000)
-                    
-                    return 'hell'  # Quitte le jeu
         
         # ─────────────────────────────────────────────────────
         # DESSIN
@@ -287,13 +250,43 @@ def settings_display():
         screen.blit(sfx_label, (w // 2 - 150, 310))
         slider_sfx.draw(screen)
         
-        # Label résolution
-        res_label = font_label.render("Taille de la fenêtre :", True, (50, 50, 50))
-        screen.blit(res_label, (w // 2 - 150, 425))
-        
-        # Boutons résolution
-        for btn, _, _ in resolution_buttons:
-            btn.draw(screen)
+        # Bouton changer d'écran
+        dest = change_screen_button.draw()
+        if dest == 'change_screen':
+            # ✅ Bascule l'écran dans la config
+            from config_manager import load_config, save_config
+            import os
+            
+            config = load_config()
+            
+            # Récupère ou initialise le numéro d'écran actuel
+            current_screen = config.get("display_screen", 0)
+            
+            # Bascule entre écran 0 et 1
+            next_screen = 1 if current_screen == 0 else 0
+            config["display_screen"] = next_screen
+            save_config(config)
+            
+            print(f"✅ Écran changé : {current_screen} → {next_screen}")
+            
+            # Message
+            overlay = pygame.Surface((w, h))
+            overlay.fill((0, 0, 0))
+            overlay.set_alpha(220)
+            screen.blit(overlay, (0, 0))
+            
+            font_msg = pygame.font.Font(resource_path("GuessMyClass/font/MightySouly.ttf"), 40)
+            font_msg2 = pygame.font.Font(resource_path("GuessMyClass/font/MightySouly.ttf"), 35)
+            msg = font_msg.render(f"Passage à l'écran {next_screen + 1}", True, (255, 255, 255))
+            msg2 = font_msg2.render("Le jeu va redémarrer...", True, (255, 255, 255))
+            
+            screen.blit(msg, (w//2 - msg.get_width()//2, h//2 - 50))
+            screen.blit(msg2, (w//2 - msg2.get_width()//2, h//2 + 10))
+            
+            pygame.display.flip()
+            pygame.time.delay(2000)
+            
+            return 'hell'  # Redémarre
         
         # Bouton changer de pseudo
         dest = change_pseudo_button.draw()
@@ -307,8 +300,30 @@ def settings_display():
             if result:
                 print(f"✅ Pseudo changé avec succès")
         
-        # Popup changement de pseudo (SUPPRIMÉ - on utilise celui de welcome)
-        # Plus besoin de ce code, on réutilise show_login_popup
+        # Bouton mode invité
+        dest = guest_mode_button.draw()
+        if dest == 'guest_mode':
+            # ✅ Repasse en mode invité
+            from config_manager import set_pseudo
+            set_pseudo("Invite")
+            print("✅ Mode invité activé")
+            
+            # Message de confirmation
+            overlay = pygame.Surface((w, h))
+            overlay.fill((0, 0, 0))
+            overlay.set_alpha(200)
+            screen.blit(overlay, (0, 0))
+            
+            font_msg = pygame.font.Font(resource_path("GuessMyClass/font/MightySouly.ttf"), 35)
+            msg = font_msg.render("Mode invité activé", True, (255, 255, 255))
+            msg2 = font_msg.render("Vous pouvez maintenant jouer sans compte", True, (255, 255, 255))
+            screen.blit(msg, (w//2 - msg.get_width()//2, h//2 - 40))
+            screen.blit(msg2, (w//2 - msg2.get_width()//2, h//2 + 10))
+            
+            pygame.display.flip()
+            pygame.time.delay(2000)
+            
+            return 'home'
         
         pygame.display.flip()
         clock.tick(60)

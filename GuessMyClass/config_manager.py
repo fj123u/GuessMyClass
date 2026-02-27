@@ -21,9 +21,10 @@ CONFIG_FILE = os.path.join(CONFIG_DIR, "settings.json")
 
 # Configuration par défaut
 DEFAULT_CONFIG = {
-    "pseudo": "Invité",
+    "pseudo": "Invite",
     "music_volume": 0.3,
     "sfx_volume": 0.5,
+    "display_screen": 0,  # 0 = écran principal, 1 = écran secondaire
     "resolution": {
         "width": 1920,
         "height": 1080,

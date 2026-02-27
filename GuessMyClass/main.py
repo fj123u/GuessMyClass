@@ -22,7 +22,7 @@ check_supabase_connection(force=True)
 # ✅ Vérifie si un pseudo est déjà défini
 from config_manager import get_pseudo
 saved_pseudo = get_pseudo()
-if saved_pseudo and saved_pseudo != "Invité" and "invit" not in saved_pseudo.lower():
+if saved_pseudo and saved_pseudo != "Invite":
     print(f"✅ Pseudo trouvé: {saved_pseudo}, skip welcome")
     dest = 'home'
 else:

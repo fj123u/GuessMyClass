@@ -112,32 +112,27 @@ class Shape:
 pygame.init()
 pygame.font.get_init()
 
-# ✅ Charge la résolution depuis la config
+# ✅ Charge le numéro d'écran depuis la config et configure SDL
 import os
 
 try:
-    from config_manager import get_resolution
-    saved_w, saved_h, fullscreen = get_resolution()
+    from config_manager import load_config
+    config = load_config()
+    display_screen = config.get("display_screen", 0)
     
-    if fullscreen:
-        screen = pygame.display.set_mode((0, 0), pygame.FULLSCREEN)
-        print(f"✅ Mode plein écran chargé")
-    else:
-        # ✅ Centre la fenêtre
-        info = pygame.display.Info()
-        center_x = (info.current_w - saved_w) // 2
-        center_y = (info.current_h - saved_h) // 2
-        os.environ['SDL_VIDEO_WINDOW_POS'] = f"{center_x},{center_y}"
-        
-        screen = pygame.display.set_mode((saved_w, saved_h), pygame.NOFRAME)
-        print(f"✅ Résolution chargée : {saved_w}x{saved_h} (centrée)")
-    
-    current_w, current_h = screen.get_size()
+    # ✅ Configure SDL pour utiliser l'écran sélectionné
+    os.environ['SDL_VIDEO_WINDOW_POS'] = f"{display_screen},0"  # Utilise l'index d'écran SDL
+    print(f"✅ Écran sélectionné : {display_screen}")
 except Exception as e:
-    print(f"⚠️ Erreur chargement résolution: {e}, utilisation par défaut")
-    os.environ['SDL_VIDEO_WINDOW_POS'] = "0,0"
-    current_w, current_h = pygame.display.Info().current_w, pygame.display.Info().current_h
-    screen = pygame.display.set_mode((current_w, current_h), pygame.NOFRAME)
-    current_w, current_h = screen.get_size()
+    print(f"⚠️ Erreur config écran: {e}")
+    display_screen = 0
+
+# Détecte la résolution de l'écran
+info = pygame.display.Info()
+current_w, current_h = info.current_w, info.current_h
+
+# Crée une fenêtre sans bordure en plein écran
+screen = pygame.display.set_mode((current_w, current_h), pygame.NOFRAME)
+print(f"✅ Fenêtre sans bordure : {current_w}x{current_h}")
 
 clock = pygame.time.Clock()

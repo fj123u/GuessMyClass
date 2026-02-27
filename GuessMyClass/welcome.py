@@ -231,7 +231,7 @@ def welcome_display():
 
             if guest_hovered and guest_was_pressed:
                 guest_was_pressed = False
-                set_pseudo("Invite\ninvit")  # ✅ Sauvegarde dans config JSON
+                set_pseudo("Invite")  # ✅ Pseudo invité = "Invite"
                 return 'home'
 
         if mouse_pressed:
