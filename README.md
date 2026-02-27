@@ -44,8 +44,6 @@ Ce projet a été développé par le groupe GMC de la classe de TGNSI au lycée 
 
 Pygame (https://www.pygame.org/news)
 
-Custom Tkinter (https://customtkinter.tomschimansky.com/)
-
 Supabase (https://supabase.com/docs/reference/python/introduction)
 ```
 

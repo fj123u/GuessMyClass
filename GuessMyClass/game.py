@@ -1,4 +1,3 @@
-
 # Importe les bibliothèques nécessaires pour le fonctionnement du code
 
 import pygame
@@ -8,6 +7,8 @@ from random import *
 from time import *
 from sql_link import *
 from utils import *
+from config_manager import get_pseudo
+from multiplayer import is_player_guest
 
 
 # Définition de last_point
@@ -100,12 +101,16 @@ class PanoramicView:
 
 # Fonction principale du gameplay
 def game_display():
+    # ✅ Lance la musique de gameplay
+    try:
+        from audio_manager import audio
+        audio.play_music_game()
+    except:
+        pass
     
     # Gère le multijoueur
     with open(resource_path("GuessMyClass/score/option.txt"), "r") as f:
         testread = f.readlines()
-    
-    
     try:
         if testread[0] == "True":
             f.close()
@@ -129,6 +134,7 @@ def game_display():
     score3 = 0
     score4 = 0
     truc2 = 0
+    manche = 1
     map_image_coo = (75, 75)
     etage_image_coo = (75, 75)
     end = False
@@ -153,6 +159,7 @@ def game_display():
             x, y = event.pos
             if 20 <= x <= 140 and 20 <= y <= 70: 
                 pygame.time.delay(300)
+                leave_button.show()
                 return 'home'
             elif (current_w/2 -125) <= x <= (current_w/2 -125 +50) and (current_h/2) <= y <= (current_h/2 +50):
                 nb = 5
@@ -192,17 +199,25 @@ def game_display():
             
                 scoreButtonWidth = 200
                 scoreButtonHeight = 50
-                scoreButtonPos = (current_w -200 -25, 20)
+                scoreButtonPos = (current_w -200 - 25, 20)
                 scoreButtonElevation = 5
                 scoreButtonColor = (220, 0, 0)
                 score_button = Shape('score', "Score J1 : " + str(score), scoreButtonWidth, scoreButtonHeight, scoreButtonPos, scoreButtonElevation, scoreButtonColor, False, (resource_path('GuessMyClass/font/MightySouly.ttf'), 30))
                 
                 scoreButton2Width = 200
                 scoreButton2Height = 50
-                scoreButton2Pos = (current_w -200 -25, 80)
+                scoreButton2Pos = (current_w -200 - 25, 80)
                 scoreButton2Elevation = 5
                 scoreButton2Color = (220, 0, 0)
                 score_button2 = Shape('score', "Score J2 : " + str(score4), scoreButton2Width, scoreButton2Height, scoreButton2Pos, scoreButton2Elevation, scoreButton2Color, False, (resource_path('GuessMyClass/font/MightySouly.ttf'), 30))
+
+                roundButtonWidth = 200
+                roundButtonHeight = 50
+                roundButtonPos = (current_w - 400 - 50, 20)
+                roundButtonElevation = 5
+                roundButtonColor = (104, 180, 229)
+                round_button = Shape('round', f"Manche {manche}/{nb}", roundButtonWidth, roundButtonHeight, roundButtonPos, roundButtonElevation, roundButtonColor, False, (resource_path('GuessMyClass/font/MightySouly.ttf'), 30))
+        
 
                 if mult == True :
                     score_button2.draw()
@@ -238,6 +253,7 @@ def game_display():
                             x, y = event.pos
                             if 20 <= x <= 140 and 20 <= y <= 70 and clickable == False: 
                                 pygame.time.delay(300)
+                                leave_button.show()
                                 return 'home'
                             if current_w - 120 <= x <= current_w - 20 and current_h - 120 <= y <= current_h - 20 and map_block == False:
                                 clickable = not clickable
@@ -283,6 +299,7 @@ def game_display():
                                 if valider_pressed :
                                     score += score2
                                     score4 += score3
+                                    manche += 1
                                     map_open = not map_open
                                     
                                     scoreButtonWidth = 200
@@ -321,6 +338,7 @@ def game_display():
                                 if valider_pressed :
                                     score += score2
                                     score4 += score3
+                                    manche += 1
                                     map_open = not map_open
                                     
                                     scoreButtonWidth = 200
@@ -358,6 +376,7 @@ def game_display():
                                 screen.blit(etage_icon, (current_w -75 - 17,current_h -75 -132))
                                 if valider_pressed :
                                     score += score2
+                                    manche += 1
                                     map_open = not map_open
                                     
                                     scoreButtonWidth = 200
@@ -387,6 +406,7 @@ def game_display():
                                 screen.blit(etage_icon2, (current_w -75 - 17,current_h -75 -132))
                                 if valider_pressed :
                                     score += score2
+                                    manche += 1
                                     map_open = not map_open
                                     
                                     scoreButtonWidth = 200
@@ -414,6 +434,7 @@ def game_display():
                     leave_button.draw()
                     score_button.draw()
                     score_button2.draw()
+                    round_button.draw()
                     game_map.draw()
                     screen.blit(map_icon, (current_w -75 -17,current_h -75 -22))
                     aze = calc_timer(timer)
@@ -425,32 +446,19 @@ def game_display():
                         clickable = True
                     timer_button = Shape('timer', "Temps : " + str(round(timer)) + "s", timerButtonWidth, timerButtonHeight, timerButtonPos, timerButtonElevation, timerButtonColor, False, (resource_path('GuessMyClass/font/MightySouly.ttf'), 30))
                     timer_button.draw()
+                    
                 
                     pygame.display.flip()
                     clock.tick(60)
-                    
+    
             pygame.time.delay(2000)
             end = True
         
-            # Ouvre le fichier de score du joueur et met son meilleur score dedans, et envoie le résultat en BDD sauf si le joueur n'est pas connecté
-            with open(resource_path("GuessMyClass/profile/compte.txt"), "r") as f:
-                pseudo = f.read().strip()
-
-            if pseudo != "Invite\ninvit":
-                score_path = resource_path(f"GuessMyClass/score/{pseudo}_{nb}.txt")
-                os.makedirs(os.path.dirname(score_path), exist_ok=True)
-
-                best_score = 0
-                if os.path.exists(score_path):
-                    with open(score_path, "r") as f:
-                        best_score = int(f.read().strip())
-
-                if score > best_score:
-                    with open(score_path, "w") as f:
-                        f.write(str(score))
-                        send_score(pseudo, nb, score)
-
-
+            # ✅ Charge le pseudo depuis le JSON et envoie le score en BDD sauf si invité
+            pseudo = get_pseudo()
+            if not is_player_guest(pseudo):
+                send_score(pseudo, nb, score)
+                
             # Ecran de fin de partie
             if mult == True:
                 scoreTotJ1Width = 650
@@ -534,6 +542,7 @@ def game_display():
 
                 for event in pygame.event.get():
                     if event.type == pygame.QUIT:
+                        leave_button.show()
                         return "home"
                     if event.type == pygame.MOUSEBUTTONDOWN:
                         x, y = event.pos
@@ -544,6 +553,7 @@ def game_display():
                             with open(resource_path("GuessMyClass/score/option.txt"), "w") as f:
                                 f.write('False')
                             mult = False
+                            leave_button.show()
                             return "home"
                     if reponse_donnee:
                         while truc != [] :

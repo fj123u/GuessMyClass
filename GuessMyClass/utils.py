@@ -1,4 +1,3 @@
-
 # Importe les bibliothèques nécessaires pour le fonctionnement du code
 
 import sys, os
@@ -71,9 +70,18 @@ buttonList3Elevation = 2
 buttonList3Color = (144, 180, 229)
 button_list3 = Shape('leaderboard', 'Classements', buttonList3Width, buttonList3Height, buttonList3Pos, buttonList3Elevation, buttonList3Color, True, (resource_path('GuessMyClass/font/MightySouly.ttf'), 40))
 
+# Bouton Paramètres (au-dessus de Quitter)
+settingsWidth = 250
+settingsHeight = 50
+settingsPos = (current_w/2 - 125, current_h/2 + 218)
+settingsElevation = 2
+settingsColor = (144, 140, 189)
+settings_button = Shape("settings", "Paramètres", settingsWidth, settingsHeight, settingsPos, settingsElevation, settingsColor, True, (resource_path('GuessMyClass/font/MightySouly.ttf'), 40))
+
+# Bouton Quitter (tout en bas)
 buttonList4Width = 250
 buttonList4Height = 50
-buttonList4Pos = (current_w/2-125, current_h/2+218)
+buttonList4Pos = (current_w/2-125, current_h/2+275)
 buttonList4Elevation = 2
 buttonList4Color = (104, 180, 229)
 button_list4 = Shape('leave', 'Quitter', buttonList4Width, buttonList4Height, buttonList4Pos, buttonList4Elevation, buttonList4Color, True, (resource_path('GuessMyClass/font/MightySouly.ttf'), 40))
@@ -111,7 +119,7 @@ logInWelcomeHeight = current_h/8
 logInWelcomePos = (current_w/5, 600)
 logInWelcomeElevation = 2
 logInWelcomeColor = (184, 180, 229)
-log_in_welcome = Shape('home', 'Se connecter', logInWelcomeWidth, logInWelcomeHeight, logInWelcomePos, logInWelcomeElevation, logInWelcomeColor, True, (resource_path('GuessMyClass/font/MightySouly.ttf'), 70))
+log_in_welcome = Shape('home', 'Créer un compte', logInWelcomeWidth, logInWelcomeHeight, logInWelcomePos, logInWelcomeElevation, logInWelcomeColor, True, (resource_path('GuessMyClass/font/MightySouly.ttf'), 70))
 
 sansCompteWidth = ((current_w/4-6)*2+58)/1.8
 sansCompteHeight = current_h/8
@@ -132,21 +140,21 @@ nb5Height = 50
 nb5Pos = (current_w/2 -125, current_h/2)
 nb5Elevation = 2
 nb5Color = (255, 128, 0)
-nb_5 = Shape(None, "5", nb5Width, nb5Height, nb5Pos, nb5Elevation, nb5Color, True, (resource_path('GuessMyClass/font/MightySouly.ttf'), 40))
+nb_5 = Shape("5", "5", nb5Width, nb5Height, nb5Pos, nb5Elevation, nb5Color, True, (resource_path('GuessMyClass/font/MightySouly.ttf'), 40))
 
 nb10Width = 50
 nb10Height = 50
 nb10Pos = (current_w/2-25, current_h/2)
 nb10Elevation = 2
 nb10Color = (255, 128, 0)
-nb_10 = Shape(None, "10", nb10Width, nb10Height, nb10Pos, nb10Elevation, nb10Color, True, (resource_path('GuessMyClass/font/MightySouly.ttf'), 40))
+nb_10 = Shape("10", "10", nb10Width, nb10Height, nb10Pos, nb10Elevation, nb10Color, True, (resource_path('GuessMyClass/font/MightySouly.ttf'), 40))
 
 nb20Width = 50
 nb20Height = 50
 nb20Pos = (current_w/2 +75, current_h/2)
 nb20Elevation = 2
 nb20Color = (255, 128, 0)
-nb_20 = Shape(None, "20", nb20Width, nb20Height, nb20Pos, nb20Elevation, nb20Color, True, (resource_path('GuessMyClass/font/MightySouly.ttf'), 40))
+nb_20 = Shape("20", "20", nb20Width, nb20Height, nb20Pos, nb20Elevation, nb20Color, True, (resource_path('GuessMyClass/font/MightySouly.ttf'), 40))
 
 mapWidth = 100
 mapHeight = 100
@@ -204,9 +212,9 @@ popupVersus1Elevation = 3
 popupVersus1Color = (184, 180, 229)
 popup_versus1 = Shape('versus_friend', 'Versus friend', popupVersus1Width, popupVersus1Height, popupVersus1Pos, popupVersus1Elevation, popupVersus1Color, True, (resource_path('GuessMyClass/font/MightySouly.ttf'), 50))
 
-logInMainWidth = 350
-logInMainHeight = 50
-logInMainPos = (6, current_h/6 + 6 + 5 + 55)
-logInMainElevation = 2
-logInMainColor = (184, 180, 229)
-log_in_main = Shape('log_in', 'Changer de pseudo', logInMainWidth, logInMainHeight, logInMainPos, logInMainElevation, logInMainColor, True, (resource_path('GuessMyClass/font/MightySouly.ttf'), 40))
+onlineWidth = 250
+onlineHeight = 50
+onlinePos = (current_w/2 - 125, current_h/2 + 50)
+onlineElevation = 2
+onlineColor = (104, 180, 229)
+online = Shape("multiplayer_menu", "En ligne", onlineWidth, onlineHeight, onlinePos, onlineElevation, onlineColor, True, (resource_path('GuessMyClass/font/MightySouly.ttf'), 40))

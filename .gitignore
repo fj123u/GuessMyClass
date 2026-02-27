@@ -22,3 +22,6 @@ GuessMyClass/GuessMyClass.spec
 GuessMyClass/build_gmc.bat
 GuessMyClass/logo.png
 GuessMyClass/gmc/ico
+
+# Herald
+herald.config.json

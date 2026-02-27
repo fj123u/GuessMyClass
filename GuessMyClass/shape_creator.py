@@ -1,4 +1,3 @@
-
 # Importe les bibliothèques nécessaires pour le fonctionnement du code
 
 import pygame
@@ -93,6 +92,12 @@ class Shape:
                 self.dynamic_elecation = self.elevation
                 if self.pressed == True:
                     self.pressed = False
+                    # ✅ Joue le son de clic
+                    try:
+                        from audio_manager import audio
+                        audio.play_click()
+                    except:
+                        pass  # Ignore si audio_manager non dispo
                     return self.destination
         else:
             self.dynamic_elecation = self.elevation
@@ -104,10 +109,19 @@ class Shape:
     def show(self):
         self.visible = True
 
-
 pygame.init()
 pygame.font.get_init()
-current_w, current_h = pygame.display.Info().current_w, pygame.display.Info().current_h
-screen =  pygame.display.set_mode((current_w, current_h))
+
+# ✅ Fenêtre sans bordure qui prend tout l'écran
+import os
+os.environ['SDL_VIDEO_CENTERED'] = '1'
+
+# Détecte la résolution de l'écran
+info = pygame.display.Info()
+current_w, current_h = info.current_w, info.current_h
+
+# Crée une fenêtre sans bordure en plein écran
+screen = pygame.display.set_mode((current_w, current_h), pygame.NOFRAME)
+print(f"✅ Fenêtre sans bordure : {current_w}x{current_h}")
+
 clock = pygame.time.Clock()
-        
