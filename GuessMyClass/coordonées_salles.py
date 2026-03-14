@@ -7,20 +7,22 @@ from shape_creator import *
 from utils import *
 
 # Dictionnaire pour stocker les coordonnées de chaque salle
-coo_original = {"C005" : [1178, 313, 0], "C006" : [1180, 265, 0], "C008" : [1284, 312, 0], "C009" : [1247, 265, 0], "C012" : [1366, 263, 0],
-       "C104" : [1159, 265, 1], "C105" : [1193, 314, 1], "C106" : [1195, 263, 1], "C108" : [1232, 491, 1], "C109" : [1249, 315, 1], "C111" : [1249, 316, 1], "C113" : [1312, 263, 1], "C114" : [1347, 265, 1], "C115" : [1360, 316, 1],"C117" : [1387, 313, 1],"C110" : [1268, 262, 1], 
-       "D004" : [1162, 478, 0], "D010" : [1285, 470, 0], "D012_v2" : [1388, 414, 0],"D006" : [1185, 415, 0],"D014" : [1373, 472, 0],
-       "D104" : [1198, 471, 1], "D105" : [1170, 421, 1], "D106" : [1212, 419, 1], "D111" : [1271, 418, 0], "D112" : [1299, 469, 0], "D113" : [1310, 420, 0], "D114" : [1360, 471, 0], "D115" : [1358, 419, 0],"D116" : [1386, 469, 0],"D117" : [1387, 420, 0],"D109" : [1246, 471, 1], "D110" : [1274, 471, 1],
-       "E107" : [1174, 643, 1], "E108" : [1176, 591, 1], "E109" : [1228, 642, 1], "E110" : [1232, 590, 1], "E111" : [1287, 646, 1], "E114" : [1377, 589, 1], "E113" : [1369, 647, 1],"E123" : [1578, 585, 1],"E125" : [1647, 642, 1], "E116" : [1462, 644, 1], "E121" : [1437, 646, 1], "E126" : [1635, 588, 1],
-       "(parking)" : [1685, 501, 0], "4_arbres" : [298, 446, 0],
-       "biathlon" : [812, 1003, 0], "briques" : [1668, 1051, 0], "cdi" : [1058, 291, 1], "cours_dehors" : [860, 480, 0],
-       "cours_internat" : [632, 731, 0], "creux" : [1615, 360, 0], "dehors_physique" : [1376, 376, 0], "hall" : [1103, 233, 0],
-       "petit_arbre" : [97, 895, 0], "terrain_foot" : [569, 207, 0], "toilettes hall garçon" : [1140, 224, 0], "toilette haut interieur" : [1136, 266, 1],
-       "vestiaire" : [1154, 671, 0], "couloir CDI" : [1047, 251, 1], "couloir salle prof" : [915, 284, 1], "escalier E" : [1324, 627, 1], "Grande passerelle" : [1111, 444, 0],
-       "Passerelle_D-C_bas" : [1339, 379, 0], "Passerelle_D-C" : [1338, 378, 1], "Passerelle_E-D" : [1339, 524, 1], "Passerelle_E-D_bas" : [1338, 520, 0], "couloir E haut" : [1324, 614, 1],
-       "Beton" : [1561, 803, 0], "bois" : [1303, 881, 0], "couloir E bas" : [1334, 653, 0], "E030" : [1464, 612, 0], "Energie" : [1447, 725, 0],
-       "peinture" : [1193, 829, 0], "couloir D haut" : [1311, 444, 1], "Escalier D" : [1324, 478, 1], "A136" : [1069, 268, 1], "A137" : [1056, 271, 1],
-       "A138" : [988, 270, 1], "A139" : [1037, 268, 1], "E041" : [1639, 605, 0]}
+coo_original = {
+    "C005": [1178, 313, 0], "C006": [1180, 265, 0], "C008": [1284, 312, 0], "C009": [1247, 265, 0], "C012": [1366, 263, 0],
+    "C104": [1159, 265, 1], "C105": [1193, 314, 1], "C106": [1195, 263, 1], "C108": [1232, 491, 1], "C109": [1249, 315, 1], "C111": [1249, 316, 1], "C113": [1312, 263, 1], "C114": [1347, 265, 1], "C115": [1360, 316, 1], "C117": [1387, 313, 1], "C110": [1268, 262, 1],
+    "D004": [1162, 478, 0], "D010": [1285, 470, 0], "D012_v2": [1388, 414, 0], "D006": [1185, 415, 0], "D014": [1373, 472, 0],
+    "D104": [1198, 471, 1], "D105": [1170, 421, 1], "D106": [1212, 419, 1], "D111": [1271, 418, 0], "D112": [1299, 469, 0], "D113": [1310, 420, 0], "D114": [1360, 471, 0], "D115": [1358, 419, 0], "D116": [1386, 469, 0], "D117": [1387, 420, 0], "D109": [1246, 471, 1], "D110": [1274, 471, 1],
+    "E107": [1174, 643, 1], "E108": [1176, 591, 1], "E109": [1228, 642, 1], "E110": [1232, 590, 1], "E111": [1287, 646, 1], "E114": [1377, 589, 1], "E113": [1369, 647, 1], "E123": [1578, 585, 1], "E125": [1647, 642, 1], "E116": [1462, 644, 1], "E121": [1437, 646, 1], "E126": [1635, 588, 1],
+    "(parking)": [1685, 501, 0], "4_arbres": [298, 446, 0],
+    "biathlon": [812, 1003, 0], "briques": [1668, 1051, 0], "cdi": [1058, 291, 1], "cours_dehors": [860, 480, 0],
+    "cours_internat": [632, 731, 0], "creux": [1615, 360, 0], "dehors_physique": [1376, 376, 0], "hall": [1103, 233, 0],
+    "petit_arbre": [97, 895, 0], "terrain_foot": [569, 207, 0], "toilettes hall garçon": [1140, 224, 0], "toilette haut interieur": [1136, 266, 1],
+    "vestiaire": [1154, 671, 0], "couloir CDI": [1047, 251, 1], "couloir salle prof": [915, 284, 1], "escalier E": [1324, 627, 1], "Grande passerelle": [1111, 444, 0],
+    "Passerelle_D-C_bas": [1339, 379, 0], "Passerelle_D-C": [1338, 378, 1], "Passerelle_E-D": [1339, 524, 1], "Passerelle_E-D_bas": [1338, 520, 0], "couloir E haut": [1324, 614, 1],
+    "Beton": [1561, 803, 0], "bois": [1303, 881, 0], "couloir E bas": [1334, 653, 0], "E030": [1464, 612, 0], "Energie": [1447, 725, 0],
+    "peinture": [1193, 829, 0], "couloir D haut": [1311, 444, 1], "Escalier D": [1324, 478, 1], "A136": [1069, 268, 1], "A137": [1056, 271, 1],
+    "A138": [988, 270, 1], "A139": [1037, 268, 1], "E041": [1639, 605, 0],
+}
 
 # Fonction pour adapter les coordonnées
 def scale_coordinates(coord_dict, scale_x, scale_y):
@@ -36,7 +38,22 @@ REFERENCE_HEIGHT = 1080
 scale_x = current_w / REFERENCE_WIDTH
 scale_y = current_h / REFERENCE_HEIGHT
 
-# Coordonnées adaptées à l'écran actuel
+
+def screen_to_reference(point):
+    """Convertit un point écran (pixels actuels) vers les coordonnées de référence (1920x1080)."""
+    if not point:
+        return (0, 0)
+    return (int(point[0] / scale_x), int(point[1] / scale_y))
+
+
+def reference_to_screen(point):
+    """Convertit un point référence (1920x1080) vers les pixels de l'écran actuel."""
+    if not point:
+        return (0, 0)
+    return (int(point[0] * scale_x), int(point[1] * scale_y))
+
+
+# Coordonnées adaptées à l'écran actuel (utilisées uniquement pour l'affichage)
 coo = scale_coordinates(coo_original, scale_x, scale_y)
 
 # Fonction qui calcul le nombre de points par rapport à la salle, les coordonnées du points et l'étage

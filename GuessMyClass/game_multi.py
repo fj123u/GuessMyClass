@@ -9,7 +9,7 @@ from multiplayer import (get_room_info, submit_answer, get_round_results, next_r
                          create_game_session, save_round_detail, is_player_guest,
                          PLAYER_COLORS, SOLUTION_COLOR)
 from config_manager import get_pseudo
-from coordonées_salles import coo
+from coordonées_salles import coo, coo_original, screen_to_reference, reference_to_screen
 
 def resource_path(relative_path):
     try:
@@ -67,8 +67,10 @@ def get_image_for_room(room_name):
                 return img_path
     return None
 
-def calcul_points(salle, coo_pin, nb_etage):
-    distance = sqrt((coo_pin[0] - coo[salle][0])**2 + (coo_pin[1] - coo[salle][1])**2)
+def calcul_points(salle, coo_pin_ref, nb_etage):
+    """Calcule le score à partir de coordonnées EN RÉFÉRENCE (1920x1080), indépendantes de la résolution."""
+    target = coo_original[salle]
+    distance = sqrt((coo_pin_ref[0] - target[0])**2 + (coo_pin_ref[1] - target[1])**2)
     if distance <= 10:
         score = 5000
     elif distance <= 300:
@@ -78,7 +80,7 @@ def calcul_points(salle, coo_pin, nb_etage):
     else:
         score = 500 - ((distance - 300) / 700) * 450
         score = max(score, 50)
-    if nb_etage != coo[salle][2]:
+    if nb_etage != target[2]:
         score *= 0.25
     return round(score), distance
 
@@ -89,24 +91,33 @@ def draw_player_point(point, color):
         pygame.draw.circle(screen, (0, 0, 0), point, 10, 2)
 
 def draw_solution_point(salle):
-    """✅ Dessine la solution en OR avec un point blanc au centre"""
+    """✅ Dessine la solution en OR avec un point blanc au centre (coordonnées écran)"""
     x, y = coo[salle][0], coo[salle][1]
     pygame.draw.circle(screen, SOLUTION_COLOR, (x, y), 13)
     pygame.draw.circle(screen, (0, 0, 0), (x, y), 13, 2)
     pygame.draw.circle(screen, (255, 255, 255), (x, y), 4)
 
 def show_answer_multi(salle, results, player_colors):
-    """✅ Affiche lignes + points colorés + solution en or"""
+    """✅ Affiche lignes + points colorés + solution en or.
+
+    Les coordonnées stockées en base sont en RÉFÉRENCE (1920x1080) et sont
+    converties ici en coordonnées écran pour chaque joueur.
+    """
     # D'abord les lignes (derrière)
     for res in results:
         color = tuple(player_colors.get(res['pseudo'], [255, 255, 255]))
-        point = (res['x'], res['y'])
-        if point != (0, 0):
-            pygame.draw.line(screen, color, point, (coo[salle][0], coo[salle][1]), width=2)
+        point_ref = (res['x'], res['y'])
+        point_screen = reference_to_screen(point_ref)
+        if point_screen != (0, 0):
+            pygame.draw.line(screen, color, point_screen, (coo[salle][0], coo[salle][1]), width=2)
+
     # Puis les points joueurs
     for res in results:
         color = tuple(player_colors.get(res['pseudo'], [255, 255, 255]))
-        draw_player_point((res['x'], res['y']), color)
+        point_ref = (res['x'], res['y'])
+        point_screen = reference_to_screen(point_ref)
+        draw_player_point(point_screen, color)
+
     # Solution PAR-DESSUS tout
     draw_solution_point(salle)
 
@@ -288,11 +299,13 @@ def game_multi_display(room_code):
                 if valider_pressed and not player_has_answered:
                     if len(liste_points) >= 2:
                         round_time_taken = int(time.time() - round_start_time)
-                        score2, distance = calcul_points(salle, liste_points[-2], nb_etage)
+                        click_screen = liste_points[-2]
+                        click_ref = screen_to_reference(click_screen)
+                        score2, distance = calcul_points(salle, click_ref, nb_etage)
                         score += score2
-                        submit_answer(room_code, round_num, pseudo, liste_points[-2][0], liste_points[-2][1], nb_etage, score2)
+                        submit_answer(room_code, round_num, pseudo, click_ref[0], click_ref[1], nb_etage, score2)
                         if session_id:
-                            save_round_detail(session_id, round_num, salle, pseudo, liste_points[-2][0], liste_points[-2][1], nb_etage, score2, distance, round_time_taken)
+                            save_round_detail(session_id, round_num, salle, pseudo, click_ref[0], click_ref[1], nb_etage, score2, distance, round_time_taken)
                         player_has_answered = True
                         valider_pressed = False
                         score_button = Shape('score', "Score : " + str(score), scoreButtonWidth, scoreButtonHeight, scoreButtonPos, scoreButtonElevation, scoreButtonColor, False, (resource_path('GuessMyClass/font/MightySouly.ttf'), 30))
@@ -385,11 +398,12 @@ def game_multi_display(room_code):
                 if auto_submit_time and not player_has_answered and time.time() - auto_submit_time > 10.0:
                     print(f"⏰ Auto-submit pour {pseudo} après 10s de timer expiré")
                     round_time_taken = int(time.time() - round_start_time)
-                    score2, distance = calcul_points(salle, (0, 0), nb_etage)
+                    click_ref = (0, 0)
+                    score2, distance = calcul_points(salle, click_ref, nb_etage)
                     score += score2
-                    submit_answer(room_code, round_num, pseudo, 0, 0, nb_etage, score2)
+                    submit_answer(room_code, round_num, pseudo, click_ref[0], click_ref[1], nb_etage, score2)
                     if session_id:
-                        save_round_detail(session_id, round_num, salle, pseudo, 0, 0, nb_etage, score2, distance, round_time_taken)
+                        save_round_detail(session_id, round_num, salle, pseudo, click_ref[0], click_ref[1], nb_etage, score2, distance, round_time_taken)
                     player_has_answered = True
                     score_button = Shape('score', "Score : " + str(score), scoreButtonWidth, scoreButtonHeight, scoreButtonPos, scoreButtonElevation, scoreButtonColor, False, (resource_path('GuessMyClass/font/MightySouly.ttf'), 30))
                 
